@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const CTASection = () => {
   return (
@@ -19,9 +20,11 @@ export const CTASection = () => {
           <p className="mb-10 text-lg text-white/60">
             Join thousands of Australian students already practising smarter. Start free — no credit card required.
           </p>
-          <Button variant="hero" size="lg" className="group">
-            Get started for free
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          <Button variant="hero" size="lg" className="group" asChild>
+            <Link to="/practice">
+              Try a practice session
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
           </Button>
         </motion.div>
       </div>
