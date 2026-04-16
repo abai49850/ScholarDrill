@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { testCards } from "@/data/mockProgress";
 import { DifficultyBadge } from "@/components/practice/DifficultyBadge";
 
+const subjectMap: Record<string, string> = {
+  Mathematics: "maths",
+  Reading: "reading",
+  Writing: "writing",
+  Reasoning: "reasoning",
+  Conventions: "conventions",
+};
+
 const categories = [
   { key: "all", label: "All Tests" },
   { key: "naplan", label: "NAPLAN" },
@@ -77,7 +85,7 @@ export function TestSelectionCards() {
                     </span>
                   </div>
                   <Button variant="default" size="sm" asChild className="group-hover:shadow-md transition-shadow">
-                    <Link to={`/practice?subject=${test.subjects[0]}`}>
+                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}`}>
                       Start Practice <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                     </Link>
                   </Button>
