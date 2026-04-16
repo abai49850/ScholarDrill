@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Zap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -26,6 +26,16 @@ interface SessionResult {
 }
 
 export default function Practice() {
+  const [searchParams] = useSearchParams();
+  const subjectFilter = searchParams.get("subject");
+
+  const filteredQuestions = useMemo(
+    () => subjectFilter
+      ? sampleQuestions.filter((q) => q.subject === subjectFilter)
+      : sampleQuestions,
+    [subjectFilter]
+  );
+
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -41,7 +51,7 @@ export default function Practice() {
 
   const pickNextQuestion = useCallback(
     (diff: number, answered: Set<string>) => {
-      const q = selectQuestion(sampleQuestions, diff, answered);
+      const q = selectQuestion(filteredQuestions, diff, answered);
       if (!q) {
         setSessionDone(true);
         return;
@@ -52,7 +62,7 @@ export default function Practice() {
       setTimerRunning(true);
       questionStartTime.current = Date.now();
     },
-    []
+    [filteredQuestions]
   );
 
   useEffect(() => {
@@ -120,7 +130,7 @@ export default function Practice() {
     pickNextQuestion(2, new Set());
   };
 
-  const questionsTotal = Math.min(TOTAL_QUESTIONS, sampleQuestions.length);
+  const questionsTotal = Math.min(TOTAL_QUESTIONS, filteredQuestions.length);
 
   if (sessionDone) {
     return (
