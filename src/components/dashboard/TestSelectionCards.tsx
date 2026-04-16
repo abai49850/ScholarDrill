@@ -77,7 +77,7 @@ export function TestSelectionCards() {
                     </span>
                   </div>
                   <Button variant="default" size="sm" asChild className="group-hover:shadow-md transition-shadow">
-                    <Link to="/practice">
+                    <Link to={`/practice?subject=${test.subjects[0]}`}>
                       Start Practice <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                     </Link>
                   </Button>
