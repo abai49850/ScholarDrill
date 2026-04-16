@@ -708,8 +708,10 @@ export function selectQuestion(
 ): Question | null {
   const available = questions.filter((q) => !answeredIds.has(q.id));
   if (available.length === 0) return null;
-  const sorted = [...available].sort(
-    (a, b) => Math.abs(a.difficulty - targetDifficulty) - Math.abs(b.difficulty - targetDifficulty)
+  // Group by closeness to target difficulty, then pick randomly within the best group
+  const minDist = Math.min(...available.map((q) => Math.abs(q.difficulty - targetDifficulty)));
+  const bestMatch = available.filter(
+    (q) => Math.abs(q.difficulty - targetDifficulty) <= minDist + 1
   );
-  return sorted[0];
+  return bestMatch[Math.floor(Math.random() * bestMatch.length)];
 }
