@@ -1179,6 +1179,8 @@ const naplanPack: Question[] = [
 ];
 
 // ── COMBINED EXPORT ────────────────────────────────────
+import { naplanGeneratedPack } from "./naplanGeneratedPack";
+
 export const sampleQuestions: Question[] = [
   ...mathsQuestions,
   ...readingQuestions,
@@ -1186,6 +1188,7 @@ export const sampleQuestions: Question[] = [
   ...reasoningQuestions,
   ...conventionsQuestions,
   ...naplanPack,
+  ...naplanGeneratedPack,
 ];
 
 // Adaptive difficulty engine
