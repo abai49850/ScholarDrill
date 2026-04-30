@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, BookOpen, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { testCards } from "@/data/mockProgress";
 import { DifficultyBadge } from "@/components/practice/DifficultyBadge";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 const subjectMap: Record<string, string> = {
   Mathematics: "maths",
@@ -22,12 +23,27 @@ const categories = [
 ] as const;
 
 export function TestSelectionCards() {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const { profile } = useUserProfile();
+  const initialCategory = profile.examFocus === "all" ? "all" : profile.examFocus;
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
 
-  const filtered =
-    activeCategory === "all"
-      ? testCards
-      : testCards.filter((t) => t.category === activeCategory);
+  // When profile changes, sync the category filter
+  useEffect(() => {
+    setActiveCategory(profile.examFocus === "all" ? "all" : profile.examFocus);
+  }, [profile.id, profile.examFocus]);
+
+  const filtered = useMemo(() => {
+    let list = testCards;
+    if (activeCategory !== "all") {
+      list = list.filter((t) => t.category === activeCategory);
+    }
+    // Match year level: include tests where the profile's year fits, or near (±1)
+    list = list.filter((t) =>
+      t.yearLevels.includes(profile.yearLevel) ||
+      t.yearLevels.some((y) => Math.abs(y - profile.yearLevel) <= 1)
+    );
+    return list;
+  }, [activeCategory, profile.yearLevel]);
 
   return (
     <div>
@@ -85,7 +101,7 @@ export function TestSelectionCards() {
                     </span>
                   </div>
                   <Button variant="default" size="sm" asChild className="group-hover:shadow-md transition-shadow">
-                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}`}>
+                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}&year=${profile.yearLevel}`}>
                       Start Practice <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                     </Link>
                   </Button>
@@ -95,6 +111,11 @@ export function TestSelectionCards() {
           ))}
         </AnimatePresence>
       </div>
+      {filtered.length === 0 && (
+        <div className="bg-card border border-dashed border-border rounded-2xl p-8 text-center text-sm text-muted-foreground">
+          No tests match Year {profile.yearLevel} in this category yet. Try a different filter or persona.
+        </div>
+      )}
     </div>
   );
 }

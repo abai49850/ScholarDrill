@@ -4,8 +4,10 @@ import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { SubjectProgressCards } from "@/components/dashboard/SubjectProgressCards";
 import { TestSelectionCards } from "@/components/dashboard/TestSelectionCards";
 import { StreakWidget } from "@/components/dashboard/StreakWidget";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 export default function Dashboard() {
+  const { profile } = useUserProfile();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -15,8 +17,13 @@ export default function Dashboard() {
           <header className="h-14 flex items-center border-b border-border px-4 glass-nav sticky top-0 z-40">
             <SidebarTrigger className="mr-3" />
             <div>
-              <h1 className="text-base font-semibold">Welcome back, Emma 👋</h1>
-              <p className="text-xs text-muted-foreground">Year 5 · NSW</p>
+              <h1 className="text-base font-semibold">
+                Welcome back, {profile.name} 👋
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Year {profile.yearLevel} · {profile.region}
+                {profile.isSuperUser && " · Super User"}
+              </p>
             </div>
           </header>
 
