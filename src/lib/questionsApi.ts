@@ -75,30 +75,27 @@ export async function getQuestion(id: string): Promise<DbQuestion | null> {
 }
 
 export async function createQuestion(draft: QuestionDraft): Promise<DbQuestion> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert({ ...draft, options: draft.options as unknown as object })
-    .select("*")
-    .single();
+  const payload = { ...draft, options: draft.options as unknown } as never;
+  const { data, error } = await supabase.from(TABLE).insert(payload).select("*").single();
   if (error) throw error;
   return data as unknown as DbQuestion;
 }
 
 export async function updateQuestion(id: string, patch: Partial<QuestionDraft>): Promise<DbQuestion> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update({ ...patch, ...(patch.options ? { options: patch.options as unknown as object } : {}) })
-    .eq("id", id)
-    .select("*")
-    .single();
+  const payload = {
+    ...patch,
+    ...(patch.options ? { options: patch.options as unknown } : {}),
+  } as never;
+  const { data, error } = await supabase.from(TABLE).update(payload).eq("id", id).select("*").single();
   if (error) throw error;
   return data as unknown as DbQuestion;
 }
 
 export async function setQuestionStatus(id: string, status: QuestionStatus): Promise<DbQuestion> {
-  const patch: Record<string, unknown> = { status };
-  if (status === "approved") patch.approved_at = new Date().toISOString();
-  else patch.approved_at = null;
+  const patch = {
+    status,
+    approved_at: status === "approved" ? new Date().toISOString() : null,
+  } as never;
   const { data, error } = await supabase.from(TABLE).update(patch).eq("id", id).select("*").single();
   if (error) throw error;
   return data as unknown as DbQuestion;
