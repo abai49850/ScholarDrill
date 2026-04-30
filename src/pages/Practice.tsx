@@ -15,6 +15,7 @@ import {
   getNextDifficulty,
   type Question,
 } from "@/data/sampleQuestions";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -28,13 +29,23 @@ interface SessionResult {
 export default function Practice() {
   const [searchParams] = useSearchParams();
   const subjectFilter = searchParams.get("subject");
+  const yearParam = searchParams.get("year");
+  const { profile } = useUserProfile();
+  const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
 
-  const filteredQuestions = useMemo(
-    () => subjectFilter
+  const filteredQuestions = useMemo(() => {
+    let pool = subjectFilter
       ? sampleQuestions.filter((q) => q.subject === subjectFilter)
-      : sampleQuestions,
-    [subjectFilter]
-  );
+      : sampleQuestions;
+
+    // Try exact year first, then ±1, then ±2, then fallback to whole pool
+    const tiers = [0, 1, 2];
+    for (const tier of tiers) {
+      const matched = pool.filter((q) => Math.abs(q.yearLevel - targetYear) <= tier);
+      if (matched.length >= TOTAL_QUESTIONS) return matched;
+    }
+    return pool;
+  }, [subjectFilter, targetYear]);
 
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
