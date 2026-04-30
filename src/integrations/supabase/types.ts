@@ -14,16 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      questions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          content: string
+          correct_option_id: string
+          created_at: string
+          created_by: string | null
+          difficulty: number
+          exam_type: Database["public"]["Enums"]["question_exam_type"]
+          explanation: string
+          id: string
+          legacy_id: string | null
+          options: Json
+          skill_tags: string[]
+          source_reference: string
+          status: Database["public"]["Enums"]["question_status"]
+          subject: Database["public"]["Enums"]["question_subject"]
+          subtopic: string
+          time_limit_seconds: number
+          topic: string
+          updated_at: string
+          year_level: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content: string
+          correct_option_id: string
+          created_at?: string
+          created_by?: string | null
+          difficulty?: number
+          exam_type?: Database["public"]["Enums"]["question_exam_type"]
+          explanation?: string
+          id?: string
+          legacy_id?: string | null
+          options: Json
+          skill_tags?: string[]
+          source_reference?: string
+          status?: Database["public"]["Enums"]["question_status"]
+          subject: Database["public"]["Enums"]["question_subject"]
+          subtopic?: string
+          time_limit_seconds?: number
+          topic?: string
+          updated_at?: string
+          year_level: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content?: string
+          correct_option_id?: string
+          created_at?: string
+          created_by?: string | null
+          difficulty?: number
+          exam_type?: Database["public"]["Enums"]["question_exam_type"]
+          explanation?: string
+          id?: string
+          legacy_id?: string | null
+          options?: Json
+          skill_tags?: string[]
+          source_reference?: string
+          status?: Database["public"]["Enums"]["question_status"]
+          subject?: Database["public"]["Enums"]["question_subject"]
+          subtopic?: string
+          time_limit_seconds?: number
+          topic?: string
+          updated_at?: string
+          year_level?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      question_exam_type: "naplan" | "selective" | "scholarship" | "general"
+      question_status: "draft" | "approved"
+      question_subject:
+        | "maths"
+        | "reading"
+        | "writing"
+        | "conventions"
+        | "reasoning"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +256,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      question_exam_type: ["naplan", "selective", "scholarship", "general"],
+      question_status: ["draft", "approved"],
+      question_subject: [
+        "maths",
+        "reading",
+        "writing",
+        "conventions",
+        "reasoning",
+      ],
+    },
   },
 } as const
