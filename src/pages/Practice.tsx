@@ -185,7 +185,15 @@ export default function Practice() {
     );
   }
 
-  if (!currentQuestion) return null;
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading questions…
+        </div>
+      </div>
+    );
+  }
 
   const isCorrect = selectedId === currentQuestion.correctOptionId;
 
