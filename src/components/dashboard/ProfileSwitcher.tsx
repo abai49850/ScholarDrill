@@ -1,4 +1,5 @@
-import { Check, ChevronsUpDown, UserCog } from "lucide-react";
+import { Check, ChevronsUpDown, ShieldCheck, UserCog } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -137,6 +138,11 @@ export function ProfileSwitcher({ collapsed }: Props) {
               <p className="text-[11px] text-muted-foreground leading-snug">
                 Super user can swap year, region & exam focus on the fly to walk through the full UX.
               </p>
+              <Button asChild size="sm" variant="outline" className="w-full">
+                <Link to="/admin">
+                  <ShieldCheck className="w-4 h-4 mr-1" /> Open Admin Dashboard
+                </Link>
+              </Button>
             </div>
           )}
         </div>

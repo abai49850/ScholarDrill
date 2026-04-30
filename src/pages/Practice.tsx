@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Zap, BookOpen } from "lucide-react";
+import { ArrowLeft, Zap, BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { QuestionTimer } from "@/components/practice/QuestionTimer";
@@ -16,6 +16,7 @@ import {
   type Question,
 } from "@/data/sampleQuestions";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -33,11 +34,36 @@ export default function Practice() {
   const { profile } = useUserProfile();
   const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
 
-  const filteredQuestions = useMemo(() => {
-    let pool = subjectFilter
-      ? sampleQuestions.filter((q) => q.subject === subjectFilter)
-      : sampleQuestions;
+  const [pool, setPool] = useState<Question[] | null>(null);
 
+  // Load approved questions from DB; fall back to bundled sample data if DB is empty/unreachable.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const dbQs = await listApprovedQuestions(
+          subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}
+        );
+        if (cancelled) return;
+        if (dbQs.length > 0) {
+          setPool(dbQs.map(dbToPracticeQuestion));
+          return;
+        }
+      } catch {
+        /* fall back to sample */
+      }
+      if (cancelled) return;
+      setPool(
+        subjectFilter
+          ? sampleQuestions.filter((q) => q.subject === subjectFilter)
+          : sampleQuestions
+      );
+    })();
+    return () => { cancelled = true; };
+  }, [subjectFilter]);
+
+  const filteredQuestions = useMemo(() => {
+    if (!pool) return [];
     // Try exact year first, then ±1, then ±2, then fallback to whole pool
     const tiers = [0, 1, 2];
     for (const tier of tiers) {
@@ -45,7 +71,8 @@ export default function Practice() {
       if (matched.length >= TOTAL_QUESTIONS) return matched;
     }
     return pool;
-  }, [subjectFilter, targetYear]);
+  }, [pool, targetYear]);
+
 
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -76,10 +103,13 @@ export default function Practice() {
     [filteredQuestions]
   );
 
+  // Pick first question once the pool has loaded
   useEffect(() => {
-    pickNextQuestion(difficulty, answeredIds);
+    if (!currentQuestion && filteredQuestions.length > 0) {
+      pickNextQuestion(difficulty, answeredIds);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filteredQuestions]);
 
   const handleSelect = (optionId: string) => {
     if (revealed) return;
@@ -155,7 +185,15 @@ export default function Practice() {
     );
   }
 
-  if (!currentQuestion) return null;
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading questions…
+        </div>
+      </div>
+    );
+  }
 
   const isCorrect = selectedId === currentQuestion.correctOptionId;
 
