@@ -103,10 +103,13 @@ export default function Practice() {
     [filteredQuestions]
   );
 
+  // Pick first question once the pool has loaded
   useEffect(() => {
-    pickNextQuestion(difficulty, answeredIds);
+    if (!currentQuestion && filteredQuestions.length > 0) {
+      pickNextQuestion(difficulty, answeredIds);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filteredQuestions]);
 
   const handleSelect = (optionId: string) => {
     if (revealed) return;
