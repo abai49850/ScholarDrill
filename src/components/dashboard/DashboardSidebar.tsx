@@ -21,6 +21,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ProfileSwitcher } from "@/components/dashboard/ProfileSwitcher";
 
 const mainItems = [
   { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
@@ -102,18 +103,8 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
-        {!collapsed && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-              E
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Emma W.</p>
-              <p className="text-xs text-muted-foreground">Year 5</p>
-            </div>
-          </div>
-        )}
+      <SidebarFooter className="p-3">
+        <ProfileSwitcher collapsed={collapsed} />
       </SidebarFooter>
     </Sidebar>
   );
