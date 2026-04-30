@@ -8,6 +8,11 @@ import Practice from "./pages/Practice.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { UserProfileProvider } from "./contexts/UserProfileContext";
+import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import AdminOverview from "./pages/admin/AdminOverview.tsx";
+import AdminQuestionsList from "./pages/admin/AdminQuestionsList.tsx";
+import AdminQuestionForm from "./pages/admin/AdminQuestionForm.tsx";
+import AdminQuestionTest from "./pages/admin/AdminQuestionTest.tsx";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +27,13 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverview />} />
+            <Route path="questions" element={<AdminQuestionsList />} />
+            <Route path="questions/new" element={<AdminQuestionForm />} />
+            <Route path="questions/:id" element={<AdminQuestionForm />} />
+            <Route path="questions/:id/test" element={<AdminQuestionTest />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

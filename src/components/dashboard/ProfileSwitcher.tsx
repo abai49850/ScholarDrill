@@ -1,4 +1,5 @@
-import { Check, ChevronsUpDown, UserCog } from "lucide-react";
+import { Check, ChevronsUpDown, ShieldCheck, UserCog } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
