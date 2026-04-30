@@ -101,7 +101,7 @@ export function TestSelectionCards() {
                     </span>
                   </div>
                   <Button variant="default" size="sm" asChild className="group-hover:shadow-md transition-shadow">
-                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}`}>
+                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}&year=${profile.yearLevel}`}>
                       Start Practice <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                     </Link>
                   </Button>
@@ -111,6 +111,11 @@ export function TestSelectionCards() {
           ))}
         </AnimatePresence>
       </div>
+      {filtered.length === 0 && (
+        <div className="bg-card border border-dashed border-border rounded-2xl p-8 text-center text-sm text-muted-foreground">
+          No tests match Year {profile.yearLevel} in this category yet. Try a different filter or persona.
+        </div>
+      )}
     </div>
   );
 }
