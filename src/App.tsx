@@ -13,6 +13,7 @@ import AdminOverview from "./pages/admin/AdminOverview.tsx";
 import AdminQuestionsList from "./pages/admin/AdminQuestionsList.tsx";
 import AdminQuestionForm from "./pages/admin/AdminQuestionForm.tsx";
 import AdminQuestionTest from "./pages/admin/AdminQuestionTest.tsx";
+import AdminQuestionGenerator from "./pages/admin/AdminQuestionGenerator.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOverview />} />
             <Route path="questions" element={<AdminQuestionsList />} />
+            <Route path="generate" element={<AdminQuestionGenerator />} />
             <Route path="questions/new" element={<AdminQuestionForm />} />
             <Route path="questions/:id" element={<AdminQuestionForm />} />
             <Route path="questions/:id/test" element={<AdminQuestionTest />} />

@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ShieldCheck, Database, FilePlus2, LayoutDashboard, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Database, FilePlus2, LayoutDashboard, ArrowLeft, Wand2 } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ const items = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard, end: true },
   { title: "All Questions", url: "/admin/questions", icon: Database },
   { title: "Add Question", url: "/admin/questions/new", icon: FilePlus2 },
+  { title: "AI Generator", url: "/admin/generate", icon: Wand2 },
 ];
 
 function AdminSidebar() {
