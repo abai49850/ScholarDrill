@@ -233,7 +233,7 @@ export default function Practice() {
       <header className="sticky top-0 z-40 glass-nav">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/"><ArrowLeft className="w-4 h-4 mr-1" /> Exit</Link>
+            <Link to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Dashboard</Link>
           </Button>
 
           <div className="flex items-center gap-3">
