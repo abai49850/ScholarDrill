@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { createQuestion, type QuestionDraft, type QuestionExamType, type QuestionSubject } from "@/lib/questionsApi";
+import { type QuestionDraft, type QuestionExamType, type QuestionSubject } from "@/lib/questionsApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -113,10 +113,20 @@ export default function AdminQuestionGenerator() {
     status,
   });
 
+  const saveViaFn = async (drafts: QuestionDraft[]) => {
+    const { data, error } = await supabase.functions.invoke("save-questions", {
+      body: { questions: drafts },
+    });
+    if (error) throw error;
+    const errMsg = (data as { error?: string })?.error;
+    if (errMsg) throw new Error(errMsg);
+    return (data as { inserted: number }).inserted ?? 0;
+  };
+
   const saveOne = async (i: number, status: "draft" | "approved") => {
     setSavingIdx(i);
     try {
-      await createQuestion(buildDraft(results[i], status));
+      await saveViaFn([buildDraft(results[i], status)]);
       setSavedIdx((s) => new Set(s).add(i));
       toast({
         title: status === "approved" ? "Approved & published" : "Saved as draft",
@@ -135,19 +145,26 @@ export default function AdminQuestionGenerator() {
 
   const saveAll = async (status: "draft" | "approved") => {
     setSavingAll(true);
-    let ok = 0;
-    for (let i = 0; i < results.length; i++) {
-      if (savedIdx.has(i)) continue;
-      try {
-        await createQuestion(buildDraft(results[i], status));
-        setSavedIdx((s) => new Set(s).add(i));
-        ok++;
-      } catch (e) {
-        console.error("save failed", i, e);
-      }
+    const pending = results
+      .map((q, i) => ({ q, i }))
+      .filter(({ i }) => !savedIdx.has(i));
+    try {
+      const ok = await saveViaFn(pending.map(({ q }) => buildDraft(q, status)));
+      setSavedIdx((s) => {
+        const next = new Set(s);
+        pending.forEach(({ i }) => next.add(i));
+        return next;
+      });
+      toast({ title: `Saved ${ok}`, description: `Bulk ${status === "approved" ? "publish" : "save"} complete.` });
+    } catch (e) {
+      toast({
+        title: "Bulk save failed",
+        description: e instanceof Error ? e.message : "Try again",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingAll(false);
     }
-    setSavingAll(false);
-    toast({ title: `Saved ${ok}`, description: `Bulk ${status === "approved" ? "publish" : "save"} complete.` });
   };
 
   const updateField = (i: number, patch: Partial<GeneratedQuestion>) => {
