@@ -17,6 +17,7 @@ import {
 } from "@/data/sampleQuestions";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
+import { recordAttempt } from "@/lib/statsApi";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
