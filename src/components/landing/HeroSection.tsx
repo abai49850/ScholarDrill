@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { ParticleField } from "./ParticleField";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const HeroSection = () => {
+  const { user } = useAuth();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       <ParticleField />
