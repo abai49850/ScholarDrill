@@ -92,8 +92,14 @@ export const Navbar = () => {
                 </a>
               ))}
               <div className="mt-4 flex flex-col gap-2">
-                <Button variant="ghost">Log in</Button>
-                <Button variant="hero">Start Free</Button>
+                {user ? (
+                  <Button variant="hero" asChild><Link to="/dashboard">Open Dashboard</Link></Button>
+                ) : (
+                  <>
+                    <Button variant="ghost" asChild><Link to="/auth">Log in</Link></Button>
+                    <Button variant="hero" asChild><Link to="/auth">Start Free</Link></Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
