@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { createQuestion, type QuestionDraft, type QuestionExamType, type QuestionSubject } from "@/lib/questionsApi";
+import { type QuestionDraft, type QuestionExamType, type QuestionSubject } from "@/lib/questionsApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
