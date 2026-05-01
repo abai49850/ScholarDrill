@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export type ExamFocus = "naplan" | "selective" | "scholarship" | "all";
 
@@ -6,29 +7,20 @@ export interface UserProfile {
   id: string;
   name: string;
   initial: string;
-  yearLevel: number; // 3, 5, 7, 9
-  region: string; // NSW, VIC, QLD, etc.
+  yearLevel: number;
+  region: string;
   examFocus: ExamFocus;
   isSuperUser?: boolean;
 }
 
-export const PRESET_PROFILES: UserProfile[] = [
-  {
-    id: "super",
-    name: "Super User",
-    initial: "S",
-    yearLevel: 5,
-    region: "ALL",
-    examFocus: "all",
-    isSuperUser: true,
-  },
-  { id: "emma", name: "Emma W.", initial: "E", yearLevel: 5, region: "NSW", examFocus: "naplan" },
-  { id: "liam-y3", name: "Liam (Y3)", initial: "L", yearLevel: 3, region: "VIC", examFocus: "naplan" },
-  { id: "ava-y7", name: "Ava (Y7)", initial: "A", yearLevel: 7, region: "NSW", examFocus: "selective" },
-  { id: "noah-y9", name: "Noah (Y9)", initial: "N", yearLevel: 9, region: "QLD", examFocus: "scholarship" },
-];
-
-const STORAGE_KEY = "aceit:activeProfile";
+const FALLBACK: UserProfile = {
+  id: "guest",
+  name: "Guest",
+  initial: "G",
+  yearLevel: 5,
+  region: "NSW",
+  examFocus: "naplan",
+};
 
 interface Ctx {
   profile: UserProfile;
@@ -39,25 +31,36 @@ interface Ctx {
 
 const UserProfileContext = createContext<Ctx | null>(null);
 
-export function UserProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfileState] = useState<UserProfile>(() => {
-    if (typeof window === "undefined") return PRESET_PROFILES[0];
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw) as UserProfile;
-    } catch {/* ignore */}
-    return PRESET_PROFILES[0];
-  });
+// Backwards-compat export (no longer used for personas, but kept to avoid breaking imports)
+export const PRESET_PROFILES: UserProfile[] = [FALLBACK];
 
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); } catch {/* ignore */}
-  }, [profile]);
+export function UserProfileProvider({ children }: { children: ReactNode }) {
+  const { profile: dbProfile, isAdmin, user } = useAuth();
+  const [override, setOverride] = useState<Partial<UserProfile> | null>(null);
+
+  // Reset overrides when the signed-in user changes
+  useEffect(() => { setOverride(null); }, [user?.id]);
+
+  const profile: UserProfile = useMemo(() => {
+    if (!dbProfile) return { ...FALLBACK, isSuperUser: isAdmin };
+    const name = dbProfile.display_name || "Student";
+    const base: UserProfile = {
+      id: dbProfile.user_id,
+      name,
+      initial: name.charAt(0).toUpperCase(),
+      yearLevel: dbProfile.year_level,
+      region: dbProfile.region,
+      examFocus: (dbProfile.exam_focus as ExamFocus) ?? "naplan",
+      isSuperUser: isAdmin,
+    };
+    return { ...base, ...override };
+  }, [dbProfile, isAdmin, override]);
 
   const value = useMemo<Ctx>(() => ({
     profile,
-    setProfile: setProfileState,
-    updateProfile: (patch) => setProfileState((p) => ({ ...p, ...patch })),
-    profiles: PRESET_PROFILES,
+    setProfile: () => { /* no-op: profile derived from auth */ },
+    updateProfile: (patch) => setOverride((o) => ({ ...(o ?? {}), ...patch })),
+    profiles: [profile],
   }), [profile]);
 
   return <UserProfileContext.Provider value={value}>{children}</UserProfileContext.Provider>;

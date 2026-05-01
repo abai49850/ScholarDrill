@@ -17,6 +17,7 @@ import {
 } from "@/data/sampleQuestions";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
+import { recordAttempt } from "@/lib/statsApi";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -131,11 +132,25 @@ export default function Practice() {
 
     const recentCorrects = newResults.map((r) => r.correct);
     setDifficulty(getNextDifficulty(recentCorrects, difficulty));
+
+    // Persist
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(currentQuestion.id);
+    void recordAttempt({
+      questionId: isUuid ? currentQuestion.id : null,
+      legacyQuestionId: isUuid ? null : currentQuestion.id,
+      subject: currentQuestion.subject,
+      yearLevel: currentQuestion.yearLevel,
+      topic: currentQuestion.topic,
+      difficulty: currentQuestion.difficulty,
+      selectedOptionId: selectedId,
+      correctOptionId: currentQuestion.correctOptionId,
+      isCorrect: correct,
+      timeSpentSeconds: timeSpent,
+    });
   };
 
   const handleTimeUp = () => {
     if (revealed) return;
-    // Auto-submit with no selection → wrong
     setRevealed(true);
     setTimerRunning(false);
     const timeSpent = currentQuestion?.timeLimitSeconds || 0;
@@ -149,6 +164,21 @@ export default function Practice() {
     setAnsweredIds((prev) => new Set([...prev, currentQuestion!.id]));
     const recentCorrects = newResults.map((r) => r.correct);
     setDifficulty(getNextDifficulty(recentCorrects, difficulty));
+
+    const q = currentQuestion!;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q.id);
+    void recordAttempt({
+      questionId: isUuid ? q.id : null,
+      legacyQuestionId: isUuid ? null : q.id,
+      subject: q.subject,
+      yearLevel: q.yearLevel,
+      topic: q.topic,
+      difficulty: q.difficulty,
+      selectedOptionId: null,
+      correctOptionId: q.correctOptionId,
+      isCorrect: false,
+      timeSpentSeconds: timeSpent,
+    });
   };
 
   const handleNext = () => {
@@ -203,7 +233,7 @@ export default function Practice() {
       <header className="sticky top-0 z-40 glass-nav">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/"><ArrowLeft className="w-4 h-4 mr-1" /> Exit</Link>
+            <Link to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Dashboard</Link>
           </Button>
 
           <div className="flex items-center gap-3">

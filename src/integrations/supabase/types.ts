@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      practice_attempts: {
+        Row: {
+          correct_option_id: string
+          created_at: string
+          difficulty: number
+          id: string
+          is_correct: boolean
+          legacy_question_id: string | null
+          question_id: string | null
+          selected_option_id: string | null
+          subject: string
+          time_spent_seconds: number
+          topic: string
+          user_id: string
+          year_level: number
+        }
+        Insert: {
+          correct_option_id: string
+          created_at?: string
+          difficulty?: number
+          id?: string
+          is_correct: boolean
+          legacy_question_id?: string | null
+          question_id?: string | null
+          selected_option_id?: string | null
+          subject: string
+          time_spent_seconds?: number
+          topic?: string
+          user_id: string
+          year_level: number
+        }
+        Update: {
+          correct_option_id?: string
+          created_at?: string
+          difficulty?: number
+          id?: string
+          is_correct?: boolean
+          legacy_question_id?: string | null
+          question_id?: string | null
+          selected_option_id?: string | null
+          subject?: string
+          time_spent_seconds?: number
+          topic?: string
+          user_id?: string
+          year_level?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_attempts_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          daily_goal: number
+          display_name: string
+          exam_focus: string
+          id: string
+          region: string
+          updated_at: string
+          user_id: string
+          year_level: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          daily_goal?: number
+          display_name?: string
+          exam_focus?: string
+          id?: string
+          region?: string
+          updated_at?: string
+          user_id: string
+          year_level?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          daily_goal?: number
+          display_name?: string
+          exam_focus?: string
+          id?: string
+          region?: string
+          updated_at?: string
+          user_id?: string
+          year_level?: number
+        }
+        Relationships: []
+      }
       questions: {
         Row: {
           approved_at: string | null

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Zap } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "NAPLAN", href: "#tests" },
@@ -14,6 +16,7 @@ const navLinks = [
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -51,8 +54,14 @@ export const Navbar = () => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">Log in</Button>
-          <Button variant="hero" size="sm">Start Free</Button>
+          {user ? (
+            <Button variant="hero" size="sm" asChild><Link to="/dashboard">Open Dashboard</Link></Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild><Link to="/auth">Log in</Link></Button>
+              <Button variant="hero" size="sm" asChild><Link to="/auth">Start Free</Link></Button>
+            </>
+          )}
         </div>
 
         <button
@@ -83,8 +92,14 @@ export const Navbar = () => {
                 </a>
               ))}
               <div className="mt-4 flex flex-col gap-2">
-                <Button variant="ghost">Log in</Button>
-                <Button variant="hero">Start Free</Button>
+                {user ? (
+                  <Button variant="hero" asChild><Link to="/dashboard">Open Dashboard</Link></Button>
+                ) : (
+                  <>
+                    <Button variant="ghost" asChild><Link to="/auth">Log in</Link></Button>
+                    <Button variant="hero" asChild><Link to="/auth">Start Free</Link></Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

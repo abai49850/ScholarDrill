@@ -1,42 +1,20 @@
 import { motion } from "framer-motion";
-import { BookOpen, Target, Flame, TrendingUp } from "lucide-react";
-import { subjectProgress, streakData } from "@/data/mockProgress";
+import { BookOpen, Target, Flame, TrendingUp, TrendingDown } from "lucide-react";
+import type { UserStats } from "@/lib/statsApi";
 
-export function StatsOverview() {
-  const totalAttempted = subjectProgress.reduce((s, p) => s + p.questionsAttempted, 0);
-  const totalCorrect = subjectProgress.reduce((s, p) => s + p.questionsCorrect, 0);
-  const overallAccuracy = Math.round((totalCorrect / totalAttempted) * 100);
-
-  const stats = [
-    {
-      icon: BookOpen,
-      label: "Questions Practised",
-      value: totalAttempted.toLocaleString(),
-      color: "bg-primary/10 text-primary",
-    },
-    {
-      icon: Target,
-      label: "Overall Accuracy",
-      value: `${overallAccuracy}%`,
-      color: "bg-success/10 text-success",
-    },
-    {
-      icon: Flame,
-      label: "Day Streak",
-      value: `${streakData.currentStreak}`,
-      color: "bg-accent/10 text-accent",
-    },
-    {
-      icon: TrendingUp,
-      label: "Week Improvement",
-      value: "+5%",
-      color: "bg-[hsl(var(--subject-reasoning))]/10 text-[hsl(var(--subject-reasoning))]",
-    },
+export function StatsOverview({ stats }: { stats: UserStats }) {
+  const trend = stats.weeklyTrendPct;
+  const TrendIcon = trend >= 0 ? TrendingUp : TrendingDown;
+  const items = [
+    { icon: BookOpen, label: "Questions Practised", value: stats.totalAttempted.toLocaleString(), color: "bg-primary/10 text-primary" },
+    { icon: Target, label: "Overall Accuracy", value: `${stats.overallAccuracy}%`, color: "bg-success/10 text-success" },
+    { icon: Flame, label: "Day Streak", value: `${stats.currentStreak}`, color: "bg-accent/10 text-accent" },
+    { icon: TrendIcon, label: "Week Change", value: `${trend >= 0 ? "+" : ""}${trend}%`, color: "bg-[hsl(var(--subject-reasoning))]/10 text-[hsl(var(--subject-reasoning))]" },
   ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, i) => (
+      {items.map((stat, i) => (
         <motion.div
           key={stat.label}
           initial={{ opacity: 0, y: 20 }}

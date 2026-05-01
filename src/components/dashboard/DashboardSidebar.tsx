@@ -1,10 +1,9 @@
 import {
   LayoutDashboard,
   BookOpen,
-  BarChart3,
-  Flame,
-  Settings,
   GraduationCap,
+  ShieldCheck,
+  Home,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -22,28 +21,24 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ProfileSwitcher } from "@/components/dashboard/ProfileSwitcher";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mainItems = [
-  { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Practice Tests", url: "/dashboard/tests", icon: BookOpen },
-  { title: "Progress", url: "/dashboard/progress", icon: BarChart3 },
-  { title: "Streaks", url: "/dashboard/streaks", icon: Flame },
+  { title: "Overview", url: "/dashboard", icon: LayoutDashboard, end: true },
+  { title: "Practice", url: "/practice", icon: BookOpen },
 ];
 
-const secondaryItems = [
-  { title: "Settings", url: "/dashboard/settings", icon: Settings },
-];
+const homeItem = { title: "Home", url: "/", icon: Home };
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
+  const { isAdmin } = useAuth();
 
-  const isActive = (path: string) =>
-    path === "/dashboard"
-      ? currentPath === "/dashboard"
-      : currentPath.startsWith(path);
+  const isActive = (path: string, end?: boolean) =>
+    end ? currentPath === path : currentPath.startsWith(path);
 
   return (
     <Sidebar collapsible="icon">
@@ -58,15 +53,15 @@ export function DashboardSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <SidebarGroupLabel>Study</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url, item.end)}>
                     <NavLink
                       to={item.url}
-                      end={item.url === "/dashboard"}
+                      end={item.end}
                       className="hover:bg-muted/50"
                       activeClassName="bg-primary/10 text-primary font-medium"
                     >
@@ -80,24 +75,36 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={currentPath.startsWith("/admin")}>
+                    <NavLink to="/admin" className="hover:bg-muted/50" activeClassName="bg-accent/10 text-accent font-medium">
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Admin Dashboard</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         <SidebarGroup>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {secondaryItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink
-                      to={item.url}
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={currentPath === "/"}>
+                  <NavLink to={homeItem.url} className="hover:bg-muted/50" activeClassName="bg-primary/10 text-primary font-medium">
+                    <homeItem.icon className="mr-2 h-4 w-4" />
+                    {!collapsed && <span>{homeItem.title}</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
