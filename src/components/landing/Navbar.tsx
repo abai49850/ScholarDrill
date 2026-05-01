@@ -54,8 +54,14 @@ export const Navbar = () => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">Log in</Button>
-          <Button variant="hero" size="sm">Start Free</Button>
+          {user ? (
+            <Button variant="hero" size="sm" asChild><Link to="/dashboard">Open Dashboard</Link></Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild><Link to="/auth">Log in</Link></Button>
+              <Button variant="hero" size="sm" asChild><Link to="/auth">Start Free</Link></Button>
+            </>
+          )}
         </div>
 
         <button
