@@ -1,10 +1,31 @@
 import { Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const footerLinks = {
-  Tests: ["NAPLAN", "Selective Schools", "Scholarships", "Subject Practice"],
-  States: ["NSW", "VIC", "QLD", "SA", "WA"],
-  Company: ["About", "Blog", "Careers", "Contact"],
-  Legal: ["Privacy Policy", "Terms of Service", "Refund Policy"],
+const footerLinks: Record<string, { label: string; to: string }[]> = {
+  Tests: [
+    { label: "NAPLAN", to: "/practice" },
+    { label: "Selective Schools", to: "/practice" },
+    { label: "Scholarships", to: "/practice" },
+    { label: "Subject Practice", to: "/practice" },
+  ],
+  States: [
+    { label: "NSW", to: "/practice" },
+    { label: "VIC", to: "/practice" },
+    { label: "QLD", to: "/practice" },
+    { label: "SA", to: "/practice" },
+    { label: "WA", to: "/practice" },
+  ],
+  Company: [
+    { label: "About", to: "/info/about" },
+    { label: "Blog", to: "/info/blog" },
+    { label: "Careers", to: "/info/careers" },
+    { label: "Contact", to: "/info/contact" },
+  ],
+  Legal: [
+    { label: "Privacy Policy", to: "/info/privacy" },
+    { label: "Terms of Service", to: "/info/terms" },
+    { label: "Refund Policy", to: "/info/refund" },
+  ],
 };
 
 export const FooterSection = () => {
@@ -13,12 +34,12 @@ export const FooterSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-1">
-            <a href="#" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold text-foreground">AceIt</span>
-            </a>
+            </Link>
             <p className="mt-4 text-sm text-muted-foreground">
               Australia's smartest test preparation platform.
             </p>
@@ -29,10 +50,13 @@ export const FooterSection = () => {
               <h4 className="mb-4 text-sm font-semibold text-foreground">{heading}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                      {link}
-                    </a>
+                  <li key={link.label}>
+                    <Link
+                      to={link.to}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>

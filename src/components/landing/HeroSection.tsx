@@ -50,8 +50,8 @@ export const HeroSection = () => {
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Button variant="hero" size="lg" className="group" asChild>
-              <Link to={user ? "/dashboard" : "/auth"}>
-                {user ? "Open Dashboard" : "Start practising free"}
+              <Link to="/practice">
+                Start practising free
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>

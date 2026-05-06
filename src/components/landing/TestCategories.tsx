@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { BookOpen, Brain, GraduationCap, Award } from "lucide-react";
 
 const categories = [
@@ -70,10 +71,10 @@ export const TestCategories = () => {
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
           {categories.map((cat) => (
-            <motion.div
-              key={cat.title}
-              variants={cardVariants}
-              className="card-hover group cursor-pointer rounded-2xl border border-border bg-card p-6"
+            <motion.div key={cat.title} variants={cardVariants}>
+            <Link
+              to="/practice"
+              className="card-hover group block cursor-pointer rounded-2xl border border-border bg-card p-6 h-full"
             >
               <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl ${cat.iconBg}`}>
                 <cat.icon className="h-6 w-6 text-white" />
@@ -87,6 +88,7 @@ export const TestCategories = () => {
                   </span>
                 ))}
               </div>
+            </Link>
             </motion.div>
           ))}
         </motion.div>
