@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
   {
@@ -54,6 +56,9 @@ const plans = [
 ];
 
 export const PricingSection = () => {
+  const { user } = useAuth();
+  const ctaTo = (planName: string) =>
+    planName === "Free" ? (user ? "/practice" : "/auth") : user ? "/dashboard" : "/auth";
   return (
     <section id="pricing" className="py-24 md:py-32">
       <div className="container mx-auto px-6">
@@ -94,8 +99,8 @@ export const PricingSection = () => {
                 <span className="text-sm text-muted-foreground">{plan.period}</span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
-              <Button variant={plan.variant} className="mt-6 w-full">
-                {plan.cta}
+              <Button variant={plan.variant} className="mt-6 w-full" asChild>
+                <Link to={ctaTo(plan.name)}>{plan.cta}</Link>
               </Button>
               <ul className="mt-6 space-y-3">
                 {plan.features.map((f) => (
