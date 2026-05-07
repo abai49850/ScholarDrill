@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+
 import { Link } from "react-router-dom";
 
 const footerLinks: Record<string, { label: string; to: string }[]> = {
@@ -35,10 +35,8 @@ export const FooterSection = () => {
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-                <Zap className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AceIt</span>
+              <img src="/logo.png" alt="ScholarDrill Logo" className="h-9 w-9 object-contain" />
+              <span className="text-xl font-bold text-foreground">ScholarDrill</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
               Australia's smartest test preparation platform.
@@ -65,7 +63,7 @@ export const FooterSection = () => {
         </div>
 
         <div className="mt-12 border-t border-border pt-8 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} AceIt. All rights reserved. Made in Australia 🇦🇺
+          © {new Date().getFullYear()} ScholarDrill. All rights reserved. Made in Australia 🇦🇺
         </div>
       </div>
     </footer>

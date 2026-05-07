@@ -8,8 +8,8 @@ import {
 
 const faqs = [
   {
-    q: "What tests does AceIt cover?",
-    a: "AceIt covers NAPLAN (Years 3, 5, 7 & 9), selective school entry exams (NSW OC & Selective, VIC Selective Entry, QLD Academic Talent, WA ASET), and major scholarship tests including ACER and EduTest.",
+    q: "What tests does ScholarDrill cover?",
+    a: "ScholarDrill covers NAPLAN (Years 3, 5, 7 & 9), selective school entry exams (NSW OC & Selective, VIC Selective Entry, QLD Academic Talent, WA ASET), and major scholarship tests including ACER and EduTest.",
   },
   {
     q: "How does the AI question generation work?",
@@ -28,8 +28,8 @@ const faqs = [
     a: "Yes! The free plan gives you 10 questions per day, access to NAPLAN practice for Years 3 & 5, basic progress tracking, and instant explanations. Upgrade to Pro for unlimited access.",
   },
   {
-    q: "What ages is AceIt suitable for?",
-    a: "AceIt is designed for Australian students in Years 3–9, covering ages roughly 8–15. Content difficulty automatically adjusts based on the selected year level.",
+    q: "What ages is ScholarDrill suitable for?",
+    a: "ScholarDrill is designed for Australian students in Years 3–9, covering ages roughly 8–15. Content difficulty automatically adjusts based on the selected year level.",
   },
 ];
 

@@ -59,7 +59,7 @@ export const TestCategories = () => {
         >
           <h2 className="text-display mb-4">Every test. One platform.</h2>
           <p className="text-lg text-muted-foreground">
-            From NAPLAN to elite scholarships, AceIt covers every major Australian exam with precision-crafted practice.
+            From NAPLAN to elite scholarships, ScholarDrill covers every major Australian exam with precision-crafted practice.
           </p>
         </motion.div>
 

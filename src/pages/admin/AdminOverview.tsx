@@ -42,7 +42,7 @@ export default function AdminOverview() {
       <div>
         <h2 className="text-2xl font-bold">Question Bank Overview</h2>
         <p className="text-muted-foreground text-sm mt-1">
-          Review, approve, and manage every practice question in the AceIt library.
+          Review, approve, and manage every practice question in the ScholarDrill library.
         </p>
       </div>
 

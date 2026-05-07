@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   BookOpen,
-  GraduationCap,
   ShieldCheck,
   Home,
 } from "lucide-react";
@@ -44,9 +43,9 @@ export function DashboardSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
         <NavLink to="/dashboard" className="flex items-center gap-2">
-          <GraduationCap className="w-7 h-7 text-primary flex-shrink-0" />
+          <img src="/logo.png" alt="ScholarDrill Logo" className="w-7 h-7 object-contain flex-shrink-0" />
           {!collapsed && (
-            <span className="text-lg font-bold tracking-tight">AceIt</span>
+            <span className="text-lg font-bold tracking-tight">ScholarDrill</span>
           )}
         </NavLink>
       </SidebarHeader>

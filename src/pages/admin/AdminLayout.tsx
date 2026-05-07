@@ -90,7 +90,7 @@ export default function AdminLayout() {
           <header className="h-14 flex items-center border-b border-border px-4 glass-nav sticky top-0 z-40">
             <SidebarTrigger className="mr-3" />
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-semibold">AceIt Admin</h1>
+              <h1 className="text-base font-semibold">ScholarDrill Admin</h1>
               <Badge variant="secondary" className="text-[10px]">Super User</Badge>
             </div>
             <div className="ml-auto">

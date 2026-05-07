@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { GraduationCap, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,8 +89,8 @@ export default function Auth() {
         className="w-full max-w-md"
       >
         <Link to="/" className="flex items-center gap-2 justify-center mb-6">
-          <GraduationCap className="w-8 h-8 text-primary" />
-          <span className="text-2xl font-bold tracking-tight">AceIt</span>
+          <img src="/logo.png" alt="ScholarDrill Logo" className="w-8 h-8 object-contain" />
+          <span className="text-2xl font-bold tracking-tight">ScholarDrill</span>
         </Link>
 
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
@@ -171,7 +171,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-4">
-          By continuing you agree to AceIt's terms. <Link to="/" className="underline">Back to home</Link>
+          By continuing you agree to ScholarDrill's terms. <Link to="/" className="underline">Back to home</Link>
         </p>
       </motion.div>
     </main>
