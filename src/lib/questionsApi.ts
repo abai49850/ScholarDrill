@@ -59,10 +59,14 @@ export async function listQuestions(filters: {
 export async function listApprovedQuestions(filters: {
   subject?: QuestionSubject;
   examType?: QuestionExamType;
+  yearLevel?: number;
 } = {}): Promise<DbQuestion[]> {
-  let q = supabase.from(TABLE).select("*").eq("status", "approved").limit(1000);
+  let q = supabase.from(TABLE).select("*").eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
   if (filters.subject) q = q.eq("subject", filters.subject);
   if (filters.examType) q = q.eq("exam_type", filters.examType);
+  if (filters.yearLevel !== undefined) {
+    q = q.gte("year_level", filters.yearLevel - 2).lte("year_level", filters.yearLevel + 2);
+  }
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as unknown as DbQuestion[];

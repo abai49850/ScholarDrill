@@ -105,19 +105,19 @@ export const streakData: StreakData = {
 
 export const testCards: TestCard[] = [
   {
-    id: "naplan-numeracy-y5",
+    id: "naplan-numeracy-all",
     title: "NAPLAN Numeracy",
-    description: "Year 5 practice with calculator and non-calculator sections",
+    description: "Comprehensive practice with calculator and non-calculator sections",
     category: "naplan",
     subjects: ["Mathematics"],
     questionCount: 40,
     estimatedMinutes: 50,
     difficulty: 2,
-    yearLevels: [5],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "📐",
   },
   {
-    id: "naplan-reading-y5",
+    id: "naplan-reading-all",
     title: "NAPLAN Reading",
     description: "Comprehension passages with multiple question types",
     category: "naplan",
@@ -125,11 +125,11 @@ export const testCards: TestCard[] = [
     questionCount: 35,
     estimatedMinutes: 45,
     difficulty: 2,
-    yearLevels: [5],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "📖",
   },
   {
-    id: "naplan-conventions-y5",
+    id: "naplan-conventions-all",
     title: "NAPLAN Language Conventions",
     description: "Spelling, grammar, and punctuation practice",
     category: "naplan",
@@ -137,7 +137,7 @@ export const testCards: TestCard[] = [
     questionCount: 50,
     estimatedMinutes: 40,
     difficulty: 2,
-    yearLevels: [5],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "✍️",
   },
   {
@@ -149,7 +149,7 @@ export const testCards: TestCard[] = [
     questionCount: 30,
     estimatedMinutes: 40,
     difficulty: 4,
-    yearLevels: [6, 7],
+    yearLevels: [5, 6, 7, 8, 9],
     icon: "🧠",
   },
   {
@@ -161,7 +161,7 @@ export const testCards: TestCard[] = [
     questionCount: 35,
     estimatedMinutes: 45,
     difficulty: 4,
-    yearLevels: [6, 7],
+    yearLevels: [5, 6, 7, 8, 9],
     icon: "🔢",
   },
   {
@@ -173,7 +173,7 @@ export const testCards: TestCard[] = [
     questionCount: 25,
     estimatedMinutes: 30,
     difficulty: 3,
-    yearLevels: [5, 6, 7],
+    yearLevels: [5, 6, 7, 8, 9],
     icon: "💡",
   },
   {
@@ -185,7 +185,7 @@ export const testCards: TestCard[] = [
     questionCount: 25,
     estimatedMinutes: 35,
     difficulty: 3,
-    yearLevels: [5, 6, 7],
+    yearLevels: [5, 6, 7, 8, 9],
     icon: "📊",
   },
   {
@@ -197,7 +197,7 @@ export const testCards: TestCard[] = [
     questionCount: 3,
     estimatedMinutes: 45,
     difficulty: 3,
-    yearLevels: [5, 6, 7],
+    yearLevels: [5, 6, 7, 8, 9],
     icon: "🖊️",
   },
 ];

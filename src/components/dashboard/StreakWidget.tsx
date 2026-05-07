@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Flame, Target, Trophy, Zap } from "lucide-react";
 import type { UserStats } from "@/lib/statsApi";
@@ -8,9 +9,12 @@ interface Props {
 }
 
 export function StreakWidget({ stats, dailyGoal }: Props) {
-  const { currentStreak, longestStreak, todayCount, weeklyActivity } = stats;
+  const [viewMode, setViewMode] = useState<"week" | "month">("week");
+  const { currentStreak, longestStreak, todayCount, weeklyActivity, monthlyActivity } = stats;
   const goalProgress = Math.min((todayCount / dailyGoal) * 100, 100);
-  const maxCount = Math.max(...weeklyActivity.map((d) => d.count), 1);
+  
+  const activityData = viewMode === "week" ? weeklyActivity : monthlyActivity;
+  const maxCount = Math.max(...activityData.map((d) => d.count), 1);
 
   return (
     <div className="space-y-4">
@@ -66,24 +70,50 @@ export function StreakWidget({ stats, dailyGoal }: Props) {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-card border border-border rounded-2xl p-5">
-        <h4 className="text-sm font-medium mb-4">This Week</h4>
-        <div className="flex items-end justify-between gap-2 h-24">
-          {weeklyActivity.map((day, i) => {
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-sm font-medium">{viewMode === "week" ? "This Week" : "This Month"}</h4>
+          <div className="flex bg-secondary p-1 rounded-lg">
+            <button
+              onClick={() => setViewMode("week")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                viewMode === "week" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setViewMode("month")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                viewMode === "month" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Month
+            </button>
+          </div>
+        </div>
+        <div className="flex items-end justify-between gap-1 sm:gap-2 h-24">
+          {activityData.map((day, i) => {
             const height = (day.count / maxCount) * 100;
+            // Only show labels for week mode, or occasionally for month mode to save space
+            const showLabel = viewMode === "week" || i % 5 === 0 || i === activityData.length - 1;
             return (
               <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                 <motion.div
                   initial={{ height: 0 }}
                   animate={{ height: `${height}%` }}
-                  transition={{ duration: 0.5, delay: 0.2 + i * 0.05 }}
-                  className="w-full rounded-t-lg bg-primary/20 min-h-[4px] relative"
+                  transition={{ duration: 0.5, delay: 0.2 + (viewMode === "week" ? i * 0.05 : i * 0.01) }}
+                  className="w-full rounded-t bg-primary/20 min-h-[4px] relative"
                 >
                   <div
-                    className="absolute bottom-0 w-full rounded-t-lg bg-primary"
+                    className="absolute bottom-0 w-full rounded-t bg-primary"
                     style={{ height: day.count >= dailyGoal ? "100%" : "60%" }}
                   />
                 </motion.div>
-                <span className="text-xs text-muted-foreground">{day.day}</span>
+                {showLabel ? (
+                  <span className="text-[10px] text-muted-foreground">{day.day}</span>
+                ) : (
+                  <span className="text-[10px] text-transparent select-none">-</span>
+                )}
               </div>
             );
           })}

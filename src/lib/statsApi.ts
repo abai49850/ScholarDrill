@@ -29,6 +29,7 @@ export interface UserStats {
   currentStreak: number;
   longestStreak: number;
   weeklyActivity: { day: string; date: string; count: number }[];
+  monthlyActivity: { day: string; date: string; count: number }[];
   weeklyTrendPct: number;
 }
 
@@ -135,6 +136,15 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
   }
   const todayCount = countsByDate.get(ymd(today)) ?? 0;
 
+  // Monthly activity (last 30 days)
+  const monthlyActivity: UserStats["monthlyActivity"] = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = ymd(d);
+    monthlyActivity.push({ day: d.getDate().toString(), date: key, count: countsByDate.get(key) ?? 0 });
+  }
+
   // Streak (consecutive days with at least one attempt)
   let currentStreak = 0;
   for (let i = 0; i < 365; i++) {
@@ -180,6 +190,7 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
     currentStreak,
     longestStreak,
     weeklyActivity,
+    monthlyActivity,
     weeklyTrendPct,
   };
 }

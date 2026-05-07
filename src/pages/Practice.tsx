@@ -42,9 +42,10 @@ export default function Practice() {
     let cancelled = false;
     (async () => {
       try {
-        const dbQs = await listApprovedQuestions(
-          subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}
-        );
+        const dbQs = await listApprovedQuestions({
+          ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
+          yearLevel: targetYear,
+        });
         if (cancelled) return;
         if (dbQs.length > 0) {
           setPool(dbQs.map(dbToPracticeQuestion));
