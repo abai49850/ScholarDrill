@@ -42,11 +42,10 @@ export function DashboardSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
-        <NavLink to="/dashboard" className="flex items-center gap-2">
-          <img src="/logo.png" alt="ScholarDrill Logo" className="w-7 h-7 object-contain flex-shrink-0" />
-          {!collapsed && (
-            <span className="text-lg font-bold tracking-tight">ScholarDrill</span>
-          )}
+        <NavLink to="/dashboard" className="flex items-center justify-center w-full py-1">
+          <div className={`bg-slate-900 rounded-xl flex items-center justify-center shadow-sm transition-all w-full ${collapsed ? 'p-1' : 'px-2 py-1'}`}>
+            <img src="/logo.png" alt="ScholarDrill Logo" className={`object-contain flex-shrink-0 transition-all ${collapsed ? 'w-6 h-6' : 'w-full h-auto max-h-8'}`} />
+          </div>
         </NavLink>
       </SidebarHeader>
 

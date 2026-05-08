@@ -149,7 +149,7 @@ export const testCards: TestCard[] = [
     questionCount: 30,
     estimatedMinutes: 40,
     difficulty: 4,
-    yearLevels: [5, 6, 7, 8, 9],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "🧠",
   },
   {
@@ -161,7 +161,7 @@ export const testCards: TestCard[] = [
     questionCount: 35,
     estimatedMinutes: 45,
     difficulty: 4,
-    yearLevels: [5, 6, 7, 8, 9],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "🔢",
   },
   {
@@ -173,7 +173,7 @@ export const testCards: TestCard[] = [
     questionCount: 25,
     estimatedMinutes: 30,
     difficulty: 3,
-    yearLevels: [5, 6, 7, 8, 9],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "💡",
   },
   {
@@ -185,7 +185,7 @@ export const testCards: TestCard[] = [
     questionCount: 25,
     estimatedMinutes: 35,
     difficulty: 3,
-    yearLevels: [5, 6, 7, 8, 9],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "📊",
   },
   {
@@ -197,7 +197,7 @@ export const testCards: TestCard[] = [
     questionCount: 3,
     estimatedMinutes: 45,
     difficulty: 3,
-    yearLevels: [5, 6, 7, 8, 9],
+    yearLevels: [3, 4, 5, 6, 7, 8, 9],
     icon: "🖊️",
   },
 ];

@@ -88,10 +88,11 @@ export default function Auth() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <Link to="/" className="flex items-center gap-2 justify-center mb-6">
-          <img src="/logo.png" alt="ScholarDrill Logo" className="w-8 h-8 object-contain" />
-          <span className="text-2xl font-bold tracking-tight">ScholarDrill</span>
-        </Link>
+        <div className="flex justify-center mb-6">
+          <Link to="/" className="inline-flex items-center justify-center bg-slate-900 rounded-xl px-3 py-2 shadow-sm transition-transform hover:scale-105">
+            <img src="/logo.png" alt="ScholarDrill Logo" className="h-12 md:h-14 w-auto object-contain" />
+          </Link>
+        </div>
 
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <Tabs defaultValue="signin">

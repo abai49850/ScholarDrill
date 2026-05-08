@@ -34,11 +34,10 @@ export const FooterSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="ScholarDrill Logo" className="h-9 w-9 object-contain" />
-              <span className="text-xl font-bold text-foreground">ScholarDrill</span>
+            <Link to="/" className="inline-flex items-center bg-slate-900 rounded-xl px-2 py-1 shadow-sm">
+              <img src="/logo.png" alt="ScholarDrill Logo" className="h-8 md:h-10 w-auto object-contain" />
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-8 text-sm text-muted-foreground">
               Australia's smartest test preparation platform.
             </p>
           </div>
