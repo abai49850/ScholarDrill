@@ -34,7 +34,7 @@ export interface DbQuestion {
 
 export type QuestionDraft = Omit<
   DbQuestion,
-  "id" | "legacy_id" | "created_at" | "updated_at" | "approved_at"
+  "id" | "legacy_id" | "created_at" | "updated_at" | "approved_at" | "is_free_sample"
 >;
 
 const TABLE = "questions";
