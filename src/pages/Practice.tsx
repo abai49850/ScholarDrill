@@ -227,6 +227,37 @@ export default function Practice() {
 
   const questionsTotal = Math.min(TOTAL_QUESTIONS, filteredQuestions.length);
 
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <Lock className="w-10 h-10 text-destructive" />
+        <h1 className="text-2xl font-bold">Account access paused</h1>
+        <p className="text-muted-foreground max-w-md">
+          Your account has been blocked by an administrator. Please contact support if you believe this is an error.
+        </p>
+        <Button asChild variant="outline"><Link to="/dashboard">Back to dashboard</Link></Button>
+      </div>
+    );
+  }
+
+  if (dailyLimitReached) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-6 text-center">
+        <Sparkles className="w-10 h-10 text-accent" />
+        <h1 className="text-2xl font-bold">You're done for today!</h1>
+        <p className="text-muted-foreground max-w-md">
+          Free accounts include one practice session per day with {FREE_DAILY_LIMIT} curated
+          Year {targetYear} questions. Upgrade to <strong>Pro</strong> for unlimited access to the
+          full question library.
+        </p>
+        <div className="flex gap-3">
+          <Button asChild variant="hero"><Link to="/info/pricing">Upgrade to Pro</Link></Button>
+          <Button asChild variant="outline"><Link to="/dashboard">Back to dashboard</Link></Button>
+        </div>
+      </div>
+    );
+  }
+
   if (sessionDone) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -234,6 +265,7 @@ export default function Practice() {
           results={results}
           totalTime={totalSessionTime.current}
           onRestart={handleRestart}
+          isFree={isFree}
         />
       </div>
     );
