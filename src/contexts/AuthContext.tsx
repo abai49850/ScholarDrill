@@ -11,6 +11,8 @@ export interface Profile {
   region: string;
   exam_focus: string;
   daily_goal: number;
+  tier: "free" | "pro";
+  is_blocked: boolean;
 }
 
 interface AuthCtx {
