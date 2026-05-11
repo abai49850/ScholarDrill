@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, Clock, TrendingUp, RotateCcw, Home } from "lucide-react";
+import { Trophy, Target, Clock, TrendingUp, RotateCcw, Home, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface SessionResult {
@@ -13,9 +13,10 @@ interface SessionSummaryProps {
   results: SessionResult[];
   totalTime: number;
   onRestart: () => void;
+  isFree?: boolean;
 }
 
-export function SessionSummary({ results, totalTime, onRestart }: SessionSummaryProps) {
+export function SessionSummary({ results, totalTime, onRestart, isFree = false }: SessionSummaryProps) {
   const correct = results.filter((r) => r.correct).length;
   const total = results.length;
   const pct = Math.round((correct / total) * 100);
@@ -68,12 +69,38 @@ export function SessionSummary({ results, totalTime, onRestart }: SessionSummary
         ))}
       </div>
 
+      {isFree && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mb-6 rounded-2xl border border-accent/30 bg-accent/10 p-5 text-left"
+        >
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-accent mt-0.5" />
+            <div>
+              <p className="font-semibold">Unlock the full question library</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                You're on the free plan — one practice set per day with the same 10 curated
+                questions. Upgrade to <strong>Pro</strong> for unlimited adaptive practice across
+                every subject and year level.
+              </p>
+              <Button asChild variant="hero" size="sm" className="mt-3">
+                <Link to="/info/pricing"><Sparkles className="w-4 h-4" /> Upgrade to Pro</Link>
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <div className="flex gap-3 justify-center">
-        <Button variant="hero-outline" onClick={onRestart}>
-          <RotateCcw className="w-4 h-4" /> Try Again
-        </Button>
+        {!isFree && (
+          <Button variant="hero-outline" onClick={onRestart}>
+            <RotateCcw className="w-4 h-4" /> Try Again
+          </Button>
+        )}
         <Button variant="hero" asChild>
-          <Link to="/"><Home className="w-4 h-4" /> Home</Link>
+          <Link to="/dashboard"><Home className="w-4 h-4" /> Dashboard</Link>
         </Button>
       </div>
     </motion.div>
