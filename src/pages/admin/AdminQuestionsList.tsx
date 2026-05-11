@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   listQuestions,
   setQuestionStatus,
+  setQuestionFreeSample,
   deleteQuestion,
   type DbQuestion,
   type QuestionExamType,
@@ -35,6 +36,7 @@ import {
   PlayCircle,
   RotateCcw,
   Search,
+  Star,
   Trash2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -121,6 +123,24 @@ export default function AdminQuestionsList() {
       const updated = await setQuestionStatus(q.id, "draft");
       setItems((prev) => prev?.map((p) => (p.id === q.id ? updated : p)) ?? null);
       toast({ title: "Moved back to draft" });
+    } catch (e) {
+      toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onToggleFree = async (q: DbQuestion) => {
+    setBusyId(q.id);
+    try {
+      const updated = await setQuestionFreeSample(q.id, !q.is_free_sample);
+      setItems((prev) => prev?.map((p) => (p.id === q.id ? updated : p)) ?? null);
+      toast({
+        title: updated.is_free_sample
+          ? "Added to free sample"
+          : "Removed from free sample",
+        description: `Year ${q.year_level} free-tier set updated.`,
+      });
     } catch (e) {
       toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
     } finally {
@@ -259,6 +279,15 @@ export default function AdminQuestionsList() {
                         onClick={() => navigate(`/admin/questions/${q.id}`)}
                       >
                         <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title={q.is_free_sample ? "Remove from free sample" : "Mark as free-tier sample (Year " + q.year_level + ")"}
+                        disabled={busyId === q.id}
+                        onClick={() => onToggleFree(q)}
+                      >
+                        <Star className={`w-4 h-4 ${q.is_free_sample ? "fill-amber-400 text-amber-400" : ""}`} />
                       </Button>
                       {q.status === "draft" ? (
                         <Button

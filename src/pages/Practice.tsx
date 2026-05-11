@@ -18,6 +18,9 @@ import {
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
 import { recordAttempt } from "@/lib/statsApi";
+import { useAuth } from "@/contexts/AuthContext";
+import { FREE_DAILY_LIMIT, hasPractisedToday, loadFreeSampleQuestions } from "@/lib/freeAccess";
+import { Lock, Sparkles } from "lucide-react";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -33,19 +36,38 @@ export default function Practice() {
   const subjectFilter = searchParams.get("subject");
   const yearParam = searchParams.get("year");
   const { profile } = useUserProfile();
+  const { profile: authProfile, user } = useAuth();
+  const isFree = (authProfile?.tier ?? "free") !== "pro";
+  const isBlocked = !!authProfile?.is_blocked;
   const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
 
   const [pool, setPool] = useState<Question[] | null>(null);
+  const [dailyLimitReached, setDailyLimitReached] = useState(false);
 
-  // Load approved questions from DB; fall back to bundled sample data if DB is empty/unreachable.
+  // Load questions: free users get a fixed 10-question set; pro users get the full bank.
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      // Free-tier daily gate
+      if (isFree && user) {
+        const reached = await hasPractisedToday(user.id);
+        if (cancelled) return;
+        if (reached) {
+          setDailyLimitReached(true);
+          setPool([]);
+          return;
+        }
+      }
       try {
-        const dbQs = await listApprovedQuestions({
-          ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
-          yearLevel: targetYear,
-        });
+        const dbQs = isFree
+          ? await loadFreeSampleQuestions(
+              targetYear,
+              subjectFilter ? (subjectFilter as QuestionSubject) : undefined
+            )
+          : await listApprovedQuestions({
+              ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
+              yearLevel: targetYear,
+            });
         if (cancelled) return;
         if (dbQs.length > 0) {
           setPool(dbQs.map(dbToPracticeQuestion));
@@ -62,7 +84,8 @@ export default function Practice() {
       );
     })();
     return () => { cancelled = true; };
-  }, [subjectFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectFilter, isFree, user?.id, targetYear]);
 
   const filteredQuestions = useMemo(() => {
     if (!pool) return [];
@@ -204,6 +227,37 @@ export default function Practice() {
 
   const questionsTotal = Math.min(TOTAL_QUESTIONS, filteredQuestions.length);
 
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <Lock className="w-10 h-10 text-destructive" />
+        <h1 className="text-2xl font-bold">Account access paused</h1>
+        <p className="text-muted-foreground max-w-md">
+          Your account has been blocked by an administrator. Please contact support if you believe this is an error.
+        </p>
+        <Button asChild variant="outline"><Link to="/dashboard">Back to dashboard</Link></Button>
+      </div>
+    );
+  }
+
+  if (dailyLimitReached) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-6 text-center">
+        <Sparkles className="w-10 h-10 text-accent" />
+        <h1 className="text-2xl font-bold">You're done for today!</h1>
+        <p className="text-muted-foreground max-w-md">
+          Free accounts include one practice session per day with {FREE_DAILY_LIMIT} curated
+          Year {targetYear} questions. Upgrade to <strong>Pro</strong> for unlimited access to the
+          full question library.
+        </p>
+        <div className="flex gap-3">
+          <Button asChild variant="hero"><Link to="/info/pricing">Upgrade to Pro</Link></Button>
+          <Button asChild variant="outline"><Link to="/dashboard">Back to dashboard</Link></Button>
+        </div>
+      </div>
+    );
+  }
+
   if (sessionDone) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -211,6 +265,7 @@ export default function Practice() {
           results={results}
           totalTime={totalSessionTime.current}
           onRestart={handleRestart}
+          isFree={isFree}
         />
       </div>
     );

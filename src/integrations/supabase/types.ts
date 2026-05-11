@@ -78,7 +78,9 @@ export type Database = {
           display_name: string
           exam_focus: string
           id: string
+          is_blocked: boolean
           region: string
+          tier: Database["public"]["Enums"]["membership_tier"]
           updated_at: string
           user_id: string
           year_level: number
@@ -90,7 +92,9 @@ export type Database = {
           display_name?: string
           exam_focus?: string
           id?: string
+          is_blocked?: boolean
           region?: string
+          tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
           user_id: string
           year_level?: number
@@ -102,7 +106,9 @@ export type Database = {
           display_name?: string
           exam_focus?: string
           id?: string
+          is_blocked?: boolean
           region?: string
+          tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
           user_id?: string
           year_level?: number
@@ -121,6 +127,7 @@ export type Database = {
           exam_type: Database["public"]["Enums"]["question_exam_type"]
           explanation: string
           id: string
+          is_free_sample: boolean
           legacy_id: string | null
           options: Json
           skill_tags: string[]
@@ -144,6 +151,7 @@ export type Database = {
           exam_type?: Database["public"]["Enums"]["question_exam_type"]
           explanation?: string
           id?: string
+          is_free_sample?: boolean
           legacy_id?: string | null
           options: Json
           skill_tags?: string[]
@@ -167,6 +175,7 @@ export type Database = {
           exam_type?: Database["public"]["Enums"]["question_exam_type"]
           explanation?: string
           id?: string
+          is_free_sample?: boolean
           legacy_id?: string | null
           options?: Json
           skill_tags?: string[]
@@ -207,6 +216,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: never
+        Returns: {
+          attempts_count: number
+          created_at: string
+          display_name: string
+          email: string
+          is_admin: boolean
+          is_blocked: boolean
+          last_active: string
+          region: string
+          tier: Database["public"]["Enums"]["membership_tier"]
+          user_id: string
+          year_level: number
+        }[]
+      }
+      admin_set_admin: {
+        Args: { _make_admin: boolean; _user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -217,6 +246,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      membership_tier: "free" | "pro"
       question_exam_type: "naplan" | "selective" | "scholarship" | "general"
       question_status: "draft" | "approved"
       question_subject:
@@ -353,6 +383,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      membership_tier: ["free", "pro"],
       question_exam_type: ["naplan", "selective", "scholarship", "general"],
       question_status: ["draft", "approved"],
       question_subject: [

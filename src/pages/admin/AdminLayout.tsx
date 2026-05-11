@@ -13,8 +13,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ShieldCheck, Database, FilePlus2, LayoutDashboard, ArrowLeft, Wand2 } from "lucide-react";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { ShieldCheck, Database, FilePlus2, LayoutDashboard, Wand2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,6 +22,7 @@ const items = [
   { title: "All Questions", url: "/admin/questions", icon: Database },
   { title: "Add Question", url: "/admin/questions/new", icon: FilePlus2 },
   { title: "AI Generator", url: "/admin/generate", icon: Wand2 },
+  { title: "Users", url: "/admin/users", icon: Users },
 ];
 
 function AdminSidebar() {
@@ -64,23 +64,6 @@ function AdminSidebar() {
 }
 
 export default function AdminLayout() {
-  const { profile } = useUserProfile();
-
-  if (!profile.isSuperUser) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
-        <ShieldCheck className="w-12 h-12 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Admin access required</h1>
-        <p className="text-muted-foreground max-w-md">
-          Switch to the <strong>Super User</strong> persona from the sidebar profile menu to access the
-          admin dashboard.
-        </p>
-        <Button asChild variant="outline">
-          <NavLink to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard</NavLink>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <SidebarProvider>
