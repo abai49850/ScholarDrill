@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { KeyRound, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,15 +24,29 @@ export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as { from?: string } | null)?.from ?? "/dashboard";
+  const isResetLink =
+    location.search.includes("mode=reset") ||
+    location.hash.includes("type=recovery");
+
+  const [resetMode, setResetMode] = useState(isResetLink);
 
   useEffect(() => {
-    if (!loading && user) navigate(redirectTo, { replace: true });
-  }, [user, loading, navigate, redirectTo]);
+    if (!loading && user && !resetMode) navigate(redirectTo, { replace: true });
+  }, [user, loading, navigate, redirectTo, resetMode]);
+
+  useEffect(() => {
+    if (isResetLink) setResetMode(true);
+  }, [isResetLink]);
 
   // Sign in
   const [siEmail, setSiEmail] = useState("");
   const [siPwd, setSiPwd] = useState("");
   const [siBusy, setSiBusy] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetBusy, setResetBusy] = useState(false);
+  const [newPwd, setNewPwd] = useState("");
+  const [newPwdConfirm, setNewPwdConfirm] = useState("");
+  const [updateBusy, setUpdateBusy] = useState(false);
 
   // Sign up
   const [name, setName] = useState("");
@@ -81,6 +95,47 @@ export default function Auth() {
     navigate("/dashboard", { replace: true });
   };
 
+  const handlePasswordRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = (resetEmail || siEmail).trim();
+    if (!email) {
+      toast.error("Enter your email address first.");
+      return;
+    }
+    setResetBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth?mode=reset`,
+    });
+    setResetBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Password reset email sent. Check your inbox.");
+  };
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPwd.length < 8) {
+      toast.error("Use at least 8 characters.");
+      return;
+    }
+    if (newPwd !== newPwdConfirm) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    setUpdateBusy(true);
+    const { error } = await supabase.auth.updateUser({ password: newPwd });
+    setUpdateBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Password updated.");
+    setResetMode(false);
+    navigate("/dashboard", { replace: true });
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-background">
       <motion.div
@@ -95,6 +150,49 @@ export default function Auth() {
         </div>
 
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          {resetMode ? (
+            <form onSubmit={handlePasswordUpdate} className="space-y-4">
+              <div>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                  <KeyRound className="w-5 h-5 text-primary" />
+                </div>
+                <h1 className="text-xl font-bold">Set a new password</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Enter a new password for your ScholarDrill account.
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="new-pwd">New password</Label>
+                <Input
+                  id="new-pwd"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={newPwd}
+                  onChange={(e) => setNewPwd(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-pwd-confirm">Confirm password</Label>
+                <Input
+                  id="new-pwd-confirm"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={newPwdConfirm}
+                  onChange={(e) => setNewPwdConfirm(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={updateBusy}>
+                {updateBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Update password"}
+              </Button>
+              <Button type="button" variant="ghost" className="w-full" onClick={() => setResetMode(false)}>
+                Back to sign in
+              </Button>
+            </form>
+          ) : (
           <Tabs defaultValue="signin">
             <TabsList className="grid grid-cols-2 w-full mb-6">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
@@ -113,6 +211,22 @@ export default function Auth() {
                 </div>
                 <Button type="submit" className="w-full" disabled={siBusy}>
                   {siBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
+                </Button>
+              </form>
+              <form onSubmit={handlePasswordRequest} className="mt-4 rounded-xl border border-border p-3 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  Request password change
+                </div>
+                <Input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="Email address"
+                  autoComplete="email"
+                />
+                <Button type="submit" variant="outline" size="sm" className="w-full" disabled={resetBusy}>
+                  {resetBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send reset email"}
                 </Button>
               </form>
             </TabsContent>
@@ -169,6 +283,7 @@ export default function Auth() {
               </form>
             </TabsContent>
           </Tabs>
+          )}
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-4">

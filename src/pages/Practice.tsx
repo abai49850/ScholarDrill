@@ -211,7 +211,10 @@ export default function Practice() {
       return;
     }
     setQuestionIndex((i) => i + 1);
-    pickNextQuestion(difficulty, answeredIds);
+    const nextAnsweredIds = currentQuestion
+      ? new Set([...answeredIds, currentQuestion.id])
+      : answeredIds;
+    pickNextQuestion(difficulty, nextAnsweredIds);
   };
 
   const handleRestart = () => {

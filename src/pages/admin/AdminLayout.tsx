@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ShieldCheck, Database, FilePlus2, LayoutDashboard, Wand2, Users } from "lucide-react";
+import { ShieldCheck, Database, FilePlus2, LayoutDashboard, Wand2, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -21,6 +21,7 @@ const items = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard, end: true },
   { title: "All Questions", url: "/admin/questions", icon: Database },
   { title: "Add Question", url: "/admin/questions/new", icon: FilePlus2 },
+  { title: "Free Question Sets", url: "/admin/free-sets", icon: Star },
   { title: "AI Generator", url: "/admin/generate", icon: Wand2 },
   { title: "Users", url: "/admin/users", icon: Users },
 ];

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   listAdminUsers,
+  sendUserPasswordReset,
   setUserAdmin,
   setUserBlocked,
   setUserTier,
@@ -29,7 +30,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
-import { Search, ShieldCheck, ShieldOff, Crown, UserX } from "lucide-react";
+import { KeyRound, Search, ShieldCheck, Crown, UserX } from "lucide-react";
 
 export default function AdminUsers() {
   const { user: me } = useAuth();
@@ -40,7 +41,7 @@ export default function AdminUsers() {
   const [busy, setBusy] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setRows(null);
     try {
       setRows(await listAdminUsers());
@@ -48,9 +49,9 @@ export default function AdminUsers() {
       toast({ title: "Failed to load users", description: (e as Error).message, variant: "destructive" });
       setRows([]);
     }
-  };
+  }, [toast]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const filtered = useMemo(() => {
     if (!rows) return null;
@@ -98,6 +99,20 @@ export default function AdminUsers() {
       await setUserAdmin(r.user_id, makeAdmin);
       update(r.user_id, { is_admin: makeAdmin });
       toast({ title: makeAdmin ? "Granted admin" : "Revoked admin" });
+    } catch (e) {
+      toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(null); }
+  };
+
+  const onPasswordReset = async (r: AdminUserRow) => {
+    if (!r.email) {
+      toast({ title: "No email available", description: "This user does not have an email address on file.", variant: "destructive" });
+      return;
+    }
+    setBusy(r.user_id);
+    try {
+      await sendUserPasswordReset(r.email);
+      toast({ title: "Password reset sent", description: `A reset email was sent to ${r.email}.` });
     } catch (e) {
       toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
     } finally { setBusy(null); }
@@ -230,23 +245,32 @@ export default function AdminUsers() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      {r.is_blocked ? (
+                      <div className="inline-flex justify-end gap-1">
                         <Button
                           variant="ghost" size="sm"
-                          disabled={busy === r.user_id}
-                          onClick={() => onBlock(r, false)}
+                          disabled={busy === r.user_id || !r.email}
+                          onClick={() => onPasswordReset(r)}
                         >
-                          <ShieldCheck className="w-4 h-4 mr-1" /> Unblock
+                          <KeyRound className="w-4 h-4 mr-1" /> Reset
                         </Button>
-                      ) : (
-                        <Button
-                          variant="ghost" size="sm"
-                          disabled={busy === r.user_id || isMe}
-                          onClick={() => onBlock(r, true)}
-                        >
-                          <UserX className="w-4 h-4 mr-1 text-destructive" /> Block
-                        </Button>
-                      )}
+                        {r.is_blocked ? (
+                          <Button
+                            variant="ghost" size="sm"
+                            disabled={busy === r.user_id}
+                            onClick={() => onBlock(r, false)}
+                          >
+                            <ShieldCheck className="w-4 h-4 mr-1" /> Unblock
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost" size="sm"
+                            disabled={busy === r.user_id || isMe}
+                            onClick={() => onBlock(r, true)}
+                          >
+                            <UserX className="w-4 h-4 mr-1 text-destructive" /> Block
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

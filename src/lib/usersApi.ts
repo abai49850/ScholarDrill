@@ -15,7 +15,7 @@ export interface AdminUserRow {
 }
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
-  const { data, error } = await supabase.rpc("admin_list_users");
+  const { data, error } = await supabase.rpc.call(supabase, "admin_list_users");
   if (error) throw error;
   return (data ?? []) as unknown as AdminUserRow[];
 }
@@ -34,9 +34,16 @@ export async function setUserBlocked(userId: string, isBlocked: boolean) {
 }
 
 export async function setUserAdmin(userId: string, makeAdmin: boolean) {
-  const { error } = await supabase.rpc("admin_set_admin", {
+  const { error } = await supabase.rpc.call(supabase, "admin_set_admin", {
     _user_id: userId,
     _make_admin: makeAdmin,
+  });
+  if (error) throw error;
+}
+
+export async function sendUserPasswordReset(email: string) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth?mode=reset`,
   });
   if (error) throw error;
 }

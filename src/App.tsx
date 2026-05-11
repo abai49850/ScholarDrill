@@ -19,6 +19,7 @@ import AdminQuestionForm from "./pages/admin/AdminQuestionForm.tsx";
 import AdminQuestionTest from "./pages/admin/AdminQuestionTest.tsx";
 import AdminQuestionGenerator from "./pages/admin/AdminQuestionGenerator.tsx";
 import AdminUsers from "./pages/admin/AdminUsers.tsx";
+import AdminFreeSets from "./pages/admin/AdminFreeSets.tsx";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
                 <Route index element={<AdminOverview />} />
                 <Route path="questions" element={<AdminQuestionsList />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="free-sets" element={<AdminFreeSets />} />
                 <Route path="generate" element={<AdminQuestionGenerator />} />
                 <Route path="questions/new" element={<AdminQuestionForm />} />
                 <Route path="questions/:id" element={<AdminQuestionForm />} />
