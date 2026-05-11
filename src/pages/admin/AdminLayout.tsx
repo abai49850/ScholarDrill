@@ -14,7 +14,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ShieldCheck, Database, FilePlus2, LayoutDashboard, ArrowLeft, Wand2, Users } from "lucide-react";
-import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
