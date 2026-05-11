@@ -18,6 +18,9 @@ import {
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
 import { recordAttempt } from "@/lib/statsApi";
+import { useAuth } from "@/contexts/AuthContext";
+import { FREE_DAILY_LIMIT, hasPractisedToday, loadFreeSampleQuestions } from "@/lib/freeAccess";
+import { Lock, Sparkles } from "lucide-react";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -33,6 +36,9 @@ export default function Practice() {
   const subjectFilter = searchParams.get("subject");
   const yearParam = searchParams.get("year");
   const { profile } = useUserProfile();
+  const { profile: authProfile, user } = useAuth();
+  const isFree = (authProfile?.tier ?? "free") !== "pro";
+  const isBlocked = !!authProfile?.is_blocked;
   const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
 
   const [pool, setPool] = useState<Question[] | null>(null);
