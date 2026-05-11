@@ -280,6 +280,15 @@ export default function AdminQuestionsList() {
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title={q.is_free_sample ? "Remove from free sample" : "Mark as free-tier sample (Year " + q.year_level + ")"}
+                        disabled={busyId === q.id}
+                        onClick={() => onToggleFree(q)}
+                      >
+                        <Star className={`w-4 h-4 ${q.is_free_sample ? "fill-amber-400 text-amber-400" : ""}`} />
+                      </Button>
                       {q.status === "draft" ? (
                         <Button
                           variant="ghost"
