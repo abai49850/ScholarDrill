@@ -42,16 +42,32 @@ export default function Practice() {
   const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
 
   const [pool, setPool] = useState<Question[] | null>(null);
+  const [dailyLimitReached, setDailyLimitReached] = useState(false);
 
-  // Load approved questions from DB; fall back to bundled sample data if DB is empty/unreachable.
+  // Load questions: free users get a fixed 10-question set; pro users get the full bank.
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      // Free-tier daily gate
+      if (isFree && user) {
+        const reached = await hasPractisedToday(user.id);
+        if (cancelled) return;
+        if (reached) {
+          setDailyLimitReached(true);
+          setPool([]);
+          return;
+        }
+      }
       try {
-        const dbQs = await listApprovedQuestions({
-          ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
-          yearLevel: targetYear,
-        });
+        const dbQs = isFree
+          ? await loadFreeSampleQuestions(
+              targetYear,
+              subjectFilter ? (subjectFilter as QuestionSubject) : undefined
+            )
+          : await listApprovedQuestions({
+              ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
+              yearLevel: targetYear,
+            });
         if (cancelled) return;
         if (dbQs.length > 0) {
           setPool(dbQs.map(dbToPracticeQuestion));
@@ -68,7 +84,8 @@ export default function Practice() {
       );
     })();
     return () => { cancelled = true; };
-  }, [subjectFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectFilter, isFree, user?.id, targetYear]);
 
   const filteredQuestions = useMemo(() => {
     if (!pool) return [];
