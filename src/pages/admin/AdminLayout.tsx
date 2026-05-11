@@ -65,23 +65,6 @@ function AdminSidebar() {
 }
 
 export default function AdminLayout() {
-  const { profile } = useUserProfile();
-
-  if (!profile.isSuperUser) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
-        <ShieldCheck className="w-12 h-12 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Admin access required</h1>
-        <p className="text-muted-foreground max-w-md">
-          Switch to the <strong>Super User</strong> persona from the sidebar profile menu to access the
-          admin dashboard.
-        </p>
-        <Button asChild variant="outline">
-          <NavLink to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard</NavLink>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <SidebarProvider>
