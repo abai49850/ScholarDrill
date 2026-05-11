@@ -26,6 +26,7 @@ export interface DbQuestion {
   source_reference: string;
   time_limit_seconds: number;
   status: QuestionStatus;
+  is_free_sample: boolean;
   created_at: string;
   updated_at: string;
   approved_at: string | null;
@@ -101,6 +102,17 @@ export async function setQuestionStatus(id: string, status: QuestionStatus): Pro
     approved_at: status === "approved" ? new Date().toISOString() : null,
   } as never;
   const { data, error } = await supabase.from(TABLE).update(patch).eq("id", id).select("*").single();
+  if (error) throw error;
+  return data as unknown as DbQuestion;
+}
+
+export async function setQuestionFreeSample(id: string, isFreeSample: boolean): Promise<DbQuestion> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .update({ is_free_sample: isFreeSample } as never)
+    .eq("id", id)
+    .select("*")
+    .single();
   if (error) throw error;
   return data as unknown as DbQuestion;
 }
