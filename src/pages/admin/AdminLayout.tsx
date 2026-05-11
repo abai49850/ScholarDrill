@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ShieldCheck, Database, FilePlus2, LayoutDashboard, ArrowLeft, Wand2, Users } from "lucide-react";
+import { ShieldCheck, Database, FilePlus2, LayoutDashboard, Wand2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
