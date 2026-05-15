@@ -3,6 +3,8 @@ import {
   BookOpen,
   ShieldCheck,
   Home,
+  Map,
+  BotMessageSquare,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -25,6 +27,8 @@ import { useAuth } from "@/contexts/AuthContext";
 const mainItems = [
   { title: "Overview", url: "/dashboard", icon: LayoutDashboard, end: true },
   { title: "Practice", url: "/practice", icon: BookOpen },
+  { title: "Journey", url: "/journey", icon: Map },
+  { title: "AI Coach", url: "/coach", icon: BotMessageSquare },
 ];
 
 const homeItem = { title: "Home", url: "/dashboard", icon: Home };

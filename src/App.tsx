@@ -20,6 +20,12 @@ import AdminQuestionTest from "./pages/admin/AdminQuestionTest.tsx";
 import AdminQuestionGenerator from "./pages/admin/AdminQuestionGenerator.tsx";
 import AdminUsers from "./pages/admin/AdminUsers.tsx";
 import AdminFreeSets from "./pages/admin/AdminFreeSets.tsx";
+import NaplanHub from "./pages/naplan/Index.tsx";
+import NaplanSimulator from "./pages/naplan/Simulator.tsx";
+import JourneyHub from "./pages/gamification/JourneyHub.tsx";
+import LandingPage from "./pages/lp/LandingPage.tsx";
+import CoachPage from "./pages/coach/CoachPage.tsx";
+import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 
 const queryClient = new QueryClient();
 
@@ -28,11 +34,13 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <UserProfileProvider>
-          <TooltipProvider>
+          <FeatureFlagProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/lp/:slug" element={<LandingPage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/info/:slug" element={<Info />} />
               <Route
@@ -42,6 +50,22 @@ const App = () => (
               <Route
                 path="/dashboard"
                 element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/journey"
+                element={<ProtectedRoute><JourneyHub /></ProtectedRoute>}
+              />
+              <Route
+                path="/coach"
+                element={<ProtectedRoute><CoachPage /></ProtectedRoute>}
+              />
+              <Route
+                path="/naplan"
+                element={<ProtectedRoute><NaplanHub /></ProtectedRoute>}
+              />
+              <Route
+                path="/naplan/simulator"
+                element={<ProtectedRoute><NaplanSimulator /></ProtectedRoute>}
               />
               <Route
                 path="/admin"
@@ -60,7 +84,8 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
-        </UserProfileProvider>
+        </FeatureFlagProvider>
+      </UserProfileProvider>
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>

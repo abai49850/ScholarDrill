@@ -16,11 +16,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+import { getDisplayYear } from "@/lib/utils/australian-localiser";
+
 interface Props {
   collapsed?: boolean;
 }
 
-const YEAR_LEVELS = [3, 5, 7, 9];
+const YEAR_LEVELS = [3, 5, 7, 9, 10, 11, 12];
 const REGIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 const FOCI: { value: ExamFocus; label: string }[] = [
   { value: "naplan", label: "NAPLAN" },
@@ -66,7 +68,7 @@ export function ProfileSwitcher({ collapsed }: Props) {
                   {isAdmin && <UserCog className="w-3 h-3 text-accent" />}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  Year {profile.yearLevel} · {profile.region}
+                  {getDisplayYear(profile.yearLevel, profile.region)} · {profile.region}
                 </p>
               </div>
               <ChevronsUpDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -93,7 +95,7 @@ export function ProfileSwitcher({ collapsed }: Props) {
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {YEAR_LEVELS.map((y) => (
-                      <SelectItem key={y} value={String(y)}>Year {y}</SelectItem>
+                      <SelectItem key={y} value={String(y)}>{getDisplayYear(y, profile.region)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

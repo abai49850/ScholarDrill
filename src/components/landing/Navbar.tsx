@@ -6,11 +6,11 @@ import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
-  { label: "NAPLAN", href: "#tests" },
-  { label: "Selective", href: "#tests" },
-  { label: "Scholarships", href: "#tests" },
-  { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "NAPLAN", href: "/lp/naplan-practice-tests" },
+  { label: "Selective", href: "/lp/selective-school-test-prep" },
+  { label: "Scholarships", href: "/lp/scholarship-exam-prep" },
+  { label: "ICAS", href: "/lp/icas-english-practice" },
+  { label: "VCE", href: "/lp/vce-english-exam-prep" },
 ];
 
 export const Navbar = () => {
@@ -40,13 +40,13 @@ export const Navbar = () => {
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -79,14 +79,14 @@ export const Navbar = () => {
           >
             <div className="flex flex-col gap-2 p-6">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  to={link.href}
                   onClick={() => setMobileOpen(false)}
                   className="rounded-xl px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               <div className="mt-4 flex flex-col gap-2">
                 {user ? (
