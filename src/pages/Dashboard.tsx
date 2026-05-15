@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
 
+import { getDisplayYear } from "@/lib/utils/australian-localiser";
+
 export default function Dashboard() {
   const { profile } = useUserProfile();
   const { user, profile: dbProfile } = useAuth();
@@ -60,7 +62,7 @@ export default function Dashboard() {
                   Welcome back, {profile.name} 👋
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  Year {profile.yearLevel} · {profile.region}
+                  {getDisplayYear(profile.yearLevel, profile.region)} · {profile.region}
                   {profile.isSuperUser && " · Admin"}
                 </p>
               </div>

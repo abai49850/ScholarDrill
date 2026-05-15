@@ -4,12 +4,24 @@ import { useQuery } from "@tanstack/react-query";
 import { listApprovedQuestions, dbToPracticeQuestion, QuestionSubject } from "@/lib/questionsApi";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, ArrowRight, Flag, CheckCircle2, Clock, XCircle, LayoutGrid } from "lucide-react";
+import { NaplanEngineService, type ExamMode } from "@/modules/assessment/naplanService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function NaplanSimulator() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const year = parseInt(searchParams.get("year") || "5");
   const subject = (searchParams.get("subject") || "maths") as QuestionSubject;
+  const mode = (searchParams.get("mode") || "TIMED") as ExamMode;
+
+  useEffect(() => {
+    if (user && !sessionId) {
+      NaplanEngineService.startSession(user.id, year, subject as any, mode)
+        .then(session => setSessionId(session.id));
+    }
+  }, [user, sessionId]);
 
   const { data: questions, isLoading } = useQuery({
     queryKey: ["naplan-sim", year, subject],
@@ -80,9 +92,16 @@ export default function NaplanSimulator() {
     return Math.round((correct / questions.length) * 100);
   };
 
+  const handleFinish = async () => {
+    if (sessionId) {
+      await NaplanEngineService.completeSession(sessionId);
+    }
+    setIsCompleted(true);
+  };
+
   if (isCompleted) {
     const score = calculateScore();
-    const xpGained = Math.round(score * 1.5) + 50; // Base 50 + performance bonus
+    const xpGained = Math.round(score * 1.5) + 50;
     
     return (
       <div className="min-h-screen bg-muted/10 flex items-center justify-center p-6">
@@ -152,7 +171,7 @@ export default function NaplanSimulator() {
             })}
           </div>
           <div className="flex justify-end">
-            <Button size="lg" className="rounded-xl px-10 h-14" onClick={() => setIsCompleted(true)}>
+            <Button size="lg" className="rounded-xl px-10 h-14" onClick={handleFinish}>
               Submit Exam
             </Button>
           </div>
@@ -185,7 +204,7 @@ export default function NaplanSimulator() {
           <Button variant="outline" size="sm" onClick={() => setIsReviewScreen(true)} className="gap-2">
             <LayoutGrid className="h-4 w-4" /> Review
           </Button>
-          <Button size="sm" onClick={() => setIsCompleted(true)}>Finish</Button>
+          <Button size="sm" onClick={handleFinish}>Finish</Button>
         </div>
       </header>
 
