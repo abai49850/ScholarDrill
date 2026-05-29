@@ -21,16 +21,20 @@ export async function listAdminUsers(): Promise<AdminUserRow[]> {
 }
 
 export async function setUserTier(userId: string, tier: "free" | "pro") {
-  const { error } = await supabase
-    .from("profiles")
-    .upsert({ user_id: userId, tier }, { onConflict: "user_id" });
+  const { error } = await supabase.rpc("admin_set_user_profile", {
+    _user_id: userId,
+    _tier: tier,
+    _is_blocked: null,
+  });
   if (error) throw error;
 }
 
 export async function setUserBlocked(userId: string, isBlocked: boolean) {
-  const { error } = await supabase
-    .from("profiles")
-    .upsert({ user_id: userId, is_blocked: isBlocked }, { onConflict: "user_id" });
+  const { error } = await supabase.rpc("admin_set_user_profile", {
+    _user_id: userId,
+    _tier: null,
+    _is_blocked: isBlocked,
+  });
   if (error) throw error;
 }
 
@@ -45,6 +49,13 @@ export async function setUserAdmin(userId: string, makeAdmin: boolean) {
 export async function sendUserPasswordReset(email: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth?mode=reset`,
+  });
+  if (error) throw error;
+}
+
+export async function deleteUser(userId: string) {
+  const { error } = await supabase.rpc("admin_delete_user", {
+    _user_id: userId,
   });
   if (error) throw error;
 }

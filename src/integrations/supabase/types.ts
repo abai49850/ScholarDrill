@@ -76,10 +76,12 @@ export type Database = {
           created_at: string
           daily_goal: number
           display_name: string
+          email: string
           exam_focus: string
           id: string
           is_blocked: boolean
           region: string
+          state: string | null
           tier: Database["public"]["Enums"]["membership_tier"]
           updated_at: string
           user_id: string
@@ -90,10 +92,12 @@ export type Database = {
           created_at?: string
           daily_goal?: number
           display_name?: string
+          email: string
           exam_focus?: string
           id?: string
           is_blocked?: boolean
           region?: string
+          state?: string | null
           tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
           user_id: string
@@ -104,10 +108,12 @@ export type Database = {
           created_at?: string
           daily_goal?: number
           display_name?: string
+          email?: string
           exam_focus?: string
           id?: string
           is_blocked?: boolean
           region?: string
+          state?: string | null
           tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
           user_id?: string
@@ -234,6 +240,18 @@ export type Database = {
       }
       admin_set_admin: {
         Args: { _make_admin: boolean; _user_id: string }
+        Returns: undefined
+      }
+      admin_delete_user: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
+      admin_set_user_profile: {
+        Args: {
+          _is_blocked?: boolean | null
+          _tier?: Database["public"]["Enums"]["membership_tier"] | null
+          _user_id: string
+        }
         Returns: undefined
       }
       has_role: {

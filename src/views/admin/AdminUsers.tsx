@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  deleteUser,
   listAdminUsers,
   sendUserPasswordReset,
   setUserAdmin,
@@ -30,7 +31,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
-import { KeyRound, Search, ShieldCheck, Crown, UserX } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { KeyRound, Search, ShieldCheck, Crown, UserX, Trash2 } from "lucide-react";
 
 export default function AdminUsers() {
   const { user: me } = useAuth();
@@ -113,6 +125,17 @@ export default function AdminUsers() {
     try {
       await sendUserPasswordReset(r.email);
       toast({ title: "Password reset sent", description: `A reset email was sent to ${r.email}.` });
+    } catch (e) {
+      toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(null); }
+  };
+
+  const onDelete = async (r: AdminUserRow) => {
+    setBusy(r.user_id);
+    try {
+      await deleteUser(r.user_id);
+      setRows((prev) => prev?.filter((row) => row.user_id !== r.user_id) ?? null);
+      toast({ title: "User deleted", description: `${r.email ?? r.display_name} was removed.` });
     } catch (e) {
       toast({ title: "Failed", description: (e as Error).message, variant: "destructive" });
     } finally { setBusy(null); }
@@ -270,6 +293,28 @@ export default function AdminUsers() {
                             <UserX className="w-4 h-4 mr-1 text-destructive" /> Block
                           </Button>
                         )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost" size="sm"
+                              disabled={busy === r.user_id || isMe}
+                            >
+                              <Trash2 className="w-4 h-4 mr-1 text-destructive" /> Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete this user?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This removes the user's auth account, profile, and roles. Practice records may remain for audit history.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => onDelete(r)}>Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>

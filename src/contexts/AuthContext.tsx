@@ -57,9 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from("profiles")
         .upsert(
           {
+            id: uid,
             user_id: uid,
+            email: currentUser?.email ?? `${uid}@unknown.local`,
             display_name: displayName,
             year_level: Number.isFinite(yearLevel) ? yearLevel : 5,
+            state: typeof metadata.state === "string" ? metadata.state : "NSW",
             region: typeof metadata.region === "string" ? metadata.region : "NSW",
             exam_focus: typeof metadata.exam_focus === "string" ? metadata.exam_focus : "naplan",
           },
