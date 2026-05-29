@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { CheckCircle2, Star, ChevronDown, ArrowRight, Play, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { LandingPageData } from "@/data/landingPages";

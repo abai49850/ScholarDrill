@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { PostgrestError } from "@supabase/supabase-js";
 
 export type QuestionSubject = "maths" | "reading" | "writing" | "conventions" | "reasoning";
 export type QuestionExamType = "naplan" | "selective" | "scholarship" | "general";
@@ -38,6 +39,31 @@ export type QuestionDraft = Omit<
 >;
 
 const TABLE = "questions";
+const QUESTION_PAGE_SIZE = 1000;
+
+type PageResult<Row> = {
+  data: Row[] | null;
+  error: PostgrestError | null;
+};
+
+async function fetchAllPages<Row>(
+  loadPage: (from: number, to: number) => PromiseLike<PageResult<Row>>,
+): Promise<Row[]> {
+  const rows: Row[] = [];
+  let from = 0;
+
+  for (;;) {
+    const to = from + QUESTION_PAGE_SIZE - 1;
+    const { data, error } = await loadPage(from, to);
+    if (error) throw error;
+
+    const page = data ?? [];
+    rows.push(...page);
+
+    if (page.length < QUESTION_PAGE_SIZE) return rows;
+    from += QUESTION_PAGE_SIZE;
+  }
+}
 
 export async function listQuestions(filters: {
   status?: QuestionStatus | "all";
@@ -46,15 +72,15 @@ export async function listQuestions(filters: {
   yearLevel?: number | "all";
   search?: string;
 } = {}): Promise<DbQuestion[]> {
-  let q = supabase.from(TABLE).select("*").order("updated_at", { ascending: false }).limit(1000);
-  if (filters.status && filters.status !== "all") q = q.eq("status", filters.status);
-  if (filters.subject && filters.subject !== "all") q = q.eq("subject", filters.subject);
-  if (filters.examType && filters.examType !== "all") q = q.eq("exam_type", filters.examType);
-  if (filters.yearLevel && filters.yearLevel !== "all") q = q.eq("year_level", filters.yearLevel);
-  if (filters.search) q = q.ilike("content", `%${filters.search}%`);
-  const { data, error } = await q;
-  if (error) throw error;
-  return (data ?? []) as unknown as DbQuestion[];
+  return fetchAllPages<DbQuestion>((from, to) => {
+    let q = supabase.from(TABLE).select("*").order("updated_at", { ascending: false }).range(from, to);
+    if (filters.status && filters.status !== "all") q = q.eq("status", filters.status);
+    if (filters.subject && filters.subject !== "all") q = q.eq("subject", filters.subject);
+    if (filters.examType && filters.examType !== "all") q = q.eq("exam_type", filters.examType);
+    if (filters.yearLevel && filters.yearLevel !== "all") q = q.eq("year_level", filters.yearLevel);
+    if (filters.search) q = q.ilike("content", `%${filters.search}%`);
+    return q as unknown as PromiseLike<PageResult<DbQuestion>>;
+  });
 }
 
 export async function listApprovedQuestions(filters: {
@@ -62,15 +88,20 @@ export async function listApprovedQuestions(filters: {
   examType?: QuestionExamType;
   yearLevel?: number;
 } = {}): Promise<DbQuestion[]> {
-  let q = supabase.from(TABLE).select("*").eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
-  if (filters.subject) q = q.eq("subject", filters.subject);
-  if (filters.examType) q = q.eq("exam_type", filters.examType);
-  if (filters.yearLevel !== undefined) {
-    q = q.gte("year_level", filters.yearLevel - 2).lte("year_level", filters.yearLevel + 2);
-  }
-  const { data, error } = await q;
-  if (error) throw error;
-  return (data ?? []) as unknown as DbQuestion[];
+  return fetchAllPages<DbQuestion>((from, to) => {
+    let q = supabase
+      .from(TABLE)
+      .select("*")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .range(from, to);
+    if (filters.subject) q = q.eq("subject", filters.subject);
+    if (filters.examType) q = q.eq("exam_type", filters.examType);
+    if (filters.yearLevel !== undefined) {
+      q = q.gte("year_level", filters.yearLevel - 2).lte("year_level", filters.yearLevel + 2);
+    }
+    return q as unknown as PromiseLike<PageResult<DbQuestion>>;
+  });
 }
 
 export async function getQuestion(id: string): Promise<DbQuestion | null> {
@@ -130,17 +161,23 @@ export async function getQuestionStats(): Promise<{
   byYear: Record<string, number>;
   byExam: Record<string, number>;
 }> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .select("status, subject, year_level, exam_type")
-    .limit(5000);
-  if (error) throw error;
-  const rows = (data ?? []) as Array<{
+  const rows = await fetchAllPages<{
     status: QuestionStatus;
     subject: QuestionSubject;
     year_level: number;
     exam_type: QuestionExamType;
-  }>;
+  }>((from, to) => {
+    const q = supabase
+      .from(TABLE)
+      .select("status, subject, year_level, exam_type")
+      .range(from, to);
+    return q as unknown as PromiseLike<PageResult<{
+      status: QuestionStatus;
+      subject: QuestionSubject;
+      year_level: number;
+      exam_type: QuestionExamType;
+    }>>;
+  });
   const stats = {
     total: rows.length,
     approved: 0,

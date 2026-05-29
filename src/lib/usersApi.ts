@@ -15,26 +15,27 @@ export interface AdminUserRow {
 }
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
-  const { data, error } = await supabase.rpc.call(supabase, "admin_list_users");
+  const { data, error } = await supabase.rpc("admin_list_users");
   if (error) throw error;
   return (data ?? []) as unknown as AdminUserRow[];
 }
 
 export async function setUserTier(userId: string, tier: "free" | "pro") {
-  const { error } = await supabase.from("profiles").update({ tier }).eq("user_id", userId);
+  const { error } = await supabase
+    .from("profiles")
+    .upsert({ user_id: userId, tier }, { onConflict: "user_id" });
   if (error) throw error;
 }
 
 export async function setUserBlocked(userId: string, isBlocked: boolean) {
   const { error } = await supabase
     .from("profiles")
-    .update({ is_blocked: isBlocked })
-    .eq("user_id", userId);
+    .upsert({ user_id: userId, is_blocked: isBlocked }, { onConflict: "user_id" });
   if (error) throw error;
 }
 
 export async function setUserAdmin(userId: string, makeAdmin: boolean) {
-  const { error } = await supabase.rpc.call(supabase, "admin_set_admin", {
+  const { error } = await supabase.rpc("admin_set_admin", {
     _user_id: userId,
     _make_admin: makeAdmin,
   });

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -34,14 +34,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadProfileAndRole = async (uid: string) => {
+  const loadProfileAndRole = useCallback(async (uid: string) => {
     const [{ data: prof }, { data: roles }] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
-    setProfile((prof as Profile | null) ?? null);
+    let resolvedProfile = (prof as Profile | null) ?? null;
+    if (!resolvedProfile) {
+      const currentUser = (await supabase.auth.getUser()).data.user;
+      const metadata = currentUser?.user_metadata ?? {};
+      const displayName =
+        typeof metadata.display_name === "string"
+          ? metadata.display_name
+          : typeof metadata.full_name === "string"
+            ? metadata.full_name
+            : currentUser?.email?.split("@")[0] ?? "Student";
+      const yearLevel =
+        typeof metadata.year_level === "number"
+          ? metadata.year_level
+          : Number(metadata.year_level ?? 5);
+      const { data: created } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            user_id: uid,
+            display_name: displayName,
+            year_level: Number.isFinite(yearLevel) ? yearLevel : 5,
+            region: typeof metadata.region === "string" ? metadata.region : "NSW",
+            exam_focus: typeof metadata.exam_focus === "string" ? metadata.exam_focus : "naplan",
+          },
+          { onConflict: "user_id" },
+        )
+        .select("*")
+        .maybeSingle();
+      resolvedProfile = (created as Profile | null) ?? null;
+    }
+    setProfile(resolvedProfile);
     setIsAdmin(!!roles?.some((r: { role: string }) => r.role === "admin"));
-  };
+  }, []);
 
   useEffect(() => {
     // 1) Listener first (avoid deadlocks: defer Supabase calls)
@@ -65,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [loadProfileAndRole]);
 
   const refreshProfile = async () => {
     if (user) await loadProfileAndRole(user.id);

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "@/lib/router";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -15,7 +15,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: { children: R
     );
   }
   if (!user) {
-    return <Navigate to="/auth" replace state={{ from: location.pathname + location.search }} />;
+    return <Navigate to={`/auth?from=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   }
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/dashboard" replace />;

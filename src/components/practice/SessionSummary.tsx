@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Trophy, Target, Clock, TrendingUp, RotateCcw, Home, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 
 interface SessionResult {
   questionId: string;

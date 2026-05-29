@@ -7,7 +7,7 @@ import {
   BotMessageSquare,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/lib/router";
 import {
   Sidebar,
   SidebarContent,

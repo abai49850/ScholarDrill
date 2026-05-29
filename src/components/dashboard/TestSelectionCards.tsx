@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, BookOpen, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
 import { testCards } from "@/data/mockProgress";
 import { DifficultyBadge } from "@/components/practice/DifficultyBadge";

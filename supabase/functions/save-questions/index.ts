@@ -13,6 +13,7 @@ const corsHeaders = {
 const SUBJECTS = ["maths", "reading", "writing", "conventions", "reasoning"];
 const EXAM_TYPES = ["naplan", "selective", "scholarship", "general"];
 const STATUSES = ["draft", "approved"];
+const INSERT_CHUNK_SIZE = 500;
 
 interface QInput {
   content: string;
@@ -119,12 +120,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (items.length > 50) {
-      return new Response(JSON.stringify({ error: "Too many questions (max 50)" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     const rows = items.map((q) => {
       const err = validate(q);
@@ -150,16 +145,21 @@ Deno.serve(async (req) => {
     });
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-    const { data, error } = await supabase.from("questions").insert(rows).select("id, status");
-    if (error) {
-      console.error("insert error", error);
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const inserted: { id: string; status: string }[] = [];
+    for (let start = 0; start < rows.length; start += INSERT_CHUNK_SIZE) {
+      const chunk = rows.slice(start, start + INSERT_CHUNK_SIZE);
+      const { data, error } = await supabase.from("questions").insert(chunk).select("id, status");
+      if (error) {
+        console.error("insert error", error);
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      inserted.push(...(data ?? []));
     }
 
-    return new Response(JSON.stringify({ inserted: data?.length ?? 0, ids: data ?? [] }), {
+    return new Response(JSON.stringify({ inserted: inserted.length, ids: inserted }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

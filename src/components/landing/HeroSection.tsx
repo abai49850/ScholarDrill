@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, BarChart3, Target, Trophy } from "lucide-react";
 import { ParticleField } from "./ParticleField";

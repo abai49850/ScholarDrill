@@ -23,6 +23,7 @@ export interface SubjectStat {
 export interface UserStats {
   totalAttempted: number;
   totalCorrect: number;
+  totalPoints: number;
   overallAccuracy: number;
   bySubject: SubjectStat[];
   todayCount: number;
@@ -97,6 +98,7 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
 
   const totalAttempted = rows.length;
   const totalCorrect = rows.filter((r) => r.is_correct).length;
+  const totalPoints = totalCorrect * 10 + totalAttempted * 2;
   const overallAccuracy = totalAttempted ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
 
   // Group by subject
@@ -184,6 +186,7 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
   return {
     totalAttempted,
     totalCorrect,
+    totalPoints,
     overallAccuracy,
     bySubject,
     todayCount,

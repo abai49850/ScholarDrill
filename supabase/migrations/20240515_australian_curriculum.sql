@@ -62,17 +62,15 @@ CREATE TABLE IF NOT EXISTS student_skill_mastery (
 );
 
 -- 6. CONTENT TAGGING
+-- The questions table is created by a later checked-in migration. Keep this
+-- migration safe for fresh databases and apply these columns again later.
 DO $$ BEGIN
-    ALTER TABLE questions ADD COLUMN state australian_state;
-EXCEPTION WHEN duplicate_column THEN null; END $$;
-
-DO $$ BEGIN
-    ALTER TABLE questions ADD COLUMN curriculum_nodes UUID[];
-EXCEPTION WHEN duplicate_column THEN null; END $$;
-
-DO $$ BEGIN
-    ALTER TABLE questions ADD COLUMN aus_spelling_checked BOOLEAN DEFAULT false;
-EXCEPTION WHEN duplicate_column THEN null; END $$;
+    IF to_regclass('public.questions') IS NOT NULL THEN
+        ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS state australian_state;
+        ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS curriculum_nodes UUID[];
+        ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS aus_spelling_checked BOOLEAN DEFAULT false;
+    END IF;
+END $$;
 
 -- 7. INDICES FOR PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_taxonomy_parent ON curriculum_taxonomy(parent_id);

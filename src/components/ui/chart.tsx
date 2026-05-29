@@ -231,11 +231,11 @@ const ChartTooltipContent = React.forwardRef<
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-muted-foreground">{itemConfig?.label || item.name}</span>
                       </div>
-                      {item.value && (
+                      {item.value != null ? (
                         <span className="font-mono font-medium tabular-nums text-foreground">
                           {String(item.value)}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </>
                 )}

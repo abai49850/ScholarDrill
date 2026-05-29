@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 
 const footerLinks: Record<string, { label: string; to: string }[]> = {
   Tests: [

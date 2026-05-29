@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { BotMessageSquare, X, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { tutors } from "@/data/tutors";

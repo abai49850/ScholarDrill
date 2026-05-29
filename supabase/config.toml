@@ -1,5 +1,16 @@
 project_id = "dzcrnpnkidnnwpjznxon"
 
+[auth]
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = [
+  "http://127.0.0.1:3000/auth?mode=reset",
+  "http://localhost:3000/auth?mode=reset",
+  "https://scholardrill.com.au/auth?mode=reset",
+  "https://www.scholardrill.com.au/auth?mode=reset",
+  "https://scholardrill.com.au/dashboard",
+  "https://www.scholardrill.com.au/dashboard",
+]
+
 [functions.generate-questions]
 verify_jwt = false
 

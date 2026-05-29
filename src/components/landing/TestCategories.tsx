@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { BookOpen, Brain, GraduationCap, Microscope, Award } from "lucide-react";
 
 const categories = [

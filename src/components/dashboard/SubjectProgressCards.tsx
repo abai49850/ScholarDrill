@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router";
 import { ResponsiveContainer, AreaChart, Area } from "recharts";
 import { SUBJECT_META, SUBJECT_COLOR_VARS, type UserStats } from "@/lib/statsApi";
 

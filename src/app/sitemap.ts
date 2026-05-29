@@ -1,45 +1,34 @@
-// src/app/sitemap.ts
-import { MetadataRoute } from 'next';
-import { supabase } from '@/integrations/supabase/client';
+import type { MetadataRoute } from "next";
+import { landingPages } from "@/data/landingPages";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://scholardrill.com.au';
-
-  // 1. Static Routes
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://scholardrill.com.au";
+  const now = new Date();
   const staticRoutes = [
-    '',
-    '/auth',
-    '/practice',
-    '/coach',
-    '/naplan',
-  ].map((route) => ({
+    "",
+    "/auth",
+    "/practice",
+    "/dashboard",
+    "/coach",
+    "/naplan",
+    "/naplan/simulator",
+    "/journey",
+    "/info/about",
+    "/info/blog",
+    "/info/careers",
+    "/info/contact",
+    "/info/pricing",
+    "/info/privacy",
+    "/info/terms",
+    "/info/refund",
+  ];
+
+  const landingRoutes = landingPages.map((page) => `/lp/${page.slug}`);
+
+  return [...staticRoutes, ...landingRoutes].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 1,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: route === "" ? 1 : 0.8,
   }));
-
-  // 2. Dynamic Blog/Guide Routes
-  const { data: posts } = await supabase
-    .from('content_posts')
-    .select('slug, updated_at')
-    .eq('is_published', true);
-
-  const dynamicPosts = (posts || []).map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.updated_at),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }));
-
-  // 3. Exam State Routes
-  const states = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'];
-  const examRoutes = states.map((state) => ({
-    url: `${baseUrl}/exams/${state.toLowerCase()}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.9,
-  }));
-
-  return [...staticRoutes, ...dynamicPosts, ...examRoutes];
 }
