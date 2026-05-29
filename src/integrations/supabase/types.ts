@@ -263,7 +263,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "super_user" | "student" | "parent"
       membership_tier: "free" | "pro"
       question_exam_type: "naplan" | "selective" | "scholarship" | "general"
       question_status: "draft" | "approved"
