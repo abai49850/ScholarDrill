@@ -1,4 +1,5 @@
 import type { TutorPersonality } from "@/data/tutors";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatMessage {
   id: string;
@@ -60,17 +61,23 @@ RULES:
 
   while (attempts < maxAttempts) {
     try {
-      const response = await fetch("/api/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents, systemPrompt }),
+      const { data, error } = await supabase.functions.invoke("coach", {
+        body: { contents, systemPrompt },
       });
-      const data = await response.json().catch(() => ({}));
 
-      if (response.ok) return { content: data.content || "", xpAwarded: data.xpAwarded ?? 10 };
+      if (!error) return { content: data?.content || "", xpAwarded: data?.xpAwarded ?? 10 };
 
-      lastError = data.error || response.statusText;
-      if (response.status === 429) {
+      lastError = error.message || "Coach function failed.";
+      if ("context" in error && error.context instanceof Response) {
+        const status = error.context.status;
+        const detail = await error.context.clone().json().catch(() => null);
+        lastError = detail?.error || error.message || lastError;
+        if (status === 429) {
+          attempts++;
+          await new Promise((r) => setTimeout(r, attempts * 2000));
+          continue;
+        }
+      } else if (error.name === "FunctionsRelayError") {
         attempts++;
         await new Promise((r) => setTimeout(r, attempts * 2000));
         continue;
