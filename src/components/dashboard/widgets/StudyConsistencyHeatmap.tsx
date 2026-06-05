@@ -1,16 +1,7 @@
 import { motion } from "framer-motion";
+import type { UserStats } from "@/lib/statsApi";
 
-export const StudyConsistencyHeatmap = () => {
-  // Generate mock data for the last 30 days
-  const today = new Date();
-  const days = Array.from({ length: 30 }).map((_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - (29 - i));
-    // Random intensity 0-4
-    const intensity = Math.random() > 0.3 ? Math.floor(Math.random() * 4) + 1 : 0;
-    return { date: d, intensity };
-  });
-
+export const StudyConsistencyHeatmap = ({ activity, dailyGoal = 10 }: { activity: UserStats["monthlyActivity"]; dailyGoal?: number }) => {
   const getIntensityColor = (intensity: number) => {
     switch (intensity) {
       case 0: return "bg-muted/50";
@@ -31,16 +22,19 @@ export const StudyConsistencyHeatmap = () => {
       
       <div className="flex-1 flex items-center justify-center">
         <div className="grid grid-flow-col grid-rows-5 gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
-          {days.map((day, i) => (
+          {activity.map((day, i) => {
+            const date = new Date(day.date);
+            const intensity = day.count === 0 ? 0 : Math.min(4, Math.ceil((day.count / dailyGoal) * 4));
+            return (
             <motion.div
-              key={i}
+              key={day.date}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.02 }}
-              className={`w-4 h-4 sm:w-5 sm:h-5 rounded-sm ${getIntensityColor(day.intensity)} hover:ring-2 hover:ring-primary/50 cursor-pointer transition-all`}
-              title={`${day.date.toDateString()}: Level ${day.intensity}`}
+              className={`w-4 h-4 sm:w-5 sm:h-5 rounded-sm ${getIntensityColor(intensity)} hover:ring-2 hover:ring-primary/50 cursor-pointer transition-all`}
+              title={`${date.toDateString()}: ${day.count} questions`}
             />
-          ))}
+          )})}
         </div>
       </div>
       

@@ -23,6 +23,7 @@ export async function generateResponse(
     yearLevel?: number;
     examType?: string;
     subject?: string;
+    performanceSummary?: string;
   },
 ): Promise<{ content: string; xpAwarded?: number }> {
   const studentMessages = history.filter((m) => m.role === "student");
@@ -48,12 +49,14 @@ CONTEXT:
 - State: ${context?.state || "Australia (General)"}
 - Year Level: ${context?.yearLevel || "Unknown"}
 - Focus: ${context?.examType || "General Study"} ${context?.subject ? `(${context.subject})` : ""}
+- Student Activity: ${context?.performanceSummary || "No practice activity available yet."}
 
 RULES:
 1. Use Australian spelling (e.g., summarise, recognise, colour).
 2. Reference the relevant Australian state syllabus if the state is provided.
 3. Be encouraging and concise.
-4. Never mention you are an AI.`;
+4. Use the student activity to name strengths, weaknesses and next steps when relevant.
+5. Never mention you are an AI.`;
 
   let attempts = 0;
   const maxAttempts = 3;

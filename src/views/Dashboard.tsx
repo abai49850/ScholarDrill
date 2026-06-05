@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -6,13 +6,14 @@ import { GamifiedHeader } from "@/components/gamification/GamifiedHeader";
 import { SeasonalBanner } from "@/components/gamification/SeasonalBanner";
 import { DailyQuestsWidget } from "@/components/gamification/DailyQuestsWidget";
 import { DailyCoachNudge } from "@/components/coach/DailyCoachNudge";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { SubjectProgressCards } from "@/components/dashboard/SubjectProgressCards";
 import { TestSelectionCards } from "@/components/dashboard/TestSelectionCards";
 import { StreakWidget } from "@/components/dashboard/StreakWidget";
 import { ParentPortal } from "@/components/dashboard/ParentPortal";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { getUserStats, type UserStats } from "@/lib/statsApi";
+import { getUserStats, type DailyQuest, type UserStats } from "@/lib/statsApi";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "@/lib/router";
@@ -24,8 +25,48 @@ export default function Dashboard() {
   const { user, profile: dbProfile } = useAuth();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bonusXp, setBonusXp] = useState(0);
+  const [claimedQuestIds, setClaimedQuestIds] = useState<Set<string>>(new Set());
+  const [eventClaimed, setEventClaimed] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "overview";
+  const todayKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  useEffect(() => {
+    if (!user) return;
+    const key = `sd_rewards:${user.id}:${todayKey}`;
+    const saved = JSON.parse(localStorage.getItem(key) || "{}") as {
+      bonusXp?: number;
+      quests?: string[];
+      event?: boolean;
+    };
+    setBonusXp(saved.bonusXp ?? 0);
+    setClaimedQuestIds(new Set(saved.quests ?? []));
+    setEventClaimed(Boolean(saved.event));
+  }, [todayKey, user]);
+
+  const saveRewards = (next: { bonusXp: number; quests: Set<string>; event: boolean }) => {
+    if (!user) return;
+    localStorage.setItem(
+      `sd_rewards:${user.id}:${todayKey}`,
+      JSON.stringify({ bonusXp: next.bonusXp, quests: [...next.quests], event: next.event }),
+    );
+    setBonusXp(next.bonusXp);
+    setClaimedQuestIds(next.quests);
+    setEventClaimed(next.event);
+  };
+
+  const claimQuest = (quest: DailyQuest) => {
+    if (claimedQuestIds.has(quest.id) || quest.progress < quest.target) return;
+    const quests = new Set(claimedQuestIds);
+    quests.add(quest.id);
+    saveRewards({ bonusXp: bonusXp + quest.xp, quests, event: eventClaimed });
+  };
+
+  const claimEvent = () => {
+    if (eventClaimed) return;
+    saveRewards({ bonusXp: bonusXp + 150, quests: claimedQuestIds, event: true });
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -91,15 +132,19 @@ export default function Dashboard() {
 
                 <TabsContent value="overview" className="space-y-8 mt-0 focus-visible:outline-none focus-visible:ring-0">
                   <section>
-                    <GamifiedHeader streak={stats.currentStreak} currentXp={stats.totalPoints} nextLevelXp={5000} level={Math.floor(stats.totalPoints / 500) + 1} />
+                    <GamifiedHeader streak={stats.currentStreak} currentXp={stats.totalPoints + bonusXp} nextLevelXp={5000} level={Math.floor((stats.totalPoints + bonusXp) / 500) + 1} />
                   </section>
 
                   <section>
-                    <SeasonalBanner />
+                    <SeasonalBanner mathsToday={stats.mathsToday} claimed={eventClaimed} onClaim={claimEvent} />
                   </section>
 
                   <section>
                     <DailyCoachNudge />
+                  </section>
+
+                  <section>
+                    <StatsOverview stats={{ ...stats, totalPoints: stats.totalPoints + bonusXp }} />
                   </section>
 
                   <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -117,7 +162,7 @@ export default function Dashboard() {
 
                     <div className="space-y-6">
                       <div>
-                        <DailyQuestsWidget />
+                        <DailyQuestsWidget quests={stats.dailyQuests} claimedIds={claimedQuestIds} onClaim={claimQuest} />
                       </div>
                       <div>
                         <h2 className="text-lg font-semibold mb-4">Your Streaks</h2>
@@ -128,7 +173,7 @@ export default function Dashboard() {
                 </TabsContent>
 
                 <TabsContent value="parent-portal" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                  <ParentPortal />
+                  <ParentPortal stats={stats} profile={dbProfile} />
                 </TabsContent>
               </Tabs>
             )}

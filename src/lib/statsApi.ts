@@ -20,6 +20,23 @@ export interface SubjectStat {
   trend: number;
 }
 
+export interface TopicStat {
+  topic: string;
+  subject: string;
+  attempted: number;
+  correct: number;
+  accuracy: number;
+}
+
+export interface DailyQuest {
+  id: string;
+  title: string;
+  desc: string;
+  progress: number;
+  target: number;
+  xp: number;
+}
+
 export interface UserStats {
   totalAttempted: number;
   totalCorrect: number;
@@ -32,6 +49,14 @@ export interface UserStats {
   weeklyActivity: { day: string; date: string; count: number }[];
   monthlyActivity: { day: string; date: string; count: number }[];
   weeklyTrendPct: number;
+  recentAttempts: AttemptRow[];
+  byTopic: TopicStat[];
+  strongestTopics: TopicStat[];
+  focusTopics: TopicStat[];
+  dailyQuests: DailyQuest[];
+  performanceTrend: { label: string; score: number; benchmark: number }[];
+  activeDaysLast30: number;
+  mathsToday: number;
 }
 
 const SUBJECT_LABELS: Record<string, string> = {
@@ -137,6 +162,9 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
     weeklyActivity.push({ day: dayLabels[d.getDay()], date: key, count: countsByDate.get(key) ?? 0 });
   }
   const todayCount = countsByDate.get(ymd(today)) ?? 0;
+  const todayKey = ymd(today);
+  const todayRows = rows.filter((r) => r.created_at.slice(0, 10) === todayKey);
+  const mathsToday = todayRows.filter((r) => r.subject === "maths").length;
 
   // Monthly activity (last 30 days)
   const monthlyActivity: UserStats["monthlyActivity"] = [];
@@ -181,7 +209,84 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
   const acc = (l: AttemptRow[]) => l.length ? Math.round((l.filter((r) => r.is_correct).length / l.length) * 100) : 0;
   const weeklyTrendPct = acc(thisWeek) - acc(prevWeek);
 
-  void dailyGoal;
+  const byTopicMap = new Map<string, AttemptRow[]>();
+  for (const r of rows) {
+    const key = `${r.subject}:${r.topic || "General"}`;
+    if (!byTopicMap.has(key)) byTopicMap.set(key, []);
+    byTopicMap.get(key)!.push(r);
+  }
+  const byTopic: TopicStat[] = [...byTopicMap.entries()].map(([key, list]) => {
+    const [subject, ...topicParts] = key.split(":");
+    const correct = list.filter((r) => r.is_correct).length;
+    return {
+      topic: topicParts.join(":") || "General",
+      subject,
+      attempted: list.length,
+      correct,
+      accuracy: Math.round((correct / list.length) * 100),
+    };
+  });
+  const meaningfulTopics = byTopic.filter((t) => t.attempted >= 2);
+  const strongestTopics = [...meaningfulTopics]
+    .sort((a, b) => b.accuracy - a.accuracy || b.attempted - a.attempted)
+    .slice(0, 3);
+  const focusTopics = [...meaningfulTopics]
+    .sort((a, b) => a.accuracy - b.accuracy || b.attempted - a.attempted)
+    .slice(0, 3);
+
+  const streakToday = (() => {
+    let run = 0;
+    for (const r of todayRows) {
+      if (r.is_correct) run++;
+      else run = 0;
+    }
+    return run;
+  })();
+
+  const readingTopicsToday = new Set(todayRows.filter((r) => r.subject === "reading").map((r) => r.topic || r.id));
+  const dailyQuests: DailyQuest[] = [
+    {
+      id: "maths-20",
+      title: "Numeracy Ninja",
+      desc: "Complete 20 maths questions today.",
+      progress: mathsToday,
+      target: 20,
+      xp: 50,
+    },
+    {
+      id: "perfect-10",
+      title: "Perfect Run",
+      desc: "Answer 10 questions correctly in a row today.",
+      progress: Math.min(streakToday, 10),
+      target: 10,
+      xp: 100,
+    },
+    {
+      id: "reading-2",
+      title: "Reading Explorer",
+      desc: "Complete 2 reading topics today.",
+      progress: readingTopicsToday.size,
+      target: 2,
+      xp: 75,
+    },
+  ];
+
+  const performanceTrend = Array.from({ length: 6 }).map((_, index) => {
+    const start = new Date(today);
+    start.setDate(today.getDate() - (6 - index) * 7);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 7);
+    const weekRows = rows.filter((r) => {
+      const created = new Date(r.created_at);
+      return created >= start && created < end;
+    });
+    return {
+      label: `Week ${index + 1}`,
+      score: acc(weekRows),
+      benchmark: 70 + Math.min(index, 3) * 2,
+    };
+  });
+  const activeDaysLast30 = monthlyActivity.filter((d) => d.count > 0).length;
 
   return {
     totalAttempted,
@@ -195,5 +300,31 @@ export async function getUserStats(userId: string, dailyGoal = 10): Promise<User
     weeklyActivity,
     monthlyActivity,
     weeklyTrendPct,
+    recentAttempts: rows.slice(0, 10),
+    byTopic,
+    strongestTopics,
+    focusTopics,
+    dailyQuests,
+    performanceTrend,
+    activeDaysLast30,
+    mathsToday,
   };
+}
+
+export function buildPerformanceSummary(stats: UserStats, dailyGoal = 10) {
+  const strongestTopic = stats.strongestTopics[0];
+  const focusTopic = stats.focusTopics[0];
+  const strongestSubject = [...stats.bySubject].sort((a, b) => b.accuracy - a.accuracy)[0];
+  const focusSubject = [...stats.bySubject].sort((a, b) => a.accuracy - b.accuracy)[0];
+  const strongestLabel = strongestTopic?.topic ?? strongestSubject?.subject;
+  const strongestAccuracy = strongestTopic?.accuracy ?? strongestSubject?.accuracy;
+  const focusLabel = focusTopic?.topic ?? focusSubject?.subject;
+  const focusAccuracy = focusTopic?.accuracy ?? focusSubject?.accuracy;
+  return [
+    `${stats.totalAttempted} questions attempted with ${stats.overallAccuracy}% overall accuracy.`,
+    `${stats.todayCount}/${dailyGoal} daily goal questions completed today.`,
+    `${stats.currentStreak}-day current streak; ${stats.longestStreak}-day best streak.`,
+    strongestLabel ? `Strength: ${strongestLabel} (${strongestAccuracy}%).` : "No clear strength yet.",
+    focusLabel ? `Focus area: ${focusLabel} (${focusAccuracy}%).` : "No clear focus area yet.",
+  ].join(" ");
 }

@@ -1,23 +1,27 @@
 import { motion } from "framer-motion";
 import { Trophy, Medal, Star, Flame, Target } from "lucide-react";
+import type { UserStats } from "@/lib/statsApi";
 
-const achievements = [
-  { id: 1, title: "First Step", desc: "Complete 1 practice test.", icon: Star, unlocked: true, color: "text-yellow-500", bg: "bg-yellow-500/20", border: "border-yellow-500" },
-  { id: 2, title: "On Fire", desc: "Reach a 7-day streak.", icon: Flame, unlocked: true, color: "text-orange-500", bg: "bg-orange-500/20", border: "border-orange-500" },
-  { id: 3, title: "Maths Wizard", desc: "Score 100% in Numeracy.", icon: Target, unlocked: false, color: "text-blue-500", bg: "bg-blue-500/20", border: "border-blue-500" },
-  { id: 4, title: "Top Scholar", desc: "Reach Level 10.", icon: Trophy, unlocked: true, color: "text-purple-500", bg: "bg-purple-500/20", border: "border-purple-500" },
-  { id: 5, title: "Reading Master", desc: "Complete all Reading modules.", icon: Medal, unlocked: false, color: "text-emerald-500", bg: "bg-emerald-500/20", border: "border-emerald-500" },
-  { id: 6, title: "Unstoppable", desc: "Answer 50 questions correctly.", icon: Star, unlocked: false, color: "text-rose-500", bg: "bg-rose-500/20", border: "border-rose-500" },
-];
+export const AchievementsVault = ({ stats }: { stats: UserStats }) => {
+  const maths = stats.bySubject.find((s) => s.subject === "maths");
+  const reading = stats.bySubject.find((s) => s.subject === "reading");
+  const achievements = [
+    { id: 1, title: "First Step", desc: "Answer your first question.", icon: Star, unlocked: stats.totalAttempted >= 1, color: "text-yellow-500", bg: "bg-yellow-500/20", border: "border-yellow-500" },
+    { id: 2, title: "On Fire", desc: "Reach a 7-day streak.", icon: Flame, unlocked: stats.currentStreak >= 7, color: "text-orange-500", bg: "bg-orange-500/20", border: "border-orange-500" },
+    { id: 3, title: "Maths Wizard", desc: "Score 80%+ in Numeracy after 10 attempts.", icon: Target, unlocked: Boolean(maths && maths.attempted >= 10 && maths.accuracy >= 80), color: "text-blue-500", bg: "bg-blue-500/20", border: "border-blue-500" },
+    { id: 4, title: "Top Scholar", desc: "Reach Level 10.", icon: Trophy, unlocked: Math.floor(stats.totalPoints / 500) + 1 >= 10, color: "text-purple-500", bg: "bg-purple-500/20", border: "border-purple-500" },
+    { id: 5, title: "Reading Master", desc: "Complete 20 reading questions.", icon: Medal, unlocked: Boolean(reading && reading.attempted >= 20), color: "text-emerald-500", bg: "bg-emerald-500/20", border: "border-emerald-500" },
+    { id: 6, title: "Unstoppable", desc: "Answer 50 questions correctly.", icon: Star, unlocked: stats.totalCorrect >= 50, color: "text-rose-500", bg: "bg-rose-500/20", border: "border-rose-500" },
+  ];
+  const unlocked = achievements.filter((a) => a.unlocked).length;
 
-export const AchievementsVault = () => {
   return (
     <div className="bg-card border-4 border-border rounded-3xl p-6 shadow-sm h-full">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-xl flex items-center gap-2">
           <Trophy className="h-6 w-6 text-yellow-500 fill-yellow-500" /> Vault
         </h3>
-        <span className="text-sm font-bold text-muted-foreground bg-muted px-3 py-1 rounded-xl border border-border/50">3/24 Unlocked</span>
+        <span className="text-sm font-bold text-muted-foreground bg-muted px-3 py-1 rounded-xl border border-border/50">{unlocked}/{achievements.length} Unlocked</span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

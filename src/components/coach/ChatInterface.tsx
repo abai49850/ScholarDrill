@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { EncouragementOverlay } from "./EncouragementOverlay";
 import { generateResponse, type ChatMessage } from "@/modules/ai-engine/coach";
 import type { TutorPersonality } from "@/data/tutors";
+import { useAuth } from "@/contexts/AuthContext";
+import { buildPerformanceSummary, getUserStats } from "@/lib/statsApi";
 
 interface Props {
   tutor: TutorPersonality;
@@ -67,6 +69,8 @@ function MessageBubble({ msg, tutor }: { msg: ChatMessage; tutor: TutorPersonali
 }
 
 export const ChatInterface = ({ tutor, goals, onChangeTutor }: Props) => {
+  const { user, profile } = useAuth();
+  const [performanceSummary, setPerformanceSummary] = useState("No practice activity available yet.");
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "0", role: "tutor", content: tutor.greeting, timestamp: new Date() },
     ...(goals.length > 0 ? [{
@@ -86,6 +90,13 @@ export const ChatInterface = ({ tutor, goals, onChangeTutor }: Props) => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    if (!user) return;
+    getUserStats(user.id, profile?.daily_goal ?? 10)
+      .then((stats) => setPerformanceSummary(buildPerformanceSummary(stats, profile?.daily_goal ?? 10)))
+      .catch(() => setPerformanceSummary("Practice activity could not be loaded for this chat."));
+  }, [profile?.daily_goal, user]);
+
   const send = async (text: string) => {
     if (!text.trim()) return;
     const studentMsg: ChatMessage = { id: Date.now().toString(), role: "student", content: text, timestamp: new Date() };
@@ -94,7 +105,12 @@ export const ChatInterface = ({ tutor, goals, onChangeTutor }: Props) => {
     setIsTyping(true);
 
     // Gemini API call
-    const { content, xpAwarded } = await generateResponse(tutor, text, [...messages, studentMsg]);
+    const { content, xpAwarded } = await generateResponse(tutor, text, [...messages, studentMsg], {
+      state: profile?.region,
+      yearLevel: profile?.year_level,
+      examType: profile?.exam_focus,
+      performanceSummary,
+    });
     const tutorMsg: ChatMessage = { id: (Date.now() + 1).toString(), role: "tutor", content, timestamp: new Date(), xpAwarded };
     setMessages(prev => [...prev, tutorMsg]);
     setIsTyping(false);

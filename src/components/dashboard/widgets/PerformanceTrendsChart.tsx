@@ -1,15 +1,7 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
+import type { UserStats } from "@/lib/statsApi";
 
-const mockData = [
-  { week: "Week 1", score: 65, benchmark: 70 },
-  { week: "Week 2", score: 68, benchmark: 70 },
-  { week: "Week 3", score: 74, benchmark: 72 },
-  { week: "Week 4", score: 79, benchmark: 72 },
-  { week: "Week 5", score: 82, benchmark: 75 },
-  { week: "Week 6", score: 85, benchmark: 75 },
-];
-
-export const PerformanceTrendsChart = () => {
+export const PerformanceTrendsChart = ({ data }: { data: UserStats["performanceTrend"] }) => {
   return (
     <div className="bg-card border border-border shadow-sm rounded-[2rem] p-6 h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
@@ -31,10 +23,10 @@ export const PerformanceTrendsChart = () => {
       
       <div className="flex-1 min-h-[200px] w-full mt-4">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={mockData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
             <XAxis 
-              dataKey="week" 
+              dataKey="label" 
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
