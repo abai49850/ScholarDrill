@@ -16,11 +16,12 @@ import {
   type Question,
 } from "@/data/sampleQuestions";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { listApprovedQuestions, dbToPracticeQuestion, type QuestionSubject } from "@/lib/questionsApi";
+import { listApprovedQuestions, dbToPracticeQuestion, type QuestionExamType, type QuestionSubject } from "@/lib/questionsApi";
 import { recordAttempt } from "@/lib/statsApi";
 import { useAuth } from "@/contexts/AuthContext";
 import { FREE_DAILY_LIMIT, hasPractisedToday, loadFreeSampleQuestions } from "@/lib/freeAccess";
 import { Lock, Sparkles } from "lucide-react";
+import { getExamCard } from "@/data/examCatalog";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
@@ -34,12 +35,18 @@ interface SessionResult {
 export default function Practice() {
   const [searchParams] = useSearchParams();
   const subjectFilter = searchParams.get("subject");
+  const examFilter = searchParams.get("exam") as QuestionExamType | null;
+  const testId = searchParams.get("testId");
+  const selectedExam = getExamCard(testId);
   const yearParam = searchParams.get("year");
   const { profile } = useUserProfile();
   const { profile: authProfile, user } = useAuth();
   const isFree = (authProfile?.tier ?? "free") !== "pro";
   const isBlocked = !!authProfile?.is_blocked;
   const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
+  const sessionQuestionTarget = selectedExam
+    ? Math.min(selectedExam.questionCount === 1 ? 1 : TOTAL_QUESTIONS, TOTAL_QUESTIONS)
+    : TOTAL_QUESTIONS;
 
   const [pool, setPool] = useState<Question[] | null>(null);
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
@@ -66,6 +73,7 @@ export default function Practice() {
             )
           : await listApprovedQuestions({
               ...(subjectFilter ? { subject: subjectFilter as QuestionSubject } : {}),
+              ...(examFilter ? { examType: examFilter } : {}),
               yearLevel: targetYear,
             });
         if (cancelled) return;
@@ -85,7 +93,7 @@ export default function Practice() {
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjectFilter, isFree, user?.id, targetYear]);
+  }, [subjectFilter, examFilter, isFree, user?.id, targetYear]);
 
   const filteredQuestions = useMemo(() => {
     if (!pool) return [];
@@ -206,7 +214,7 @@ export default function Practice() {
   };
 
   const handleNext = () => {
-    if (questionIndex + 1 >= TOTAL_QUESTIONS) {
+    if (questionIndex + 1 >= sessionQuestionTarget) {
       setSessionDone(true);
       return;
     }
@@ -228,7 +236,7 @@ export default function Practice() {
     pickNextQuestion(2, new Set());
   };
 
-  const questionsTotal = Math.min(TOTAL_QUESTIONS, filteredQuestions.length);
+  const questionsTotal = Math.min(sessionQuestionTarget, filteredQuestions.length);
 
   if (isBlocked) {
     return (
@@ -318,6 +326,21 @@ export default function Practice() {
 
       {/* Progress */}
       <div className="max-w-3xl mx-auto px-4 pt-4">
+        {selectedExam && (
+          <div className="mb-4 rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary">{selectedExam.category}</p>
+                <h1 className="font-bold">{selectedExam.title}</h1>
+                <p className="text-xs text-muted-foreground mt-1">{selectedExam.description}</p>
+              </div>
+              <div className="text-xs text-muted-foreground sm:text-right">
+                <div>{selectedExam.questionCountLabel}</div>
+                <div>{selectedExam.estimatedMinutes} min exam block</div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
           <span>Question {questionIndex + 1} of {questionsTotal}</span>
           <span>{results.filter((r) => r.correct).length} correct</span>

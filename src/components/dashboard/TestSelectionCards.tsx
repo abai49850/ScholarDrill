@@ -1,26 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, BookOpen, ChevronRight } from "lucide-react";
+import { Clock, BookOpen, ChevronRight, Layers } from "lucide-react";
 import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
-import { testCards } from "@/data/mockProgress";
 import { DifficultyBadge } from "@/components/practice/DifficultyBadge";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-
-const subjectMap: Record<string, string> = {
-  Mathematics: "maths",
-  Reading: "reading",
-  Writing: "writing",
-  Reasoning: "reasoning",
-  Conventions: "conventions",
-};
-
-const categories = [
-  { key: "all", label: "All Tests" },
-  { key: "naplan", label: "NAPLAN" },
-  { key: "selective", label: "Selective" },
-  { key: "scholarship", label: "Scholarship" },
-] as const;
+import { examCards, examCategories } from "@/data/examCatalog";
 
 export function TestSelectionCards() {
   const { profile } = useUserProfile();
@@ -33,7 +18,7 @@ export function TestSelectionCards() {
   }, [profile.id, profile.examFocus]);
 
   const filtered = useMemo(() => {
-    let list = testCards;
+    let list = examCards;
     if (activeCategory !== "all") {
       list = list.filter((t) => t.category === activeCategory);
     }
@@ -49,7 +34,7 @@ export function TestSelectionCards() {
     <div>
       {/* Filter Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        {categories.map((cat) => (
+        {examCategories.map((cat) => (
           <button
             key={cat.key}
             onClick={() => setActiveCategory(cat.key)}
@@ -67,7 +52,9 @@ export function TestSelectionCards() {
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AnimatePresence mode="popLayout">
-          {filtered.map((test, i) => (
+          {filtered.map((test, i) => {
+            const subjectQuery = test.subjects.length === 1 ? `subject=${test.subjects[0]}&` : "";
+            return (
             <motion.div
               key={test.id}
               layout
@@ -90,7 +77,7 @@ export function TestSelectionCards() {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                     <span className="flex items-center gap-1">
                       <BookOpen className="w-3.5 h-3.5" />
-                      {test.questionCount} questions
+                      {test.questionCountLabel}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
@@ -101,14 +88,39 @@ export function TestSelectionCards() {
                     </span>
                   </div>
                   <Button variant="default" size="sm" asChild className="group-hover:shadow-md transition-shadow">
-                    <Link to={`/practice?subject=${subjectMap[test.subjects[0]] || test.subjects[0].toLowerCase()}&year=${profile.yearLevel}`}>
+                    <Link to={`/practice?${subjectQuery}exam=${test.dbExamType}&testId=${test.id}&year=${profile.yearLevel}`}>
                       Start Practice <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                     </Link>
                   </Button>
                 </div>
               </div>
+              <div className="mt-4 border-t border-border/60 pt-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-2">
+                  <Layers className="w-3.5 h-3.5" />
+                  Exam structure
+                </div>
+                <div className="space-y-2">
+                  {test.sections.slice(0, 3).map((section) => (
+                    <div key={`${test.id}-${section.name}`} className="flex items-start justify-between gap-3 text-xs">
+                      <div>
+                        <span className="font-semibold text-foreground">{section.name}</span>
+                        <span className="text-muted-foreground"> - {section.focus}</span>
+                      </div>
+                      <span className="shrink-0 text-muted-foreground">{section.questionLabel}, {section.minutes} min</span>
+                    </div>
+                  ))}
+                </div>
+                <a
+                  href={test.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block text-[11px] font-medium text-primary hover:underline"
+                >
+                  Source: {test.sourceLabel}
+                </a>
+              </div>
             </motion.div>
-          ))}
+          )})}
         </AnimatePresence>
       </div>
       {filtered.length === 0 && (
