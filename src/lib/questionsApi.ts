@@ -160,6 +160,7 @@ export async function getQuestionStats(): Promise<{
   bySubject: Record<string, number>;
   byYear: Record<string, number>;
   byExam: Record<string, number>;
+  byExamSubject: Record<string, number>;
 }> {
   const rows = await fetchAllPages<{
     status: QuestionStatus;
@@ -185,6 +186,7 @@ export async function getQuestionStats(): Promise<{
     bySubject: {} as Record<string, number>,
     byYear: {} as Record<string, number>,
     byExam: {} as Record<string, number>,
+    byExamSubject: {} as Record<string, number>,
   };
   for (const r of rows) {
     if (r.status === "approved") stats.approved++;
@@ -192,6 +194,8 @@ export async function getQuestionStats(): Promise<{
     stats.bySubject[r.subject] = (stats.bySubject[r.subject] ?? 0) + 1;
     stats.byYear[String(r.year_level)] = (stats.byYear[String(r.year_level)] ?? 0) + 1;
     stats.byExam[r.exam_type] = (stats.byExam[r.exam_type] ?? 0) + 1;
+    const examSubject = `${r.exam_type}:${r.subject}`;
+    stats.byExamSubject[examSubject] = (stats.byExamSubject[examSubject] ?? 0) + 1;
   }
   return stats;
 }

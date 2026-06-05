@@ -1,6 +1,5 @@
 // Edge function: generate-questions
-// Uses Lovable AI Gateway (Gemini) to generate curriculum-aligned NAPLAN/selective questions.
-// Returns JSON via tool-calling for reliable structured output.
+// Uses Gemini directly to generate original exam-aligned questions for the admin library.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -13,6 +12,21 @@ const corsHeaders = {
 const SUBJECTS = ["maths", "reading", "writing", "conventions", "reasoning"] as const;
 const EXAM_TYPES = ["naplan", "selective", "scholarship", "general"] as const;
 
+interface ExamPathway {
+  id: string;
+  title: string;
+  category: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
+  sections?: Array<{
+    name: string;
+    subject: string;
+    questionLabel: string;
+    minutes: number;
+    focus: string;
+  }>;
+}
+
 interface GenRequest {
   subject: typeof SUBJECTS[number];
   examType: typeof EXAM_TYPES[number];
@@ -20,9 +34,10 @@ interface GenRequest {
   topic?: string;
   subtopic?: string;
   skillTags?: string[];
-  difficulty?: number; // 1-5
-  count?: number; // 1-10
+  difficulty?: number;
+  count?: number;
   notes?: string;
+  examPathway?: ExamPathway;
 }
 
 async function requireAdmin(req: Request): Promise<Response | null> {
@@ -31,17 +46,10 @@ async function requireAdmin(req: Request): Promise<Response | null> {
   const authorization = req.headers.get("Authorization");
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return new Response(JSON.stringify({ error: "Server auth not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Server auth not configured" }, 500);
   }
-
   if (!authorization) {
-    return new Response(JSON.stringify({ error: "Authentication required" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Authentication required" }, 401);
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -49,10 +57,7 @@ async function requireAdmin(req: Request): Promise<Response | null> {
   });
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
-    return new Response(JSON.stringify({ error: "Invalid session" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Invalid session" }, 401);
   }
 
   const { data: role, error: roleError } = await supabase
@@ -63,224 +68,228 @@ async function requireAdmin(req: Request): Promise<Response | null> {
     .maybeSingle();
 
   if (roleError || !role) {
-    return new Response(JSON.stringify({ error: "Admin access required" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Admin access required" }, 403);
   }
 
   return null;
 }
 
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function isConfiguredApiKey(apiKey: string | undefined) {
+  return Boolean(apiKey && !apiKey.includes("rotate-and-set") && !apiKey.includes("your-") && apiKey.trim().length > 20);
+}
+
 function buildSystemPrompt() {
-  return `You are an expert Australian K-12 curriculum writer specialising in NAPLAN, selective school, and scholarship exam preparation.
+  return `You are an expert Australian K-12 curriculum writer for ScholarDrill.
 
-Your job is to author ORIGINAL multiple-choice questions that are:
-- Curriculum-aligned to the Australian Curriculum (ACARA) for the given year level
-- Inspired by the style of NAPLAN / selective tests, but PARAPHRASED and original — never reproduce verbatim past-paper content (copyright safety)
-- Age-appropriate in vocabulary, context, and cognitive load
-- Unambiguous, with exactly ONE correct answer and three plausible distractors
-- Australian English spelling and Australian contexts (dollars, kilometres, native animals, etc.) where natural
+Write ORIGINAL multiple-choice practice questions for Australian exam preparation. Cover NAPLAN, ICAS, NSW/VIC selective entry, ACER scholarship, EduTest, HSC and VCE pathways when requested.
 
-For each question provide:
-- content: the question stem (use plain text; for maths you may use simple inline notation like 3/4, 2x+5)
-- options: exactly 4 options, each with a stable id ("a","b","c","d") and text
-- correctOptionId: one of "a","b","c","d"
-- explanation: a concise worked solution / reasoning a student can learn from
-- topic & subtopic: specific (e.g. topic="Fractions", subtopic="Equivalent fractions")
-- skillTags: 2-4 short tags
-- difficulty: integer 1 (easy) to 5 (hard)
-- timeLimitSeconds: realistic per-question time (30-120)
+Strict rules:
+- Do not copy, quote, paraphrase closely, or recreate any official, past-paper, paid, or third-party sample question.
+- Use source links and exam descriptions only for structure, timing, skill focus and style guidance.
+- Every generated question must be new, self-contained, age-appropriate, and in Australian English.
+- Return exactly four options with ids "a", "b", "c" and "d".
+- Exactly one option must be correct.
+- Explanations must teach the reasoning, not just name the answer.
+- For writing pathways, generate multiple-choice questions about planning, structure, expression, editing, audience, purpose, or text improvement unless explicitly asked for an open writing prompt.
 
-Quality bar: every question must be solvable from the stem alone, distractors should reflect common misconceptions, and the explanation must justify the correct answer.`;
+Return only valid JSON matching the requested schema.`;
 }
 
 function buildUserPrompt(req: GenRequest) {
   const lines = [
     `Generate ${req.count ?? 5} fresh multiple-choice questions.`,
     `Subject: ${req.subject}`,
-    `Exam style: ${req.examType}`,
+    `Database exam type: ${req.examType}`,
     `Year level: ${req.yearLevel}`,
   ];
+  if (req.examPathway) {
+    lines.push(`Exam pathway: ${req.examPathway.title}`);
+    lines.push(`Pathway category: ${req.examPathway.category}`);
+    if (req.examPathway.sourceLabel) lines.push(`Format source label: ${req.examPathway.sourceLabel}`);
+    if (req.examPathway.sourceUrl) lines.push(`Format source URL: ${req.examPathway.sourceUrl}`);
+    if (req.examPathway.sections?.length) {
+      lines.push(
+        `Exam sections: ${req.examPathway.sections
+          .map((s) => `${s.name} (${s.subject}, ${s.questionLabel}, ${s.minutes} min): ${s.focus}`)
+          .join("; ")}`,
+      );
+    }
+  }
   if (req.topic) lines.push(`Topic focus: ${req.topic}`);
   if (req.subtopic) lines.push(`Subtopic: ${req.subtopic}`);
   if (req.skillTags?.length) lines.push(`Target skills: ${req.skillTags.join(", ")}`);
   if (req.difficulty) lines.push(`Target difficulty (1-5): ${req.difficulty}`);
   if (req.notes) lines.push(`Additional guidance: ${req.notes}`);
-  lines.push("Return all questions via the emit_questions tool.");
+  lines.push("Respond as JSON with a top-level questions array.");
   return lines.join("\n");
 }
 
-const tool = {
-  type: "function",
-  function: {
-    name: "emit_questions",
-    description: "Return the generated curriculum-aligned questions.",
-    parameters: {
-      type: "object",
-      properties: {
-        questions: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              content: { type: "string" },
-              options: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string", enum: ["a", "b", "c", "d"] },
-                    text: { type: "string" },
-                  },
-                  required: ["id", "text"],
-                  additionalProperties: false,
+function responseSchema() {
+  return {
+    type: "OBJECT",
+    properties: {
+      questions: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            content: { type: "STRING" },
+            options: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  id: { type: "STRING" },
+                  text: { type: "STRING" },
                 },
-                minItems: 4,
-                maxItems: 4,
+                required: ["id", "text"],
               },
-              correctOptionId: { type: "string", enum: ["a", "b", "c", "d"] },
-              explanation: { type: "string" },
-              topic: { type: "string" },
-              subtopic: { type: "string" },
-              skillTags: { type: "array", items: { type: "string" } },
-              difficulty: { type: "integer", minimum: 1, maximum: 5 },
-              timeLimitSeconds: { type: "integer", minimum: 20, maximum: 300 },
             },
-            required: [
-              "content",
-              "options",
-              "correctOptionId",
-              "explanation",
-              "topic",
-              "skillTags",
-              "difficulty",
-              "timeLimitSeconds",
-            ],
-            additionalProperties: false,
+            correctOptionId: { type: "STRING" },
+            explanation: { type: "STRING" },
+            topic: { type: "STRING" },
+            subtopic: { type: "STRING" },
+            skillTags: { type: "ARRAY", items: { type: "STRING" } },
+            difficulty: { type: "INTEGER" },
+            timeLimitSeconds: { type: "INTEGER" },
           },
+          required: [
+            "content",
+            "options",
+            "correctOptionId",
+            "explanation",
+            "topic",
+            "skillTags",
+            "difficulty",
+            "timeLimitSeconds",
+          ],
         },
       },
-      required: ["questions"],
-      additionalProperties: false,
     },
-  },
-};
+    required: ["questions"],
+  };
+}
+
+function parseGeminiJson(data: Record<string, unknown>) {
+  const parts = data?.candidates?.[0]?.content?.parts as Array<{ text?: string }> | undefined;
+  const text = parts?.map((p) => p.text ?? "").join("").trim() ?? "";
+  if (!text) throw new Error("Gemini returned an empty response");
+  const cleaned = text.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+  return JSON.parse(cleaned);
+}
+
+function normaliseQuestions(raw: unknown, fallbackDifficulty: number) {
+  const questions = Array.isArray((raw as { questions?: unknown[] })?.questions)
+    ? (raw as { questions: unknown[] }).questions
+    : [];
+
+  return questions.map((q) => {
+    const item = q as Record<string, unknown>;
+    const options = Array.isArray(item.options) ? item.options.slice(0, 4) : [];
+    return {
+      content: String(item.content ?? ""),
+      options: options.map((option, idx) => {
+        const o = option as Record<string, unknown>;
+        return {
+          id: ["a", "b", "c", "d"][idx],
+          text: String(o.text ?? ""),
+        };
+      }),
+      correctOptionId: ["a", "b", "c", "d"].includes(String(item.correctOptionId)) ? String(item.correctOptionId) : "a",
+      explanation: String(item.explanation ?? ""),
+      topic: String(item.topic ?? "General"),
+      subtopic: String(item.subtopic ?? ""),
+      skillTags: Array.isArray(item.skillTags) ? item.skillTags.map(String).slice(0, 5) : [],
+      difficulty: Math.max(1, Math.min(5, Number(item.difficulty) || fallbackDifficulty)),
+      timeLimitSeconds: Math.max(20, Math.min(900, Number(item.timeLimitSeconds) || 60)),
+    };
+  }).filter((q) => q.content && q.options.length === 4 && q.options.every((o) => o.text));
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
     const authError = await requireAdmin(req);
     if (authError) return authError;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!isConfiguredApiKey(apiKey)) {
+      return json({
+        error: "GEMINI_API_KEY is not configured in Supabase secrets. Set it with `supabase secrets set GEMINI_API_KEY=...`.",
+      }, 500);
     }
 
     const body = (await req.json()) as GenRequest;
+    if (!SUBJECTS.includes(body.subject)) return json({ error: "Invalid subject" }, 400);
+    if (!EXAM_TYPES.includes(body.examType)) return json({ error: "Invalid examType" }, 400);
+    if (!body.yearLevel || body.yearLevel < 1 || body.yearLevel > 12) return json({ error: "Invalid yearLevel" }, 400);
 
-    if (!SUBJECTS.includes(body.subject)) {
-      return new Response(JSON.stringify({ error: "Invalid subject" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (!EXAM_TYPES.includes(body.examType)) {
-      return new Response(JSON.stringify({ error: "Invalid examType" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (!body.yearLevel || body.yearLevel < 1 || body.yearLevel > 12) {
-      return new Response(JSON.stringify({ error: "Invalid yearLevel" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
     body.count = Math.max(1, Math.min(10, body.count ?? 5));
+    body.difficulty = Math.max(1, Math.min(5, body.difficulty ?? 3));
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const model = Deno.env.get("GEMINI_QUESTION_MODEL") || Deno.env.get("GEMINI_MODEL") || "gemini-flash-lite-latest";
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: buildSystemPrompt() },
-          { role: "user", content: buildUserPrompt(body) },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: buildUserPrompt(body) }],
+          },
         ],
-        tools: [tool],
-        tool_choice: { type: "function", function: { name: "emit_questions" } },
-      }),
-    });
-
-    if (aiResp.status === 429) {
-      return new Response(
-        JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-    if (aiResp.status === 402) {
-      return new Response(
-        JSON.stringify({ error: "AI credits exhausted. Top up workspace credits to continue." }),
-        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-    if (!aiResp.ok) {
-      const t = await aiResp.text();
-      console.error("AI gateway error", aiResp.status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error", detail: t }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const data = await aiResp.json();
-    const toolCall = data?.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall?.function?.arguments) {
-      console.error("No tool call returned", JSON.stringify(data));
-      return new Response(JSON.stringify({ error: "Model did not return structured questions" }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    let parsed: { questions: unknown[] };
-    try {
-      parsed = JSON.parse(toolCall.function.arguments);
-    } catch (e) {
-      console.error("Bad JSON from model", e, toolCall.function.arguments);
-      return new Response(JSON.stringify({ error: "Could not parse AI response" }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(
-      JSON.stringify({
-        questions: parsed.questions ?? [],
-        meta: {
-          subject: body.subject,
-          examType: body.examType,
-          yearLevel: body.yearLevel,
-          topic: body.topic ?? "",
-          subtopic: body.subtopic ?? "",
+        system_instruction: {
+          parts: [{ text: buildSystemPrompt() }],
+        },
+        generationConfig: {
+          temperature: 0.8,
+          responseMimeType: "application/json",
+          responseSchema: responseSchema(),
         },
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const message = data.error?.message || response.statusText;
+      return json({
+        error: response.status === 429
+          ? `Gemini quota exceeded for ${model}. Check Google AI Studio billing/rate limits or set GEMINI_QUESTION_MODEL to a model with available quota.`
+          : message,
+      }, response.status);
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = parseGeminiJson(data as Record<string, unknown>);
+    } catch (e) {
+      console.error("Bad JSON from Gemini", e, JSON.stringify(data));
+      return json({ error: "Could not parse Gemini response" }, 502);
+    }
+
+    const questions = normaliseQuestions(parsed, body.difficulty);
+    return json({
+      questions,
+      meta: {
+        subject: body.subject,
+        examType: body.examType,
+        yearLevel: body.yearLevel,
+        examPathway: body.examPathway?.id ?? null,
+        topic: body.topic ?? "",
+        subtopic: body.subtopic ?? "",
+      },
+    });
   } catch (e) {
     console.error("generate-questions error", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
   }
 });

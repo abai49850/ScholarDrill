@@ -53,16 +53,16 @@ const SUBJECTS: { value: QuestionSubject | "all"; label: string }[] = [
 const EXAMS: { value: QuestionExamType | "all"; label: string }[] = [
   { value: "all", label: "All exams" },
   { value: "naplan", label: "NAPLAN" },
-  { value: "selective", label: "Selective" },
-  { value: "scholarship", label: "Scholarship" },
-  { value: "general", label: "General" },
+  { value: "selective", label: "Selective entry" },
+  { value: "scholarship", label: "ACER / EduTest" },
+  { value: "general", label: "General / ICAS / Senior" },
 ];
 const STATUSES: { value: QuestionStatus | "all"; label: string }[] = [
   { value: "all", label: "All statuses" },
   { value: "draft", label: "Draft" },
   { value: "approved", label: "Approved" },
 ];
-const YEARS = ["all", "3", "5", "7", "9"] as const;
+const YEARS = ["all", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] as const;
 
 export default function AdminQuestionsList() {
   const [items, setItems] = useState<DbQuestion[] | null>(null);

@@ -277,7 +277,7 @@ export default function AdminQuestionForm() {
                 <Select value={String(draft.year_level)} onValueChange={(v) => update({ year_level: Number(v) })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[3, 5, 7, 9].map((y) => <SelectItem key={y} value={String(y)}>Year {y}</SelectItem>)}
+                    {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((y) => <SelectItem key={y} value={String(y)}>Year {y}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
