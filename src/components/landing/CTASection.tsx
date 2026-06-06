@@ -18,11 +18,11 @@ export const CTASection = () => {
             Ready to ace your next test?
           </h2>
           <p className="mb-10 text-lg text-white/60">
-            Join thousands of Australian students already practising smarter. Start free — no credit card required.
+            Join thousands of Australian students already practising smarter. Start free - no credit card required.
           </p>
           <Button variant="hero" size="lg" className="group" asChild>
             <Link to="/practice">
-              Try a practice session
+              Start Free Diagnostic Test
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>

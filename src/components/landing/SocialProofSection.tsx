@@ -3,21 +3,21 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "ScholarDrill has completely transformed how my son approaches NAPLAN. He went from being anxious to actually enjoying the practice sessions. The analytics showed me exactly where he needed help.",
+    quote: "Perfect prep for my daughter's Year 5 NAPLAN in Geelong. The dashboard showed her weak numeracy topics, and the daily quests kept her practising without arguments.",
     author: "Sarah Jenkins",
-    role: "Parent of Year 5 Student",
+    role: "Parent, Geelong VIC",
     type: "Parent",
   },
   {
-    quote: "As an educator, I'm incredibly impressed by the quality of the AI-generated questions. They align perfectly with the Australian Curriculum and provide exactly the right level of challenge.",
+    quote: "I use ScholarDrill with students around Glen Waverley and Balwyn who are aiming for selective entry. The VIC-specific exam pathway is much closer to what families here actually need.",
     author: "David Thompson",
-    role: "Primary School Teacher, VIC",
+    role: "Primary School Teacher, Melbourne VIC",
     type: "Teacher",
   },
   {
-    quote: "The streak system is brilliant! My daughter logs in every day just to keep her streak alive. She just got accepted into her first preference selective school and we couldn't be happier.",
+    quote: "ScholarDrill helped my daughter build the confidence she needed for a top selective high school in Melbourne. The AI coach turned her practice results into a clear weekly plan.",
     author: "Michelle Lee",
-    role: "Parent of Year 8 Student",
+    role: "Parent of Year 8 Student, Box Hill VIC",
     type: "Parent",
   },
 ];
@@ -38,7 +38,6 @@ export const SocialProofSection = () => {
           </p>
         </motion.div>
 
-        {/* Success Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20 max-w-4xl mx-auto border-y border-border py-10">
           <div className="text-center">
             <p className="text-4xl font-bold text-primary mb-2">95%</p>
@@ -58,7 +57,6 @@ export const SocialProofSection = () => {
           </div>
         </div>
 
-        {/* Testimonials */}
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((t, i) => (
             <motion.div
@@ -79,8 +77,7 @@ export const SocialProofSection = () => {
                 <p className="font-bold text-foreground">{t.author}</p>
                 <p className="text-sm text-muted-foreground">{t.role}</p>
               </div>
-              
-              {/* Type Badge */}
+
               <div className="absolute top-8 right-8 text-xs font-bold uppercase tracking-wider text-muted-foreground/50">
                 {t.type}
               </div>

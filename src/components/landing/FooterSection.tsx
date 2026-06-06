@@ -1,19 +1,18 @@
-
 import { Link } from "@/lib/router";
 
 const footerLinks: Record<string, { label: string; to: string }[]> = {
   Tests: [
-    { label: "NAPLAN", to: "/practice" },
-    { label: "Selective Schools", to: "/practice" },
-    { label: "Scholarships", to: "/practice" },
-    { label: "Subject Practice", to: "/practice" },
+    { label: "NAPLAN", to: "/lp/naplan-practice-tests" },
+    { label: "Selective Schools", to: "/lp/selective-school-test-prep" },
+    { label: "Scholarships", to: "/lp/scholarship-exam-prep" },
+    { label: "Subject Practice", to: "/lp/year-5-maths-practice" },
   ],
   States: [
-    { label: "NSW", to: "/practice" },
-    { label: "VIC", to: "/practice" },
-    { label: "QLD", to: "/practice" },
-    { label: "SA", to: "/practice" },
-    { label: "WA", to: "/practice" },
+    { label: "NSW", to: "/lp/selective-school-test-prep" },
+    { label: "VIC", to: "/lp/vic-selective-entry-prep" },
+    { label: "QLD", to: "/lp/selective-school-test-prep" },
+    { label: "SA", to: "/lp/scholarship-exam-prep" },
+    { label: "WA", to: "/lp/scholarship-exam-prep" },
   ],
   Company: [
     { label: "About", to: "/info/about" },
@@ -62,7 +61,7 @@ export const FooterSection = () => {
         </div>
 
         <div className="mt-12 border-t border-border pt-8 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} ScholarDrill. All rights reserved. Made in Australia 🇦🇺
+          Copyright {new Date().getFullYear()} ScholarDrill. All rights reserved. Made in Australia.
         </div>
       </div>
     </footer>
