@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { TrustBar } from "@/components/landing/TrustBar";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { TestCategories } from "@/components/landing/TestCategories";
 import { ParentDashboardPreview } from "@/components/landing/ParentDashboardPreview";
 import { StudentGamificationSection } from "@/components/landing/StudentGamificationSection";
@@ -15,6 +16,7 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <TrustBar />
+      <FeaturesSection />
       <TestCategories />
       <ParentDashboardPreview />
       <StudentGamificationSection />

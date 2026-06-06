@@ -97,8 +97,6 @@ export const TestCategories = () => {
                 ))}
               </div>
               
-              {/* Subtle background glow on hover */}
-              <div className={`absolute -bottom-10 -right-10 w-32 h-32 ${cat.iconBg} rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
             </Link>
             </motion.div>
           ))}

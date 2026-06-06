@@ -123,9 +123,6 @@ export const ParentDashboardPreview = () => {
               </div>
             </div>
 
-            {/* Decorative background blob */}
-            <div className="absolute -top-10 -right-10 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -z-10" />
-            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-subject-reading/20 rounded-full blur-[80px] -z-10" />
           </motion.div>
 
         </div>

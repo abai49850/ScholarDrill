@@ -1,163 +1,188 @@
 import { motion } from "framer-motion";
 import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, BarChart3, Target, Trophy } from "lucide-react";
-import { ParticleField } from "./ParticleField";
+import { ArrowRight, BookOpenCheck, Bot, Sparkles, Target, Trophy } from "lucide-react";
+
+const floatingStats = [
+  { label: "Daily Quest", value: "3/4 done", icon: Target },
+  { label: "AI Coach", value: "Next: fractions", icon: Bot },
+  { label: "XP Streak", value: "14 days", icon: Trophy },
+];
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 pb-16">
-      <ParticleField />
+    <section className="relative min-h-[94vh] overflow-hidden pt-24 pb-10">
+      <img
+        src="/images/landing-students-hero.webp"
+        alt="Australian students using ScholarDrill-style practice on a laptop"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/88 to-background/42" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
-      <div className="container relative z-10 mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto max-w-5xl"
-        >
+      <div className="container relative z-10 mx-auto px-6">
+        <div className="grid min-h-[78vh] items-center gap-10 lg:grid-cols-[0.92fr_1.08fr]">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl"
           >
-            <Sparkles className="h-4 w-4" />
-            The #1 AI Tutor for Australian Students
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/80 px-4 py-2 text-sm font-medium text-primary shadow-sm backdrop-blur"
+            >
+              <Sparkles className="h-4 w-4" />
+              AI-powered exam prep for Australian students
+            </motion.div>
+
+            <h1 className="text-hero mb-6 text-balance">
+              <span className="block text-foreground">Less guessing.</span>
+              <span className="text-gradient-primary block">Smarter practice for every exam.</span>
+            </h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.6 }}
+              className="mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl"
+            >
+              Start with a free diagnostic, then let ScholarDrill guide NAPLAN, ICAS, selective entry, scholarship and senior exam practice with clear progress data.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="flex flex-col gap-4 sm:flex-row"
+            >
+              <Button variant="hero" size="lg" className="group h-14 rounded-full px-8 text-lg shadow-lg shadow-primary/25" asChild>
+                <Link to="/practice">
+                  Start Free Diagnostic Test
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="h-14 rounded-full border-2 bg-background/75 px-8 text-lg backdrop-blur" asChild>
+                <a href="#categories">Explore Practice Exams</a>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.6 }}
+              className="mt-8 grid max-w-xl grid-cols-3 gap-3"
+            >
+              {floatingStats.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-border/70 bg-background/76 p-3 shadow-sm backdrop-blur">
+                  <item.icon className="mb-2 h-4 w-4 text-primary" />
+                  <p className="text-xs text-muted-foreground">{item.label}</p>
+                  <p className="text-sm font-bold text-foreground">{item.value}</p>
+                </div>
+              ))}
+            </motion.div>
           </motion.div>
 
-          <h1 className="text-hero mb-6 text-balance">
-            <span className="block text-foreground">Help Your Child Excel in</span>
-            <span className="text-gradient-primary block">NAPLAN, Scholarships & Selective Exams</span>
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl"
-          >
-            AI-powered personalised learning built for Australian students. We make practice engaging and give parents clear insights into their child's progress.
-          </motion.p>
-
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.35, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="relative hidden lg:block"
           >
-            <Button variant="hero" size="lg" className="group rounded-full px-8 text-lg h-14 shadow-lg shadow-primary/25" asChild>
-              <Link to="/practice">
-                Start Free Diagnostic Test
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="rounded-full px-8 text-lg h-14 border-2" asChild>
-              <a href="#categories">Explore Practice Exams</a>
-            </Button>
+            <ProductSnapshot />
           </motion.div>
-        </motion.div>
-
-        {/* Floating device mockup */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto mt-16 max-w-5xl"
-        >
-          <div className="rounded-[2.5rem] border border-border/50 bg-background/50 p-3 shadow-2xl backdrop-blur-xl md:p-5">
-            <div className="overflow-hidden rounded-[2rem] bg-card border border-border/50 shadow-inner">
-              <MockAppUI />
-            </div>
-          </div>
-          {/* Glow effect behind mockup */}
-          <div className="absolute -inset-8 -z-10 rounded-full bg-primary/20 blur-[100px]" />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 };
 
-const MockAppUI = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-muted/30">
-    {/* Left Column: Gamified Stats */}
-    <div className="flex flex-col gap-4">
-      <div className="rounded-2xl bg-background p-5 border border-border shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
-            <Trophy className="h-5 w-5" />
-          </div>
+const ProductSnapshot = () => (
+  <div className="relative ml-auto max-w-2xl">
+    <motion.div
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      className="rounded-[2rem] border border-white/45 bg-white/88 p-4 shadow-2xl backdrop-blur-xl"
+    >
+      <div className="rounded-[1.5rem] border border-border bg-background p-5">
+        <div className="mb-5 flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground font-medium">Current Streak</p>
-            <p className="text-lg font-bold">14 Days</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Live Diagnostic</p>
+            <h2 className="text-xl font-black text-foreground">Year 5 NAPLAN Readiness</h2>
           </div>
+          <div className="rounded-full bg-success/15 px-3 py-1 text-xs font-bold text-success">On track</div>
         </div>
-      </div>
-      <div className="rounded-2xl bg-background p-5 border border-border shadow-sm flex-1">
-        <h3 className="font-semibold mb-4 flex items-center gap-2"><Target className="h-4 w-4 text-primary"/> Daily Goals</h3>
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-medium">Complete 20 Questions</span>
-              <span className="text-muted-foreground">15/20</span>
-            </div>
-            <div className="h-2 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-primary rounded-full w-[75%]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-medium">Master Fractions</span>
-              <span className="text-muted-foreground">80%</span>
-            </div>
-            <div className="h-2 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-success rounded-full w-[80%]" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    {/* Middle Column: Active Question */}
-    <div className="md:col-span-2 rounded-2xl bg-background p-6 border border-border shadow-sm flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs font-semibold tracking-wider text-primary uppercase">Selective School Entry • Mathematics</p>
-          <p className="text-sm text-muted-foreground mt-1">Diagnostic Assessment</p>
-        </div>
-        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-          Q4
-        </div>
-      </div>
-      
-      <div className="flex-1">
-        <p className="text-base md:text-lg font-medium mb-6 leading-relaxed">
-          If a train travels 3/4 of a kilometre in 1/2 a minute, how fast is it travelling in kilometres per hour?
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {["90 km/h", "60 km/h", "120 km/h", "45 km/h"].map((opt, i) => (
-            <div
-              key={opt}
-              className={`rounded-xl border-2 p-4 cursor-pointer transition-all ${
-                i === 0
-                  ? "border-primary bg-primary/5 shadow-sm"
-                  : "border-border hover:border-primary/30"
-              }`}
-            >
+        <div className="grid gap-4 md:grid-cols-[0.85fr_1.15fr]">
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-primary/10 p-4">
               <div className="flex items-center gap-3">
-                <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                  {String.fromCharCode(65 + i)}
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <BookOpenCheck className="h-6 w-6" />
                 </div>
-                <span className="font-medium">{opt}</span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Questions solved</p>
+                  <p className="text-2xl font-black">1,240</p>
+                </div>
               </div>
             </div>
-          ))}
+            {[
+              ["Numeracy", "90%", "bg-subject-maths"],
+              ["Reading", "76%", "bg-subject-reading"],
+              ["Writing", "52%", "bg-orange-500"],
+            ].map(([label, value, colour]) => (
+              <div key={label}>
+                <div className="mb-1 flex justify-between text-sm">
+                  <span className="font-semibold">{label}</span>
+                  <span className="text-muted-foreground">{value}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-secondary">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: value }}
+                    transition={{ delay: 0.9, duration: 1.1 }}
+                    className={`h-full rounded-full ${colour}`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border border-border bg-muted/30 p-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">AI Coach</p>
+            <div className="space-y-3">
+              <div className="rounded-2xl bg-background p-3 text-sm shadow-sm">
+                Strong progress in fractions. Next, practise multi-step word problems under 90 seconds.
+              </div>
+              <div className="rounded-2xl bg-primary p-3 text-sm font-medium text-primary-foreground shadow-sm">
+                Recommended: Selective Maths - Quantitative Reasoning
+              </div>
+            </div>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-background p-3">
+                <p className="text-xs text-muted-foreground">XP today</p>
+                <p className="text-xl font-black">420</p>
+              </div>
+              <div className="rounded-xl bg-background p-3">
+                <p className="text-xs text-muted-foreground">Weak topic</p>
+                <p className="text-sm font-bold">Inference</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div className="mt-6 flex justify-end">
-        <Button className="rounded-full px-6">Check Answer</Button>
-      </div>
-    </div>
+    </motion.div>
+
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.9 }}
+      className="absolute -bottom-7 left-8 rounded-2xl border border-border bg-background p-4 shadow-xl"
+    >
+      <p className="text-xs text-muted-foreground">Parent report ready</p>
+      <p className="font-bold text-foreground">3 strengths, 2 focus areas</p>
+    </motion.div>
   </div>
 );
