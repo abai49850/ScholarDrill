@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpenCheck, Bot, Sparkles, Target, Trophy } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Bot, CheckCircle2, Sparkles, Target, Trophy } from "lucide-react";
 
 const floatingStats = [
   { label: "Daily Quest", value: "3/4 done", icon: Target },
   { label: "AI Coach", value: "Next: fractions", icon: Bot },
   { label: "XP Streak", value: "14 days", icon: Trophy },
+];
+
+const startBenefits = [
+  "Takes less than 30 seconds to start",
+  "Works for maths, science, and more",
+  "No setup required",
 ];
 
 export const HeroSection = () => {
@@ -39,8 +45,8 @@ export const HeroSection = () => {
             </motion.div>
 
             <h1 className="text-hero mb-6 text-balance">
-              <span className="block text-foreground">Less guessing.</span>
-              <span className="text-gradient-primary block">Smarter practice for every exam.</span>
+              <span className="block text-foreground">Fix your child's</span>
+              <span className="text-gradient-primary block">learning gaps automatically</span>
             </h1>
 
             <motion.p
@@ -49,7 +55,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.25, duration: 0.6 }}
               className="mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl"
             >
-              Start with a free diagnostic, then let ScholarDrill guide NAPLAN, ICAS, selective entry, scholarship and senior exam practice with clear progress data.
+              Choose a subject, and we'll pinpoint where your child is struggling, generate targeted questions, and provide clear explanations - so they improve faster with less frustration.
             </motion.p>
 
             <motion.div
@@ -60,19 +66,33 @@ export const HeroSection = () => {
             >
               <Button variant="hero" size="lg" className="group h-14 rounded-full px-8 text-lg shadow-lg shadow-primary/25" asChild>
                 <Link to="/practice">
-                  Start Free Diagnostic Test
+                  Start Free Practice
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" className="h-14 rounded-full border-2 bg-background/75 px-8 text-lg backdrop-blur" asChild>
-                <a href="#categories">Explore Practice Exams</a>
+                <a href="#features">See How It Works</a>
               </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="mt-5 flex max-w-2xl flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center"
+            >
+              {startBenefits.map((benefit) => (
+                <span key={benefit} className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/72 px-3 py-2 shadow-sm backdrop-blur">
+                  <CheckCircle2 className="h-4 w-4 text-success" />
+                  {benefit}
+                </span>
+              ))}
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.6 }}
+              transition={{ delay: 0.62, duration: 0.6 }}
               className="mt-8 grid max-w-xl grid-cols-3 gap-3"
             >
               {floatingStats.map((item) => (
