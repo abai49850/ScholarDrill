@@ -22,7 +22,7 @@ export const CTASection = () => {
           </p>
           <Button variant="hero" size="lg" className="group" asChild>
             <Link to="/practice">
-              Start Free Diagnostic Test
+              Start Free Practice
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
