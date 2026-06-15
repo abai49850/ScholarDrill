@@ -1,9 +1,20 @@
-import { Sparkles, ArrowRight, BookOpen, Target } from "lucide-react";
+import { useState } from "react";
+import { Sparkles, ArrowRight, BookOpen, Target, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/lib/router";
 import type { UserStats } from "@/lib/statsApi";
+import type { PracticeRecommendation } from "@/lib/practiceAssignments";
 
-export const AiRecommendationsPanel = ({ stats }: { stats: UserStats }) => {
+export const AiRecommendationsPanel = ({
+  stats,
+  recommendations = [],
+  onAssign,
+}: {
+  stats: UserStats;
+  recommendations?: PracticeRecommendation[];
+  onAssign?: (recommendation: PracticeRecommendation) => void;
+}) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const [assignedTitles, setAssignedTitles] = useState<Set<string>>(new Set());
   const strongest = stats.strongestTopics[0];
   const focus = stats.focusTopics[0];
   const summary = stats.totalAttempted === 0
@@ -55,11 +66,48 @@ export const AiRecommendationsPanel = ({ stats }: { stats: UserStats }) => {
         </div>
       </div>
 
-      <Button asChild className="w-full sm:w-auto self-start rounded-xl group mt-auto shadow-sm">
-        <Link to={focus ? `/practice?subject=${focus.subject}` : "/practice"}>
-        Assign Targeted Practice
+      {showOptions && (
+        <div className="mb-4 grid gap-3">
+          {recommendations.map((recommendation) => {
+            const assigned = assignedTitles.has(recommendation.title);
+            return (
+              <div key={`${recommendation.title}-${recommendation.subject}`} className="rounded-xl border border-border bg-background/70 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="font-semibold text-sm">{recommendation.title}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{recommendation.reason}</p>
+                    <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Year {recommendation.yearLevel} - {recommendation.subject} - {recommendation.examType}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={assigned ? "secondary" : "default"}
+                    className="shrink-0 rounded-xl"
+                    disabled={assigned}
+                    onClick={() => {
+                      onAssign?.(recommendation);
+                      setAssignedTitles((current) => new Set(current).add(recommendation.title));
+                    }}
+                  >
+                    {assigned ? <CheckCircle2 className="h-4 w-4" /> : null}
+                    {assigned ? "Assigned" : "Assign"}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <Button
+        type="button"
+        className="w-full sm:w-auto self-start rounded-xl group mt-auto shadow-sm"
+        onClick={() => setShowOptions((value) => !value)}
+      >
+        {showOptions ? "Hide Practice Options" : "Assign Targeted Practice"}
         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-        </Link>
       </Button>
     </div>
   );

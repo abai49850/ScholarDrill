@@ -1,4 +1,5 @@
-import { Download, Share, Flame } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Download, Share, Flame, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExamReadinessRing } from "./widgets/ExamReadinessRing";
 import { StudyConsistencyHeatmap } from "./widgets/StudyConsistencyHeatmap";
@@ -6,10 +7,19 @@ import { PerformanceTrendsChart } from "./widgets/PerformanceTrendsChart";
 import { AiRecommendationsPanel } from "./widgets/AiRecommendationsPanel";
 import type { Profile } from "@/contexts/AuthContext";
 import { buildPerformanceSummary, type UserStats } from "@/lib/statsApi";
+import {
+  addPracticeAssignment,
+  loadPracticeAssignments,
+  type PracticeAssignment,
+  type PracticeRecommendation,
+} from "@/lib/practiceAssignments";
+import { buildPracticeRecommendations } from "@/lib/practiceRecommendations";
+import { toast } from "sonner";
 
 interface Props {
   stats: UserStats;
   profile: Profile | null;
+  userId?: string | null;
 }
 
 function downloadHtmlReport(stats: UserStats, profile: Profile | null) {
@@ -56,9 +66,25 @@ function shareWithTutor(stats: UserStats, profile: Profile | null) {
   window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
 }
 
-export const ParentPortal = ({ stats, profile }: Props) => {
+export const ParentPortal = ({ stats, profile, userId }: Props) => {
   const readiness = Math.min(100, Math.round((stats.overallAccuracy * 0.7) + (Math.min(stats.totalAttempted, 100) / 100) * 30));
   const trend = `${stats.weeklyTrendPct >= 0 ? "+" : ""}${stats.weeklyTrendPct}%`;
+  const recommendations = useMemo(
+    () => buildPracticeRecommendations(stats, profile?.year_level ?? 5),
+    [profile?.year_level, stats]
+  );
+  const [assignments, setAssignments] = useState<PracticeAssignment[]>(() => loadPracticeAssignments(userId));
+
+  useEffect(() => {
+    setAssignments(loadPracticeAssignments(userId));
+  }, [userId]);
+
+  const assignPractice = (recommendation: PracticeRecommendation) => {
+    if (!userId) return;
+    const next = addPracticeAssignment(userId, recommendation);
+    setAssignments(next);
+    toast.success("Practice assigned to the student dashboard.");
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -96,6 +122,19 @@ export const ParentPortal = ({ stats, profile }: Props) => {
             </div>
           </div>
         </div>
+        <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-background rounded-xl shadow-sm">
+              <ClipboardCheck className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-foreground">{assignments.length} assigned practice set{assignments.length === 1 ? "" : "s"}</p>
+              <p className="text-xs text-muted-foreground">
+                Assigned sets appear on the student dashboard until marked complete.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -109,7 +148,7 @@ export const ParentPortal = ({ stats, profile }: Props) => {
         </div>
 
         <div className="lg:col-span-3">
-          <AiRecommendationsPanel stats={stats} />
+          <AiRecommendationsPanel stats={stats} recommendations={recommendations} onAssign={assignPractice} />
         </div>
       </div>
     </div>

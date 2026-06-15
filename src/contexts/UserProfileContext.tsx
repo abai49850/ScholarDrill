@@ -19,7 +19,7 @@ const FALLBACK: UserProfile = {
   initial: "G",
   yearLevel: 5,
   region: "NSW",
-  examFocus: "naplan",
+  examFocus: "selective",
 };
 
 interface Ctx {
@@ -50,7 +50,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       initial: name.charAt(0).toUpperCase(),
       yearLevel: dbProfile.year_level,
       region: dbProfile.region,
-      examFocus: (dbProfile.exam_focus as ExamFocus) ?? "naplan",
+      examFocus: (dbProfile.exam_focus as ExamFocus) ?? "selective",
       isSuperUser: isAdmin,
     };
     return { ...base, ...override };

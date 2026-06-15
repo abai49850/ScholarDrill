@@ -13,6 +13,8 @@ import { SubjectProgressCards } from "@/components/dashboard/SubjectProgressCard
 import { TestSelectionCards } from "@/components/dashboard/TestSelectionCards";
 import { StreakWidget } from "@/components/dashboard/StreakWidget";
 import { ParentPortal } from "@/components/dashboard/ParentPortal";
+import { AssignedPracticeList } from "@/components/dashboard/AssignedPracticeList";
+import { DashboardPreferencesBar } from "@/components/dashboard/DashboardPreferencesBar";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserStats, type DailyQuest, type UserStats } from "@/lib/statsApi";
@@ -125,7 +127,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <Tabs value={activeTab} onValueChange={(v) => setSearchParams({ tab: v })} className="w-full">
-                <div className="flex items-center justify-between mb-8">
+                <DashboardPreferencesBar />
+                <div className="mt-6 flex items-center justify-between mb-8">
                   <TabsList className="bg-muted/50 p-1 rounded-xl">
                     <TabsTrigger value="overview" className="rounded-lg px-6">Overview</TabsTrigger>
                     <TabsTrigger value="parent-portal" className="rounded-lg px-6">Parent Portal</TabsTrigger>
@@ -161,6 +164,10 @@ export default function Dashboard() {
                       </div>
 
                       <div>
+                        <AssignedPracticeList userId={user?.id} />
+                      </div>
+
+                      <div>
                         <h2 className="text-lg font-semibold mb-4">Practice Tests</h2>
                         <TestSelectionCards />
                       </div>
@@ -181,7 +188,7 @@ export default function Dashboard() {
                 </TabsContent>
 
                 <TabsContent value="parent-portal" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                  <ParentPortal stats={stats} profile={dbProfile} />
+                  <ParentPortal stats={stats} profile={dbProfile} userId={user?.id} />
                 </TabsContent>
               </Tabs>
             )}

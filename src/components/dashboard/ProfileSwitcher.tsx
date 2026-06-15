@@ -1,49 +1,19 @@
-import { ChevronsUpDown, ShieldCheck, LogOut, UserCog, Loader2 } from "lucide-react";
+import { ChevronsUpDown, ShieldCheck, LogOut, UserCog } from "lucide-react";
 import { Link, useNavigate } from "@/lib/router";
-import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useUserProfile, type ExamFocus } from "@/contexts/UserProfileContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-
 import { getDisplayYear } from "@/lib/utils/australian-localiser";
 
 interface Props {
   collapsed?: boolean;
 }
 
-const YEAR_LEVELS = [3, 5, 7, 9, 10, 11, 12];
-const REGIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
-const FOCI: { value: ExamFocus; label: string }[] = [
-  { value: "selective", label: "Selective" },
-  { value: "scholarship", label: "Scholarship" },
-  { value: "naplan", label: "NAPLAN" },
-];
-
 export function ProfileSwitcher({ collapsed }: Props) {
-  const { profile, updateProfile } = useUserProfile();
-  const { user, signOut, refreshProfile, isAdmin } = useAuth();
+  const { profile } = useUserProfile();
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [saving, setSaving] = useState(false);
-
-  const persistPatch = async (patch: { year_level?: number; region?: string; exam_focus?: string }) => {
-    if (!user) return;
-    setSaving(true);
-    const { error } = await supabase.from("profiles").update(patch).eq("user_id", user.id);
-    setSaving(false);
-    if (error) toast.error(error.message);
-    else await refreshProfile();
-  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -68,7 +38,7 @@ export function ProfileSwitcher({ collapsed }: Props) {
                   {isAdmin && <UserCog className="w-3 h-3 text-accent" />}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {getDisplayYear(profile.yearLevel, profile.region)} · {profile.region}
+                  {getDisplayYear(profile.yearLevel, profile.region)} - {profile.region}
                 </p>
               </div>
               <ChevronsUpDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -83,57 +53,8 @@ export function ProfileSwitcher({ collapsed }: Props) {
             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           </div>
 
-          <div className="pt-2 border-t border-border space-y-2">
-            <Label className="text-xs text-muted-foreground">Study preferences</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <Label className="text-[11px] text-muted-foreground">Year</Label>
-                <Select
-                  value={String(profile.yearLevel)}
-                  onValueChange={(v) => { updateProfile({ yearLevel: Number(v) }); void persistPatch({ year_level: Number(v) }); }}
-                >
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {YEAR_LEVELS.map((y) => (
-                      <SelectItem key={y} value={String(y)}>{getDisplayYear(y, profile.region)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-[11px] text-muted-foreground">Region</Label>
-                <Select
-                  value={profile.region}
-                  onValueChange={(v) => { updateProfile({ region: v }); void persistPatch({ region: v }); }}
-                >
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {REGIONS.map((r) => (
-                      <SelectItem key={r} value={r}>{r}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label className="text-[11px] text-muted-foreground">Exam focus</Label>
-              <Select
-                value={profile.examFocus === "all" ? "selective" : profile.examFocus}
-                onValueChange={(v) => { updateProfile({ examFocus: v as ExamFocus }); void persistPatch({ exam_focus: v }); }}
-              >
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {FOCI.map((f) => (
-                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {saving && (
-              <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                <Loader2 className="w-3 h-3 animate-spin" /> Saving…
-              </p>
-            )}
+          <div className="rounded-xl border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+            Study preferences are now at the top of the dashboard.
           </div>
 
           {isAdmin && (
