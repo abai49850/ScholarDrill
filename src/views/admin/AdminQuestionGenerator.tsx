@@ -42,6 +42,24 @@ const EXAMS: { value: QuestionExamType; label: string }[] = [
 ];
 const YEARS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
 
+async function getFunctionErrorMessage(error: unknown, fallback = "Try again") {
+  const maybeError = error as { message?: string; context?: Response };
+  if (maybeError?.context instanceof Response) {
+    try {
+      const body = await maybeError.context.clone().json() as { error?: string; message?: string };
+      return body.error || body.message || maybeError.message || fallback;
+    } catch {
+      try {
+        const text = await maybeError.context.clone().text();
+        return text || maybeError.message || fallback;
+      } catch {
+        return maybeError.message || fallback;
+      }
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+}
+
 function examGuidance(card: (typeof examCards)[number]) {
   return [
     `${card.title}: ${card.description}`,
@@ -117,7 +135,7 @@ export default function AdminQuestionGenerator() {
           },
         },
       });
-      if (error) throw error;
+      if (error) throw new Error(await getFunctionErrorMessage(error));
       const errMsg = (data as { error?: string })?.error;
       if (errMsg) throw new Error(errMsg);
       const qs = (data as { questions: GeneratedQuestion[] }).questions ?? [];
@@ -125,9 +143,10 @@ export default function AdminQuestionGenerator() {
       setResults(qs);
       toast({ title: "Generated", description: `${qs.length} draft questions ready for review.` });
     } catch (e) {
+      const message = await getFunctionErrorMessage(e);
       toast({
         title: "Generation failed",
-        description: e instanceof Error ? e.message : "Try again",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -156,7 +175,7 @@ export default function AdminQuestionGenerator() {
     const { data, error } = await supabase.functions.invoke("save-questions", {
       body: { questions: drafts },
     });
-    if (error) throw error;
+    if (error) throw new Error(await getFunctionErrorMessage(error));
     const errMsg = (data as { error?: string })?.error;
     if (errMsg) throw new Error(errMsg);
     return (data as { inserted: number }).inserted ?? 0;
@@ -172,9 +191,10 @@ export default function AdminQuestionGenerator() {
         description: "Question added to library.",
       });
     } catch (e) {
+      const message = await getFunctionErrorMessage(e);
       toast({
         title: "Save failed",
-        description: e instanceof Error ? e.message : "Try again",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -188,7 +208,36 @@ export default function AdminQuestionGenerator() {
       .map((q, i) => ({ q, i }))
       .filter(({ i }) => !savedIdx.has(i));
     try {
-      const ok = await saveViaFn(pending.map(({ q }) => buildDraft(q, status)));
+      let ok = 0;
+      try {
+        ok = await saveViaFn(pending.map(({ q }) => buildDraft(q, status)));
+      } catch (bulkError) {
+        const bulkMessage = await getFunctionErrorMessage(bulkError);
+        if (pending.length <= 1) throw new Error(bulkMessage);
+
+        const savedIndexes: number[] = [];
+        const failures: string[] = [];
+        for (const { q, i } of pending) {
+          try {
+            await saveViaFn([buildDraft(q, status)]);
+            savedIndexes.push(i);
+            ok += 1;
+          } catch (rowError) {
+            failures.push(`#${i + 1}: ${await getFunctionErrorMessage(rowError)}`);
+          }
+        }
+
+        if (savedIndexes.length) {
+          setSavedIdx((s) => {
+            const next = new Set(s);
+            savedIndexes.forEach((i) => next.add(i));
+            return next;
+          });
+        }
+        if (failures.length) {
+          throw new Error(`Bulk save failed. ${failures.slice(0, 3).join(" | ")}${failures.length > 3 ? " ..." : ""}`);
+        }
+      }
       setSavedIdx((s) => {
         const next = new Set(s);
         pending.forEach(({ i }) => next.add(i));
@@ -196,9 +245,10 @@ export default function AdminQuestionGenerator() {
       });
       toast({ title: `Saved ${ok}`, description: `Bulk ${status === "approved" ? "publish" : "save"} complete.` });
     } catch (e) {
+      const message = await getFunctionErrorMessage(e);
       toast({
         title: "Bulk save failed",
-        description: e instanceof Error ? e.message : "Try again",
+        description: message,
         variant: "destructive",
       });
     } finally {

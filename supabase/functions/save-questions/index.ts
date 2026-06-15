@@ -151,7 +151,10 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.from("questions").insert(chunk).select("id, status");
       if (error) {
         console.error("insert error", error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        const message = error.message.includes("question_subject") || error.message.includes("invalid input value for enum")
+          ? `${error.message}. If this happened for Science, apply migration 20260615000000_add_science_question_subject.sql to the linked Supabase project, then redeploy the edge functions.`
+          : error.message;
+        return new Response(JSON.stringify({ error: message }), {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
