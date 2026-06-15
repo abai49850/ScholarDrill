@@ -9,7 +9,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SUBJECTS = ["maths", "reading", "writing", "conventions", "reasoning"] as const;
+const SUBJECTS = ["maths", "reading", "writing", "conventions", "reasoning", "science"] as const;
 const EXAM_TYPES = ["naplan", "selective", "scholarship", "general"] as const;
 
 interface ExamPathway {

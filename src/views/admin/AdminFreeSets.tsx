@@ -36,6 +36,7 @@ const SUBJECTS: { value: QuestionSubject | "all"; label: string }[] = [
   { value: "writing", label: "Writing" },
   { value: "conventions", label: "Conventions" },
   { value: "reasoning", label: "Reasoning" },
+  { value: "science", label: "Science" },
 ];
 
 export default function AdminFreeSets() {

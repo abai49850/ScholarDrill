@@ -9,7 +9,7 @@ export interface Question {
   subtopic: string;
   yearLevel: number;
   timeLimitSeconds: number;
-  subject: "maths" | "reading" | "writing" | "reasoning" | "conventions";
+  subject: "maths" | "reading" | "writing" | "reasoning" | "conventions" | "science";
 }
 
 // ── MATHS ──────────────────────────────────────────────
@@ -1179,6 +1179,74 @@ const naplanPack: Question[] = [
 ];
 
 // ── COMBINED EXPORT ────────────────────────────────────
+const scienceQuestions: Question[] = [
+  {
+    id: "sci1",
+    content: "A student places a plant in sunlight and another identical plant in a dark cupboard. Which variable is being tested?",
+    options: [
+      { id: "a", text: "The amount of water" },
+      { id: "b", text: "The amount of light" },
+      { id: "c", text: "The type of soil" },
+      { id: "d", text: "The size of the pot" },
+    ],
+    correctOptionId: "b",
+    explanation: "The two plants are identical except for light exposure. That means the amount of light is the variable being tested.",
+    difficulty: 2, topic: "Science Inquiry", subtopic: "Variables", yearLevel: 5, timeLimitSeconds: 60, subject: "science",
+  },
+  {
+    id: "sci2",
+    content: "Which change is most likely caused by heating water in a kettle?",
+    options: [
+      { id: "a", text: "Liquid water turns into water vapour" },
+      { id: "b", text: "Water becomes a solid" },
+      { id: "c", text: "Water changes into oxygen only" },
+      { id: "d", text: "Water loses all mass" },
+    ],
+    correctOptionId: "a",
+    explanation: "Heating adds energy to liquid water. When enough energy is added, it evaporates or boils into water vapour.",
+    difficulty: 2, topic: "Physical Sciences", subtopic: "States of Matter", yearLevel: 5, timeLimitSeconds: 45, subject: "science",
+  },
+  {
+    id: "sci3",
+    content: "A food chain is shown: grass -> grasshopper -> frog -> snake. What is the frog in this food chain?",
+    options: [
+      { id: "a", text: "A producer" },
+      { id: "b", text: "A consumer" },
+      { id: "c", text: "A decomposer" },
+      { id: "d", text: "A source of sunlight" },
+    ],
+    correctOptionId: "b",
+    explanation: "The frog eats another living thing, so it is a consumer. Grass is the producer because it makes its own food.",
+    difficulty: 2, topic: "Biological Sciences", subtopic: "Food Chains", yearLevel: 5, timeLimitSeconds: 60, subject: "science",
+  },
+  {
+    id: "sci4",
+    content: "Which force pulls objects toward Earth?",
+    options: [
+      { id: "a", text: "Friction" },
+      { id: "b", text: "Magnetism" },
+      { id: "c", text: "Gravity" },
+      { id: "d", text: "Evaporation" },
+    ],
+    correctOptionId: "c",
+    explanation: "Gravity is the force that attracts objects toward Earth. Friction slows motion between surfaces, and magnetism acts on magnetic materials.",
+    difficulty: 1, topic: "Physical Sciences", subtopic: "Forces", yearLevel: 5, timeLimitSeconds: 45, subject: "science",
+  },
+  {
+    id: "sci5",
+    content: "A scientist repeats an experiment three times and gets similar results each time. What does this suggest?",
+    options: [
+      { id: "a", text: "The results are more reliable" },
+      { id: "b", text: "The question was too easy" },
+      { id: "c", text: "The variables were not important" },
+      { id: "d", text: "The experiment did not need measurements" },
+    ],
+    correctOptionId: "a",
+    explanation: "Repeating an experiment and getting similar results increases confidence that the results are reliable.",
+    difficulty: 3, topic: "Science Inquiry", subtopic: "Reliability", yearLevel: 7, timeLimitSeconds: 60, subject: "science",
+  },
+];
+
 import { naplanGeneratedPack } from "./naplanGeneratedPack";
 
 export const sampleQuestions: Question[] = [
@@ -1187,6 +1255,7 @@ export const sampleQuestions: Question[] = [
   ...writingQuestions,
   ...reasoningQuestions,
   ...conventionsQuestions,
+  ...scienceQuestions,
   ...naplanPack,
   ...naplanGeneratedPack,
 ];

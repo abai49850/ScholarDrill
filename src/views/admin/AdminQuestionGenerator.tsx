@@ -32,6 +32,7 @@ const SUBJECTS: { value: QuestionSubject; label: string }[] = [
   { value: "writing", label: "Writing" },
   { value: "conventions", label: "Conventions" },
   { value: "reasoning", label: "Thinking Skills" },
+  { value: "science", label: "Science" },
 ];
 const EXAMS: { value: QuestionExamType; label: string }[] = [
   { value: "naplan", label: "NAPLAN" },

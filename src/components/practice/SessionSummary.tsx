@@ -106,7 +106,7 @@ export function SessionSummary({ results, totalTime, onRestart, isFree = false, 
             <div>
               <p className="font-semibold">Save this progress map</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Create a free account to save results, unlock your dashboard, and get targeted practice recommendations.
+                Create a free parent account to save results, unlock your dashboard, and continue targeted practice.
               </p>
               <Button asChild variant="hero" size="sm" className="mt-3">
                 <Link to="/auth"><UserPlus className="w-4 h-4" /> Create free account</Link>
@@ -140,7 +140,7 @@ export function SessionSummary({ results, totalTime, onRestart, isFree = false, 
       )}
 
       <div className="flex gap-3 justify-center">
-        {(!isFree || isGuest) && (
+        {!isFree && (
           <Button variant="hero-outline" onClick={onRestart}>
             <RotateCcw className="w-4 h-4" /> Try Again
           </Button>

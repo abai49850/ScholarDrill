@@ -49,6 +49,7 @@ const SUBJECTS: { value: QuestionSubject | "all"; label: string }[] = [
   { value: "writing", label: "Writing" },
   { value: "conventions", label: "Conventions" },
   { value: "reasoning", label: "Thinking Skills" },
+  { value: "science", label: "Science" },
 ];
 const EXAMS: { value: QuestionExamType | "all"; label: string }[] = [
   { value: "all", label: "All exams" },

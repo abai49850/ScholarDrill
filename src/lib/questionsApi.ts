@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { PostgrestError } from "@supabase/supabase-js";
 
-export type QuestionSubject = "maths" | "reading" | "writing" | "conventions" | "reasoning";
+export type QuestionSubject = "maths" | "reading" | "writing" | "conventions" | "reasoning" | "science";
 export type QuestionExamType = "naplan" | "selective" | "scholarship" | "general";
 export type QuestionStatus = "draft" | "approved";
 

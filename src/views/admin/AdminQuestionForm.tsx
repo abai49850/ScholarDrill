@@ -39,7 +39,7 @@ const draftSchema = z.object({
   correct_option_id: z.string().min(1),
   explanation: z.string().trim().max(4000),
   difficulty: z.number().int().min(1).max(5),
-  subject: z.enum(["maths", "reading", "writing", "conventions", "reasoning"]),
+  subject: z.enum(["maths", "reading", "writing", "conventions", "reasoning", "science"]),
   exam_type: z.enum(["naplan", "selective", "scholarship", "general"]),
   year_level: z.number().int().min(1).max(12),
   topic: z.string().trim().max(100),
@@ -256,6 +256,7 @@ export default function AdminQuestionForm() {
                   <SelectItem value="writing">Writing</SelectItem>
                   <SelectItem value="conventions">Conventions of Language</SelectItem>
                   <SelectItem value="reasoning">Thinking Skills</SelectItem>
+                  <SelectItem value="science">Science</SelectItem>
                 </SelectContent>
               </Select>
             </div>

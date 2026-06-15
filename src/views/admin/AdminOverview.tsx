@@ -12,6 +12,7 @@ const SUBJECT_LABEL: Record<string, string> = {
   writing: "Writing",
   conventions: "Conventions of Language",
   reasoning: "Thinking Skills",
+  science: "Science",
 };
 const EXAM_LABEL: Record<string, string> = {
   naplan: "NAPLAN",

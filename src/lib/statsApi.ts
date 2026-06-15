@@ -65,6 +65,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   writing: "Writing",
   reasoning: "Reasoning",
   conventions: "Conventions",
+  science: "Science",
 };
 
 const SUBJECT_COLORS: Record<string, string> = {
@@ -73,6 +74,7 @@ const SUBJECT_COLORS: Record<string, string> = {
   writing: "var(--subject-writing)",
   reasoning: "var(--subject-reasoning)",
   conventions: "var(--subject-conventions)",
+  science: "var(--primary)",
 };
 
 export const SUBJECT_META = SUBJECT_LABELS;

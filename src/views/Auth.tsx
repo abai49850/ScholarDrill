@@ -67,6 +67,7 @@ export default function Auth() {
   const [siBusy, setSiBusy] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetBusy, setResetBusy] = useState(false);
+  const [showResetRequest, setShowResetRequest] = useState(false);
   const [newPwd, setNewPwd] = useState("");
   const [newPwdConfirm, setNewPwdConfirm] = useState("");
   const [updateBusy, setUpdateBusy] = useState(false);
@@ -197,6 +198,11 @@ export default function Auth() {
         </div>
 
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          {!resetMode && (
+            <p className="mb-5 rounded-2xl bg-primary/10 px-4 py-3 text-center text-sm font-medium text-primary">
+              Create your free parent account to track your child's progress.
+            </p>
+          )}
           {resetMode ? (
             <form onSubmit={handlePasswordUpdate} className="space-y-4">
               <div>
@@ -260,22 +266,33 @@ export default function Auth() {
                   {siBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
                 </Button>
               </form>
-              <form onSubmit={handlePasswordRequest} className="mt-4 rounded-xl border border-border p-3 space-y-3">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  Request password change
-                </div>
-                <Input
-                  type="email"
-                  value={resetEmail}
-                  onChange={(e) => setResetEmail(e.target.value)}
-                  placeholder="Email address"
-                  autoComplete="email"
-                />
-                <Button type="submit" variant="outline" size="sm" className="w-full" disabled={resetBusy}>
-                  {resetBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send reset email"}
-                </Button>
-              </form>
+              <div className="mt-3 text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowResetRequest((value) => !value)}
+                  className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              {showResetRequest && (
+                <form onSubmit={handlePasswordRequest} className="mt-4 rounded-xl border border-border p-3 space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    Request password change
+                  </div>
+                  <Input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    placeholder="Email address"
+                    autoComplete="email"
+                  />
+                  <Button type="submit" variant="outline" size="sm" className="w-full" disabled={resetBusy}>
+                    {resetBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send reset email"}
+                  </Button>
+                </form>
+              )}
             </TabsContent>
 
             <TabsContent value="signup">

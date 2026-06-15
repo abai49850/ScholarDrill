@@ -5,7 +5,7 @@ import { ResponsiveContainer, AreaChart, Area } from "recharts";
 import { SUBJECT_META, SUBJECT_COLOR_VARS, type UserStats } from "@/lib/statsApi";
 
 const subjectIcons: Record<string, string> = {
-  maths: "📐", reading: "📖", writing: "✍️", reasoning: "🧠", conventions: "✏️",
+  maths: "📐", reading: "📖", writing: "✍️", reasoning: "🧠", conventions: "✏️", science: "🔬",
 };
 
 export function SubjectProgressCards({ stats }: { stats: UserStats }) {

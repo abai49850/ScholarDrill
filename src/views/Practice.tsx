@@ -24,9 +24,11 @@ import { Lock, Sparkles } from "lucide-react";
 import { examCards, getExamCard } from "@/data/examCatalog";
 
 const TOTAL_QUESTIONS = 10;
+const GUEST_FREE_QUESTION_LIMIT = 5;
 const LABELS = ["A", "B", "C", "D"];
 const SUBJECT_CHOICES: { value: QuestionSubject; label: string; desc: string }[] = [
   { value: "maths", label: "Maths", desc: "Number, data and problem solving" },
+  { value: "science", label: "Science", desc: "Biology, physics and investigation skills" },
   { value: "reading", label: "Reading", desc: "Comprehension and inference" },
   { value: "writing", label: "Writing", desc: "Structure, expression and editing" },
   { value: "reasoning", label: "Reasoning", desc: "Logic and selective-style thinking" },
@@ -59,14 +61,17 @@ export default function Practice() {
   const subjectFilter = practiceStarted ? selectedSubject : null;
   const examFilter = practiceStarted ? selectedExamType : null;
   const targetYear = selectedYear;
-  const sessionQuestionTarget = selectedExam
+  const baseSessionQuestionTarget = selectedExam
     ? Math.min(selectedExam.questionCount === 1 ? 1 : TOTAL_QUESTIONS, TOTAL_QUESTIONS)
     : TOTAL_QUESTIONS;
+  const sessionQuestionTarget = isGuest
+    ? Math.min(baseSessionQuestionTarget, GUEST_FREE_QUESTION_LIMIT)
+    : baseSessionQuestionTarget;
 
   const [pool, setPool] = useState<Question[] | null>(null);
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
 
-  // Load questions: free users get a fixed 10-question set; pro users get the full bank.
+  // Load questions: free users get a fixed sample set; pro users get the full bank.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -550,13 +555,13 @@ function PracticeStart({
               Try a real question before signing up.
             </h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Choose a subject, answer a short adaptive set, and see explanations immediately. Create an account only when you want to save the progress map.
+              Choose a subject, answer a 5-question adaptive preview, and see explanations immediately. Create an account to save the progress map and continue practising.
             </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              "No signup needed",
+              "5 questions before signup",
               "Explanations included",
               "Progress map after practice",
             ].map((item) => (
