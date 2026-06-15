@@ -2,9 +2,9 @@ import {
   LayoutDashboard,
   BookOpen,
   ShieldCheck,
-  Home,
   Map,
   BotMessageSquare,
+  Users,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "@/lib/router";
@@ -31,7 +31,9 @@ const mainItems = [
   { title: "AI Coach", url: "/coach", icon: BotMessageSquare },
 ];
 
-const homeItem = { title: "Home", url: "/dashboard", icon: Home };
+const parentItems = [
+  { title: "Parent Portal", url: "/parent", icon: Users },
+];
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
@@ -77,6 +79,24 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarGroup>
+          <SidebarGroupLabel>Parent</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {parentItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink to={item.url} className="hover:bg-muted/50" activeClassName="bg-primary/10 text-primary font-medium">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
@@ -95,21 +115,6 @@ export function DashboardSidebar() {
           </SidebarGroup>
         )}
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={currentPath === homeItem.url}>
-                  <NavLink to={homeItem.url} className="hover:bg-muted/50" activeClassName="bg-primary/10 text-primary font-medium">
-                    <homeItem.icon className="mr-2 h-4 w-4" />
-                    {!collapsed && <span>{homeItem.title}</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-3">

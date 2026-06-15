@@ -124,7 +124,7 @@ export default function NaplanSimulator() {
           </div>
           
           <div className="space-y-3">
-            <Button className="w-full h-12 text-lg rounded-xl" onClick={() => navigate("/dashboard?tab=parent-portal")}>View Detailed Report</Button>
+            <Button className="w-full h-12 text-lg rounded-xl" onClick={() => navigate("/parent")}>View Detailed Report</Button>
             <Button variant="outline" className="w-full h-12 text-lg rounded-xl" onClick={() => navigate("/naplan")}>Back to Hub</Button>
           </div>
         </div>

@@ -12,15 +12,12 @@ import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { SubjectProgressCards } from "@/components/dashboard/SubjectProgressCards";
 import { TestSelectionCards } from "@/components/dashboard/TestSelectionCards";
 import { StreakWidget } from "@/components/dashboard/StreakWidget";
-import { ParentPortal } from "@/components/dashboard/ParentPortal";
 import { AssignedPracticeList } from "@/components/dashboard/AssignedPracticeList";
 import { DashboardPreferencesBar } from "@/components/dashboard/DashboardPreferencesBar";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserStats, type DailyQuest, type UserStats } from "@/lib/statsApi";
 import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSearchParams } from "@/lib/router";
 
 import { getDisplayYear } from "@/lib/utils/australian-localiser";
 
@@ -32,8 +29,6 @@ export default function Dashboard() {
   const [bonusXp, setBonusXp] = useState(0);
   const [claimedQuestIds, setClaimedQuestIds] = useState<Set<string>>(new Set());
   const [eventClaimed, setEventClaimed] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get("tab") || "overview";
   const todayKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
@@ -126,20 +121,12 @@ export default function Dashboard() {
                 <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading your stats…
               </div>
             ) : (
-              <Tabs value={activeTab} onValueChange={(v) => setSearchParams({ tab: v })} className="w-full">
+              <div className="space-y-8">
                 <DashboardPreferencesBar />
-                <div className="mt-6 flex items-center justify-between mb-8">
-                  <TabsList className="bg-muted/50 p-1 rounded-xl">
-                    <TabsTrigger value="overview" className="rounded-lg px-6">Overview</TabsTrigger>
-                    <TabsTrigger value="parent-portal" className="rounded-lg px-6">Parent Portal</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="overview" className="space-y-8 mt-0 focus-visible:outline-none focus-visible:ring-0">
-                  {stats.totalAttempted === 0 ? (
-                    <FirstSessionPrompt />
-                  ) : (
-                    <>
+                {stats.totalAttempted === 0 ? (
+                  <FirstSessionPrompt />
+                ) : (
+                  <>
                   <section>
                     <GamifiedHeader streak={stats.currentStreak} currentXp={stats.totalPoints + bonusXp} nextLevelXp={5000} level={Math.floor((stats.totalPoints + bonusXp) / 500) + 1} />
                   </section>
@@ -183,14 +170,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </section>
-                    </>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="parent-portal" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                  <ParentPortal stats={stats} profile={dbProfile} userId={user?.id} />
-                </TabsContent>
-              </Tabs>
+                  </>
+                )}
+              </div>
             )}
           </main>
         </div>
