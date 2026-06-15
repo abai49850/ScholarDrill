@@ -53,9 +53,9 @@ export default function Practice() {
   const isFree = (authProfile?.tier ?? "free") !== "pro";
   const isBlocked = !!authProfile?.is_blocked;
   const [practiceStarted, setPracticeStarted] = useState(hasDeepLink);
-  const [selectedSubject, setSelectedSubject] = useState<QuestionSubject>(subjectParam ?? "maths");
-  const [selectedExamType, setSelectedExamType] = useState<QuestionExamType>(selectedExam?.dbExamType ?? examParam ?? "naplan");
-  const [selectedYear, setSelectedYear] = useState<number>(yearParam ? Number(yearParam) : profile.yearLevel);
+  const [selectedSubject, setSelectedSubject] = useState<QuestionSubject>(subjectParam ?? "reasoning");
+  const [selectedExamType, setSelectedExamType] = useState<QuestionExamType>(selectedExam?.dbExamType ?? examParam ?? "selective");
+  const [selectedYear, setSelectedYear] = useState<number>(yearParam ? Number(yearParam) : profile.yearLevel || 6);
   const subjectFilter = practiceStarted ? selectedSubject : null;
   const examFilter = practiceStarted ? selectedExamType : null;
   const targetYear = selectedYear;
@@ -515,10 +515,10 @@ function PracticeStart({
   isGuest: boolean;
 }) {
   const examTypeOptions: { value: QuestionExamType; label: string; desc: string }[] = [
-    { value: "naplan", label: "NAPLAN", desc: "Years 3, 5, 7 and 9" },
     { value: "selective", label: "Selective", desc: "NSW and VIC entry prep" },
     { value: "scholarship", label: "Scholarship", desc: "ACER and EduTest style" },
     { value: "general", label: "ICAS / Senior", desc: "ICAS, HSC and VCE skills" },
+    { value: "naplan", label: "NAPLAN", desc: "Years 3, 5, 7 and 9" },
   ];
   const relatedPathways = examCards.filter((card) => card.dbExamType === selectedExamType).slice(0, 3);
 

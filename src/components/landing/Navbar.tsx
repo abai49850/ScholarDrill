@@ -6,11 +6,11 @@ import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
-  { label: "NAPLAN", href: "/lp/naplan-practice-tests" },
   { label: "Selective", href: "/lp/selective-school-test-prep" },
   { label: "Scholarships", href: "/lp/scholarship-exam-prep" },
   { label: "ICAS", href: "/lp/icas-english-practice" },
   { label: "VCE", href: "/lp/vce-english-exam-prep" },
+  { label: "NAPLAN", href: "/lp/naplan-practice-tests" },
 ];
 
 export const Navbar = () => {

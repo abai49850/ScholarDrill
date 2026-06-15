@@ -3,9 +3,9 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Perfect prep for my daughter's Year 5 NAPLAN in Geelong. The dashboard showed her weak numeracy topics, and the daily quests kept her practising without arguments.",
+    quote: "Helped my daughter prepare for selective entry in Melbourne. The dashboard showed her weak reasoning topics, and the daily quests kept her practising without arguments.",
     author: "Sarah Jenkins",
-    role: "Parent, Geelong VIC",
+    role: "Parent, Melbourne VIC",
     type: "Parent",
   },
   {
@@ -41,7 +41,7 @@ export const SocialProofSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20 max-w-4xl mx-auto border-y border-border py-10">
           <div className="text-center">
             <p className="text-4xl font-bold text-primary mb-2">95%</p>
-            <p className="text-sm font-medium text-muted-foreground">Improved NAPLAN Bands</p>
+            <p className="text-sm font-medium text-muted-foreground">Improved Exam Readiness</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-bold text-success mb-2">12,000+</p>

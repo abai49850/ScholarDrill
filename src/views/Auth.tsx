@@ -14,9 +14,9 @@ import { useAuth } from "@/contexts/AuthContext";
 const YEARS = [3, 5, 7, 9];
 const REGIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 const FOCI = [
-  { value: "naplan", label: "NAPLAN" },
   { value: "selective", label: "Selective" },
   { value: "scholarship", label: "Scholarship" },
+  { value: "naplan", label: "NAPLAN" },
 ];
 
 function getAuthErrorMessage(error: unknown) {
@@ -77,7 +77,7 @@ export default function Auth() {
   const [suPwd, setSuPwd] = useState("");
   const [year, setYear] = useState("5");
   const [region, setRegion] = useState("NSW");
-  const [focus, setFocus] = useState("naplan");
+  const [focus, setFocus] = useState("selective");
   const [suBusy, setSuBusy] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {

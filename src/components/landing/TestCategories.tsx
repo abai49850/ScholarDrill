@@ -4,14 +4,14 @@ import { BookOpen, Brain, GraduationCap, Microscope, Award } from "lucide-react"
 
 const categories = [
   {
-    icon: BookOpen,
-    title: "NAPLAN",
-    description: "Reading, writing, conventions and numeracy practice aligned to Australian expectations.",
-    accent: "border-t-blue-500 bg-blue-50/45",
-    iconBg: "bg-blue-600",
-    yearTag: "Years 3-9",
-    tags: ["Reading", "Writing", "Numeracy"],
-    href: "/lp/naplan-practice-tests",
+    icon: Brain,
+    title: "Selective School Entry",
+    description: "State-specific thinking skills, maths, reading and writing for NSW and VIC-style entry.",
+    accent: "border-t-violet-500 bg-violet-50/50",
+    iconBg: "bg-violet-600",
+    yearTag: "Years 5-9",
+    tags: ["NSW", "VIC", "Reasoning"],
+    href: "/lp/selective-school-test-prep",
   },
   {
     icon: GraduationCap,
@@ -22,16 +22,6 @@ const categories = [
     yearTag: "Years 4-10",
     tags: ["ACER", "EduTest"],
     href: "/lp/scholarship-exam-prep",
-  },
-  {
-    icon: Brain,
-    title: "Selective School Entry",
-    description: "State-specific thinking skills, maths, reading and writing for NSW and VIC-style entry.",
-    accent: "border-t-violet-500 bg-violet-50/50",
-    iconBg: "bg-violet-600",
-    yearTag: "Years 5-9",
-    tags: ["NSW", "VIC", "Reasoning"],
-    href: "/lp/selective-school-test-prep",
   },
   {
     icon: Microscope,
@@ -52,6 +42,16 @@ const categories = [
     yearTag: "Years 11-12",
     tags: ["English", "Analysis", "ATAR Prep"],
     href: "/lp/vce-english-exam-prep",
+  },
+  {
+    icon: BookOpen,
+    title: "NAPLAN",
+    description: "Reading, writing, conventions and numeracy practice aligned to Australian expectations.",
+    accent: "border-t-blue-500 bg-blue-50/45",
+    iconBg: "bg-blue-600",
+    yearTag: "Years 3-9",
+    tags: ["Reading", "Writing", "Numeracy"],
+    href: "/lp/naplan-practice-tests",
   },
 ];
 
@@ -75,9 +75,9 @@ export const TestCategories = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="mx-auto mb-16 max-w-3xl text-center"
         >
-          <h2 className="text-display mb-6">Find the right exam pathway fast.</h2>
+          <h2 className="text-display mb-6">Aim higher with the right exam pathway.</h2>
           <p className="text-lg text-muted-foreground">
-            Parents scan by age and exam type, so each pathway is labelled by year range and focus area.
+            Start with selective entry, scholarships, ICAS and senior pathways, with NAPLAN still available when you need it.
           </p>
         </motion.div>
 

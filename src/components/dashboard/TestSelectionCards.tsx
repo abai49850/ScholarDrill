@@ -7,6 +7,15 @@ import { DifficultyBadge } from "@/components/practice/DifficultyBadge";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { examCards, examCategories } from "@/data/examCatalog";
 
+const categoryOrder = ["all", "selective", "scholarship", "icas", "senior", "naplan"];
+const cardOrder: Record<string, number> = {
+  selective: 0,
+  scholarship: 1,
+  icas: 2,
+  senior: 3,
+  naplan: 4,
+};
+
 export function TestSelectionCards() {
   const { profile } = useUserProfile();
   const initialCategory = profile.examFocus === "all" ? "all" : profile.examFocus;
@@ -22,19 +31,32 @@ export function TestSelectionCards() {
     if (activeCategory !== "all") {
       list = list.filter((t) => t.category === activeCategory);
     }
-    // Match year level: include tests where the profile's year fits, or near (±1)
+    // Match year level: include tests where the profile's year fits, or near (+/- 1)
     list = list.filter((t) =>
       t.yearLevels.includes(profile.yearLevel) ||
       t.yearLevels.some((y) => Math.abs(y - profile.yearLevel) <= 1)
     );
-    return list;
+    return [...list].sort((a, b) => {
+      const categoryDelta = (cardOrder[a.category] ?? 99) - (cardOrder[b.category] ?? 99);
+      return categoryDelta || a.title.localeCompare(b.title);
+    });
   }, [activeCategory, profile.yearLevel]);
+
+  const orderedCategories = useMemo(
+    () =>
+      [...examCategories].sort((a, b) => {
+        const aIndex = categoryOrder.indexOf(a.key);
+        const bIndex = categoryOrder.indexOf(b.key);
+        return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+      }),
+    []
+  );
 
   return (
     <div>
       {/* Filter Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        {examCategories.map((cat) => (
+        {orderedCategories.map((cat) => (
           <button
             key={cat.key}
             onClick={() => setActiveCategory(cat.key)}

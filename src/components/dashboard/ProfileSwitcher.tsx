@@ -25,9 +25,9 @@ interface Props {
 const YEAR_LEVELS = [3, 5, 7, 9, 10, 11, 12];
 const REGIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 const FOCI: { value: ExamFocus; label: string }[] = [
-  { value: "naplan", label: "NAPLAN" },
   { value: "selective", label: "Selective" },
   { value: "scholarship", label: "Scholarship" },
+  { value: "naplan", label: "NAPLAN" },
 ];
 
 export function ProfileSwitcher({ collapsed }: Props) {
@@ -118,7 +118,7 @@ export function ProfileSwitcher({ collapsed }: Props) {
             <div>
               <Label className="text-[11px] text-muted-foreground">Exam focus</Label>
               <Select
-                value={profile.examFocus === "all" ? "naplan" : profile.examFocus}
+                value={profile.examFocus === "all" ? "selective" : profile.examFocus}
                 onValueChange={(v) => { updateProfile({ examFocus: v as ExamFocus }); void persistPatch({ exam_focus: v }); }}
               >
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>

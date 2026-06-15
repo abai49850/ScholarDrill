@@ -9,7 +9,7 @@ import {
 const faqs = [
   {
     q: "What tests does ScholarDrill cover?",
-    a: "ScholarDrill covers NAPLAN Years 3, 5, 7 and 9, ICAS, selective school entry exams across NSW and VIC, scholarship tests including ACER and EduTest, plus senior English skill pathways for VCE and HSC preparation.",
+    a: "ScholarDrill covers selective school entry exams across NSW and VIC, scholarship tests including ACER and EduTest, ICAS, senior English skill pathways for VCE and HSC preparation, plus NAPLAN Years 3, 5, 7 and 9.",
   },
   {
     q: "What has changed in the expanded practice library?",

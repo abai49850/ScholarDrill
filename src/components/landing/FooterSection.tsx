@@ -2,10 +2,10 @@ import { Link } from "@/lib/router";
 
 const footerLinks: Record<string, { label: string; to: string }[]> = {
   Tests: [
-    { label: "NAPLAN", to: "/lp/naplan-practice-tests" },
     { label: "Selective Schools", to: "/lp/selective-school-test-prep" },
     { label: "Scholarships", to: "/lp/scholarship-exam-prep" },
     { label: "Subject Practice", to: "/lp/year-5-maths-practice" },
+    { label: "NAPLAN", to: "/lp/naplan-practice-tests" },
   ],
   States: [
     { label: "NSW", to: "/lp/selective-school-test-prep" },

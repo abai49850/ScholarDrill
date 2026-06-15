@@ -12,7 +12,7 @@ const plans = [
     description: "Get started with essential practice",
     features: [
       "10 questions per day",
-      "NAPLAN practice (Year 3 & 5)",
+      "Selective, scholarship and NAPLAN starters",
       "Basic progress tracking",
       "Instant answer explanations",
     ],

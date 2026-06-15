@@ -5,7 +5,7 @@ const features = [
   {
     icon: Sparkles,
     title: "Fresh AI Questions",
-    description: "Generate new practice for NAPLAN, ICAS, selective entry, ACER, EduTest, VCE and HSC pathways.",
+    description: "Generate new practice for selective entry, scholarships, ICAS, VCE/HSC and NAPLAN pathways.",
   },
   {
     icon: Target,

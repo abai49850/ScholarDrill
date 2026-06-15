@@ -64,7 +64,7 @@ export const ParentDashboardPreview = () => {
               <div className="flex justify-between items-center mb-6 pb-6 border-b border-border">
                 <div>
                   <h3 className="font-bold text-xl">Leo's Overview</h3>
-                  <p className="text-sm text-muted-foreground">Year 5 NAPLAN Prep</p>
+                  <p className="text-sm text-muted-foreground">Selective Entry Prep</p>
                 </div>
                 <div className="text-right">
                   <span className="inline-block px-3 py-1 bg-success/20 text-success rounded-full text-xs font-bold">
@@ -91,9 +91,9 @@ export const ParentDashboardPreview = () => {
                 <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Skill Breakdown</h4>
                 <div className="space-y-4">
                   {[
-                    { label: "Numeracy", result: "Band 8 (Strong)", width: "90%", bar: "bg-subject-maths", target: "Year 5 target: 70%" },
-                    { label: "Reading", result: "Band 7 (Good)", width: "75%", bar: "bg-subject-reading", target: "Year 5 target: 70%" },
-                    { label: "Writing", result: "Band 5 (Needs Work)", width: "45%", bar: "bg-orange-500", target: "Year 5 target: 70%", warn: true },
+                    { label: "Quantitative Reasoning", result: "Strong", width: "90%", bar: "bg-subject-maths", target: "Entry target: 70%" },
+                    { label: "Reading", result: "On target", width: "75%", bar: "bg-subject-reading", target: "Entry target: 70%" },
+                    { label: "Writing", result: "Needs Work", width: "45%", bar: "bg-orange-500", target: "Entry target: 70%", warn: true },
                   ].map((item) => (
                     <div key={item.label}>
                       <div className="flex justify-between text-sm mb-1">
