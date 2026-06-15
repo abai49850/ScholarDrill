@@ -24,8 +24,8 @@ const accentBgMap: Record<string, string> = {
   indigo: "bg-indigo-50 border-indigo-200 text-indigo-700",
 };
 
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
+function FaqItem({ q, a, defaultOpen = false }: { q: string; a: string; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border border-border rounded-2xl overflow-hidden">
       <button
@@ -274,7 +274,7 @@ export function LandingPageTemplate({ data }: { data: LandingPageData }) {
         <div className="container mx-auto px-6 max-w-3xl">
           <h2 className="text-3xl font-black text-center mb-12">Frequently Asked Questions</h2>
           <div className="space-y-3">
-            {data.faqs.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+            {data.faqs.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} defaultOpen={i === 0} />)}
           </div>
         </div>
       </section>

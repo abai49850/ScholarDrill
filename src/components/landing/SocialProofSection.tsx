@@ -44,8 +44,8 @@ export const SocialProofSection = () => {
             <p className="text-sm font-medium text-muted-foreground">Improved NAPLAN Bands</p>
           </div>
           <div className="text-center">
-            <p className="text-4xl font-bold text-success mb-2">10k+</p>
-            <p className="text-sm font-medium text-muted-foreground">Active Students</p>
+            <p className="text-4xl font-bold text-success mb-2">12,000+</p>
+            <p className="text-sm font-medium text-muted-foreground">Australian Students</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-bold text-orange-500 mb-2">4.9/5</p>

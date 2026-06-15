@@ -56,6 +56,7 @@ export const FAQSection = () => {
           className="mx-auto mb-12 max-w-2xl text-center"
         >
           <h2 className="text-display mb-4">Frequently asked questions</h2>
+          <p className="text-sm text-muted-foreground">Tap any question to expand the answer.</p>
         </motion.div>
 
         <motion.div
@@ -64,7 +65,7 @@ export const FAQSection = () => {
           viewport={{ once: true, margin: "-50px" }}
           className="mx-auto max-w-2xl"
         >
-          <Accordion type="single" collapsible className="space-y-3">
+          <Accordion type="single" collapsible defaultValue="faq-0" className="space-y-3">
             {faqs.map((faq, i) => (
               <AccordionItem
                 key={i}

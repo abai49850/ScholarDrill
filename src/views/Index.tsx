@@ -15,8 +15,8 @@ const Index = () => {
     <main className="min-h-screen bg-background selection:bg-primary/20 selection:text-primary">
       <Navbar />
       <HeroSection />
-      <TrustBar />
       <FeaturesSection />
+      <TrustBar />
       <TestCategories />
       <ParentDashboardPreview />
       <StudentGamificationSection />

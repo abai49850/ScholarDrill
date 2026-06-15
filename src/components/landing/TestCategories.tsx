@@ -6,41 +6,51 @@ const categories = [
   {
     icon: BookOpen,
     title: "NAPLAN",
-    description: "Year 3, 5, 7 & 9 practice across Reading, Writing, Conventions & Numeracy. Aligned to official ACARA standards.",
-    iconBg: "bg-subject-maths",
-    tags: ["Year 3–9", "All domains"],
+    description: "Reading, writing, conventions and numeracy practice aligned to Australian expectations.",
+    accent: "border-t-blue-500 bg-blue-50/45",
+    iconBg: "bg-blue-600",
+    yearTag: "Years 3-9",
+    tags: ["Reading", "Writing", "Numeracy"],
     href: "/lp/naplan-practice-tests",
   },
   {
     icon: GraduationCap,
     title: "Scholarship Exams",
-    description: "ACER, EduTest and school-specific scholarship tests. Verbal, Numerical & Abstract Reasoning practice.",
-    iconBg: "bg-subject-reasoning",
+    description: "ACER, EduTest and school-specific scholarship preparation across reasoning and achievement.",
+    accent: "border-t-amber-500 bg-amber-50/50",
+    iconBg: "bg-amber-500",
+    yearTag: "Years 4-10",
     tags: ["ACER", "EduTest"],
     href: "/lp/scholarship-exam-prep",
   },
   {
     icon: Brain,
     title: "Selective School Entry",
-    description: "NSW OC & Selective, VIC Selective Entry, QLD Academic Talent, WA ASET. State-specific preparation.",
-    iconBg: "bg-subject-writing",
-    tags: ["NSW", "VIC", "QLD", "WA"],
+    description: "State-specific thinking skills, maths, reading and writing for NSW and VIC-style entry.",
+    accent: "border-t-violet-500 bg-violet-50/50",
+    iconBg: "bg-violet-600",
+    yearTag: "Years 5-9",
+    tags: ["NSW", "VIC", "Reasoning"],
     href: "/lp/selective-school-test-prep",
   },
   {
     icon: Microscope,
     title: "ICAS",
-    description: "Prepare for ICAS assessments with challenging questions designed to test higher-order thinking skills.",
-    iconBg: "bg-subject-reading",
-    tags: ["Primary", "Secondary"],
+    description: "Higher-order English, maths and writing practice for students chasing deeper challenge.",
+    accent: "border-t-emerald-500 bg-emerald-50/50",
+    iconBg: "bg-emerald-600",
+    yearTag: "Years 3-12",
+    tags: ["English", "Maths", "Writing"],
     href: "/lp/icas-english-practice",
   },
   {
     icon: Award,
     title: "VCE/HSC",
-    description: "Master senior secondary exams with comprehensive practice and AI-powered feedback for VCE and HSC subjects.",
-    iconBg: "bg-primary",
-    tags: ["Years 11-12", "ATAR Prep"],
+    description: "Senior English skill pathways with structured practice and AI-supported feedback.",
+    accent: "border-t-rose-500 bg-rose-50/50",
+    iconBg: "bg-rose-600",
+    yearTag: "Years 11-12",
+    tags: ["English", "Analysis", "ATAR Prep"],
     href: "/lp/vce-english-exam-prep",
   },
 ];
@@ -65,9 +75,9 @@ export const TestCategories = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="mx-auto mb-16 max-w-3xl text-center"
         >
-          <h2 className="text-display mb-6">Every test. One platform.</h2>
+          <h2 className="text-display mb-6">Find the right exam pathway fast.</h2>
           <p className="text-lg text-muted-foreground">
-            From NAPLAN to elite scholarships, ScholarDrill covers every major Australian exam with precision-crafted, curriculum-aligned practice.
+            Parents scan by age and exam type, so each pathway is labelled by year range and focus area.
           </p>
         </motion.div>
 
@@ -80,24 +90,28 @@ export const TestCategories = () => {
         >
           {categories.map((cat) => (
             <motion.div key={cat.title} variants={cardVariants}>
-            <Link
-              to={cat.href}
-              className="group block cursor-pointer rounded-[2rem] border border-border bg-card p-8 h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-primary/50 relative overflow-hidden"
-            >
-              <div className={`mb-6 inline-flex h-16 w-16 items-center justify-center rounded-[1.5rem] ${cat.iconBg} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                <cat.icon className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-3 text-2xl font-bold text-foreground">{cat.title}</h3>
-              <p className="mb-6 text-base leading-relaxed text-muted-foreground">{cat.description}</p>
-              <div className="flex flex-wrap gap-2 mt-auto">
-                {cat.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-secondary/80 px-4 py-1.5 text-xs font-semibold text-foreground">
-                    {tag}
+              <Link
+                to={cat.href}
+                className={`group block h-full cursor-pointer rounded-[2rem] border border-t-4 border-border ${cat.accent} p-8 transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:shadow-xl`}
+              >
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <div className={`inline-flex h-16 w-16 items-center justify-center rounded-[1.5rem] ${cat.iconBg} shadow-sm transition-transform duration-300 group-hover:scale-110`}>
+                    <cat.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="rounded-full bg-background/85 px-3 py-1 text-xs font-black text-foreground shadow-sm">
+                    {cat.yearTag}
                   </span>
-                ))}
-              </div>
-              
-            </Link>
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-foreground">{cat.title}</h3>
+                <p className="mb-6 text-base leading-relaxed text-muted-foreground">{cat.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {cat.tags.map((tag) => (
+                    <span key={tag} className="rounded-full bg-background/80 px-4 py-1.5 text-xs font-semibold text-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </Link>
             </motion.div>
           ))}
         </motion.div>

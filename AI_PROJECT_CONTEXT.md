@@ -10,7 +10,8 @@ This file is a handoff document for future AI agents. It summarises the current 
 - Local path: `C:\Users\asimb\OneDrive - Deakin University\Antigravity\Codex updated 180526\ScholarDrill`
 - Git remote: `https://github.com/abai49850/ScholarDrill.git`
 - Main branch: `main`
-- Latest known pushed commit: `1159ba0 Align bottom CTA with hero`
+- Latest known pushed commit when this context file was first created: `1159ba0 Align bottom CTA with hero`
+- Always run `git log --oneline -6` for the latest commit because this handoff file may be updated alongside feature work.
 - Live site previously discussed: `https://scholardrill.vercel.app/`
 - Current Supabase project ref discussed in this thread: `sqktobxffnfqjmxwywpr`
 - Current Supabase URL discussed in this thread: `https://sqktobxffnfqjmxwywpr.supabase.co`
@@ -183,6 +184,14 @@ Summary of recent work:
   - CTA: "Start Free Practice"
   - Secondary CTA: "See How It Works"
 - Bottom CTA was aligned to "Start Free Practice".
+- `/practice` was converted from an auth-gated route into a public no-signup practice entry with subject/year/exam choices.
+- Homepage hero was simplified to one primary CTA and three micro-trust signals.
+- The "how it works" product loop was moved directly after the homepage hero.
+- Exam category cards were redesigned with distinct accents and visible year-range tags.
+- FAQ sections now show the first answer open by default.
+- Session summaries now prioritise the AI coach next-step recommendation.
+- Dashboard now has a first-session empty state instead of blank charts for new users.
+- Gamification leaderboard examples were anonymised by default.
 - FAQ and testimonials were expanded with AI tutor, app feature and localised messaging.
 - Footer links were updated to route to content-rich landing pages.
 - New VIC selective entry landing page was added.
@@ -347,7 +356,7 @@ Current hero:
 - Headline: "Fix your child's learning gaps automatically"
 - Subheading focuses on choosing a subject, identifying struggle areas, generating targeted questions and explanations.
 - Primary CTA: "Start Free Practice"
-- Secondary CTA: "See How It Works"
+- Secondary CTA was removed from the hero to reduce above-the-fold competition.
 - Mini preview pills:
   - Takes less than 30 seconds to start
   - Works for maths, science, and more
@@ -376,6 +385,19 @@ Admin users:
 
 - Earlier fixes added/expected RPCs including admin user listing and management actions.
 - If user page errors mention missing RPCs, inspect migrations and live Supabase schema/RPC cache.
+
+## Practice Conversion Flow
+
+`/practice` is intentionally public. Do not wrap it in `ProtectedPage` unless the product direction changes.
+
+Current `/practice` behaviour:
+
+- Anonymous users see a start page with subject, year and exam-style choices.
+- Anonymous users can answer questions and see explanations without signing up.
+- Attempts are only persisted when Supabase Auth has a signed-in user.
+- Guests see a "save progress" prompt in the session summary.
+- Signed-in free users still respect the free daily practice limit.
+- If a selected combination has no questions, the page shows a friendly "choose another practice set" state instead of an endless loader.
 
 ## Known Deployment Notes
 
@@ -435,4 +457,3 @@ git push
 - Continue reviewing imported questions for duplicate options, invalid correct option IDs, and overly generic source references.
 - Consider adding tests for `questionsApi` pagination and question option validation.
 - Consider adding a dedicated data-quality admin tool for duplicate answer detection.
-

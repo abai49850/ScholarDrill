@@ -90,35 +90,25 @@ export const ParentDashboardPreview = () => {
               <div>
                 <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Skill Breakdown</h4>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium">Numeracy</span>
-                      <span className="font-medium">Band 8 (Strong)</span>
+                  {[
+                    { label: "Numeracy", result: "Band 8 (Strong)", width: "90%", bar: "bg-subject-maths", target: "Year 5 target: 70%" },
+                    { label: "Reading", result: "Band 7 (Good)", width: "75%", bar: "bg-subject-reading", target: "Year 5 target: 70%" },
+                    { label: "Writing", result: "Band 5 (Needs Work)", width: "45%", bar: "bg-orange-500", target: "Year 5 target: 70%", warn: true },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium flex items-center gap-1">
+                          {item.label} {item.warn && <AlertCircle className="h-3 w-3 text-orange-500" />}
+                        </span>
+                        <span className={`font-medium ${item.warn ? "text-orange-500" : ""}`}>{item.result}</span>
+                      </div>
+                      <div className="relative h-3 w-full rounded-full bg-secondary">
+                        <div className={`h-full rounded-full ${item.bar}`} style={{ width: item.width }} />
+                        <div className="absolute left-[70%] top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-foreground/70" />
+                      </div>
+                      <div className="mt-1 text-right text-[11px] text-muted-foreground">{item.target}</div>
                     </div>
-                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-subject-maths w-[90%] rounded-full" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium">Reading</span>
-                      <span className="font-medium">Band 7 (Good)</span>
-                    </div>
-                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-subject-reading w-[75%] rounded-full" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium flex items-center gap-1">
-                        Writing <AlertCircle className="h-3 w-3 text-orange-500" />
-                      </span>
-                      <span className="font-medium text-orange-500">Band 5 (Needs Work)</span>
-                    </div>
-                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-orange-500 w-[45%] rounded-full" />
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

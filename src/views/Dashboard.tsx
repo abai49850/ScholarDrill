@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { BookOpenCheck, Loader2, Sparkles } from "lucide-react";
+import { Link } from "@/lib/router";
+import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { GamifiedHeader } from "@/components/gamification/GamifiedHeader";
@@ -131,6 +133,10 @@ export default function Dashboard() {
                 </div>
 
                 <TabsContent value="overview" className="space-y-8 mt-0 focus-visible:outline-none focus-visible:ring-0">
+                  {stats.totalAttempted === 0 ? (
+                    <FirstSessionPrompt />
+                  ) : (
+                    <>
                   <section>
                     <GamifiedHeader streak={stats.currentStreak} currentXp={stats.totalPoints + bonusXp} nextLevelXp={5000} level={Math.floor((stats.totalPoints + bonusXp) / 500) + 1} />
                   </section>
@@ -170,6 +176,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </section>
+                    </>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="parent-portal" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
@@ -181,5 +189,41 @@ export default function Dashboard() {
         </div>
       </div>
     </SidebarProvider>
+  );
+}
+
+function FirstSessionPrompt() {
+  return (
+    <section className="rounded-[2rem] border border-primary/20 bg-primary/10 p-8">
+      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-bold text-primary">
+            <Sparkles className="h-4 w-4" />
+            New dashboard
+          </div>
+          <h2 className="text-3xl font-black tracking-tight">Start one practice set to build your progress map.</h2>
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            After a few questions, ScholarDrill can show strengths, focus topics, streaks and parent-ready reports.
+          </p>
+          <Button asChild variant="hero" size="lg" className="mt-6 rounded-full">
+            <Link to="/practice"><BookOpenCheck className="h-5 w-5" /> Start Free Practice</Link>
+          </Button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            ["1", "Choose Maths, Reading, Writing or Reasoning"],
+            ["2", "Answer a short adaptive set"],
+            ["3", "Unlock your first recommendations"],
+          ].map(([step, text]) => (
+            <div key={step} className="rounded-2xl border border-border bg-background p-4">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-black text-primary-foreground">
+                {step}
+              </div>
+              <p className="text-sm font-semibold">{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

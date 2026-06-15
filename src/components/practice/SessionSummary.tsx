@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, Clock, TrendingUp, RotateCcw, Home, Sparkles } from "lucide-react";
+import { Trophy, Target, Clock, TrendingUp, RotateCcw, Home, Sparkles, Bot, UserPlus } from "lucide-react";
 import { Link } from "@/lib/router";
 
 interface SessionResult {
@@ -14,44 +14,69 @@ interface SessionSummaryProps {
   totalTime: number;
   onRestart: () => void;
   isFree?: boolean;
+  isGuest?: boolean;
 }
 
-export function SessionSummary({ results, totalTime, onRestart, isFree = false }: SessionSummaryProps) {
+export function SessionSummary({ results, totalTime, onRestart, isFree = false, isGuest = false }: SessionSummaryProps) {
   const correct = results.filter((r) => r.correct).length;
-  const total = results.length;
+  const total = Math.max(results.length, 1);
   const pct = Math.round((correct / total) * 100);
   const avgTime = Math.round(totalTime / total);
 
   const getGrade = () => {
-    if (pct >= 90) return { emoji: "🏆", label: "Outstanding!", color: "text-success" };
-    if (pct >= 70) return { emoji: "⭐", label: "Great work!", color: "text-primary" };
-    if (pct >= 50) return { emoji: "💪", label: "Good effort!", color: "text-[hsl(var(--subject-reasoning))]" };
-    return { emoji: "📚", label: "Keep practising!", color: "text-accent" };
+    if (pct >= 90) return { icon: Trophy, label: "Outstanding!", color: "text-success" };
+    if (pct >= 70) return { icon: Sparkles, label: "Great work!", color: "text-primary" };
+    if (pct >= 50) return { icon: TrendingUp, label: "Good effort!", color: "text-[hsl(var(--subject-reasoning))]" };
+    return { icon: Target, label: "Keep practising!", color: "text-accent" };
   };
 
   const grade = getGrade();
+  const GradeIcon = grade.icon;
+  const coachMessage =
+    pct >= 80
+      ? "Strong start. Next, raise the difficulty and practise under a tighter timer."
+      : pct >= 50
+        ? "Good diagnostic signal. Review the missed explanations, then practise the same topic again while it is fresh."
+        : "Start with a short targeted set. Focus on accuracy first, then speed once the pattern feels familiar.";
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="max-w-lg mx-auto text-center"
+      className="max-w-2xl mx-auto text-center"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", delay: 0.2 }}
-        className="text-6xl mb-4"
+        className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10"
       >
-        {grade.emoji}
+        <GradeIcon className={`h-10 w-10 ${grade.color}`} />
       </motion.div>
       <h2 className={`text-display mb-2 ${grade.color}`}>{grade.label}</h2>
-      <p className="text-muted-foreground mb-8">You completed {total} questions</p>
+      <p className="text-muted-foreground mb-6">You completed {results.length} questions</p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="mb-6 rounded-3xl border border-primary/20 bg-primary/10 p-5 text-left"
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <Bot className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="font-semibold">AI coach next step</p>
+            <p className="mt-1 text-sm text-muted-foreground">{coachMessage}</p>
+          </div>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-2 gap-4 mb-8">
         {[
-          { icon: Trophy, label: "Score", value: `${pct}%`, sub: `${correct}/${total} correct` },
-          { icon: Target, label: "Accuracy", value: `${correct}`, sub: `out of ${total}` },
+          { icon: Trophy, label: "Score", value: `${pct}%`, sub: `${correct}/${results.length} correct` },
+          { icon: Target, label: "Accuracy", value: `${correct}`, sub: `out of ${results.length}` },
           { icon: Clock, label: "Avg Time", value: `${avgTime}s`, sub: "per question" },
           { icon: TrendingUp, label: "Total Time", value: `${Math.floor(totalTime / 60)}m ${totalTime % 60}s`, sub: "session" },
         ].map((stat, i) => (
@@ -69,7 +94,29 @@ export function SessionSummary({ results, totalTime, onRestart, isFree = false }
         ))}
       </div>
 
-      {isFree && (
+      {isGuest && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mb-6 rounded-2xl border border-accent/30 bg-accent/10 p-5 text-left"
+        >
+          <div className="flex items-start gap-3">
+            <UserPlus className="w-5 h-5 text-accent mt-0.5" />
+            <div>
+              <p className="font-semibold">Save this progress map</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create a free account to save results, unlock your dashboard, and get targeted practice recommendations.
+              </p>
+              <Button asChild variant="hero" size="sm" className="mt-3">
+                <Link to="/auth"><UserPlus className="w-4 h-4" /> Create free account</Link>
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {!isGuest && isFree && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,9 +128,8 @@ export function SessionSummary({ results, totalTime, onRestart, isFree = false }
             <div>
               <p className="font-semibold">Unlock the full question library</p>
               <p className="text-sm text-muted-foreground mt-1">
-                You're on the free plan — one practice set per day with the same 10 curated
-                questions. Upgrade to <strong>Pro</strong> for unlimited adaptive practice across
-                every subject and year level.
+                You're on the free plan - one practice set per day with curated questions. Upgrade to
+                <strong> Pro</strong> for unlimited adaptive practice across every subject and year level.
               </p>
               <Button asChild variant="hero" size="sm" className="mt-3">
                 <Link to="/info/pricing"><Sparkles className="w-4 h-4" /> Upgrade to Pro</Link>
@@ -94,13 +140,13 @@ export function SessionSummary({ results, totalTime, onRestart, isFree = false }
       )}
 
       <div className="flex gap-3 justify-center">
-        {!isFree && (
+        {(!isFree || isGuest) && (
           <Button variant="hero-outline" onClick={onRestart}>
             <RotateCcw className="w-4 h-4" /> Try Again
           </Button>
         )}
         <Button variant="hero" asChild>
-          <Link to="/dashboard"><Home className="w-4 h-4" /> Dashboard</Link>
+          <Link to={isGuest ? "/" : "/dashboard"}><Home className="w-4 h-4" /> {isGuest ? "Home" : "Dashboard"}</Link>
         </Button>
       </div>
     </motion.div>

@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "@/lib/router";
-import { ArrowLeft, Zap, BookOpen, Loader2 } from "lucide-react";
+import { ArrowLeft, Zap, BookOpen, Loader2, CheckCircle2, Clock, GraduationCap, Target, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { QuestionTimer } from "@/components/practice/QuestionTimer";
@@ -21,10 +21,17 @@ import { recordAttempt } from "@/lib/statsApi";
 import { useAuth } from "@/contexts/AuthContext";
 import { FREE_DAILY_LIMIT, hasPractisedToday, loadFreeSampleQuestions } from "@/lib/freeAccess";
 import { Lock, Sparkles } from "lucide-react";
-import { getExamCard } from "@/data/examCatalog";
+import { examCards, getExamCard } from "@/data/examCatalog";
 
 const TOTAL_QUESTIONS = 10;
 const LABELS = ["A", "B", "C", "D"];
+const SUBJECT_CHOICES: { value: QuestionSubject; label: string; desc: string }[] = [
+  { value: "maths", label: "Maths", desc: "Number, data and problem solving" },
+  { value: "reading", label: "Reading", desc: "Comprehension and inference" },
+  { value: "writing", label: "Writing", desc: "Structure, expression and editing" },
+  { value: "reasoning", label: "Reasoning", desc: "Logic and selective-style thinking" },
+];
+const YEAR_CHOICES = [3, 4, 5, 6, 7, 8, 9] as const;
 
 interface SessionResult {
   questionId: string;
@@ -33,17 +40,25 @@ interface SessionResult {
 }
 
 export default function Practice() {
-  const [searchParams] = useSearchParams();
-  const subjectFilter = searchParams.get("subject");
-  const examFilter = searchParams.get("exam") as QuestionExamType | null;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subjectParam = searchParams.get("subject") as QuestionSubject | null;
+  const examParam = searchParams.get("exam") as QuestionExamType | null;
   const testId = searchParams.get("testId");
   const selectedExam = getExamCard(testId);
   const yearParam = searchParams.get("year");
+  const hasDeepLink = Boolean(subjectParam || examParam || testId || searchParams.get("start"));
   const { profile } = useUserProfile();
   const { profile: authProfile, user } = useAuth();
+  const isGuest = !user;
   const isFree = (authProfile?.tier ?? "free") !== "pro";
   const isBlocked = !!authProfile?.is_blocked;
-  const targetYear = yearParam ? Number(yearParam) : profile.yearLevel;
+  const [practiceStarted, setPracticeStarted] = useState(hasDeepLink);
+  const [selectedSubject, setSelectedSubject] = useState<QuestionSubject>(subjectParam ?? "maths");
+  const [selectedExamType, setSelectedExamType] = useState<QuestionExamType>(selectedExam?.dbExamType ?? examParam ?? "naplan");
+  const [selectedYear, setSelectedYear] = useState<number>(yearParam ? Number(yearParam) : profile.yearLevel);
+  const subjectFilter = practiceStarted ? selectedSubject : null;
+  const examFilter = practiceStarted ? selectedExamType : null;
+  const targetYear = selectedYear;
   const sessionQuestionTarget = selectedExam
     ? Math.min(selectedExam.questionCount === 1 ? 1 : TOTAL_QUESTIONS, TOTAL_QUESTIONS)
     : TOTAL_QUESTIONS;
@@ -55,6 +70,10 @@ export default function Practice() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (!practiceStarted) {
+        setPool(null);
+        return;
+      }
       // Free-tier daily gate
       if (isFree && user) {
         const reached = await hasPractisedToday(user.id);
@@ -93,7 +112,7 @@ export default function Practice() {
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjectFilter, examFilter, isFree, user?.id, targetYear]);
+  }, [subjectFilter, examFilter, isFree, user?.id, targetYear, practiceStarted]);
 
   const filteredQuestions = useMemo(() => {
     if (!pool) return [];
@@ -236,6 +255,25 @@ export default function Practice() {
     pickNextQuestion(2, new Set());
   };
 
+  const startPractice = () => {
+    setResults([]);
+    setQuestionIndex(0);
+    setDifficulty(2);
+    setStreak(0);
+    setAnsweredIds(new Set());
+    setSessionDone(false);
+    setCurrentQuestion(null);
+    setPool(null);
+    totalSessionTime.current = 0;
+    setPracticeStarted(true);
+    setSearchParams({
+      start: "1",
+      subject: selectedSubject,
+      exam: selectedExamType,
+      year: String(selectedYear),
+    });
+  };
+
   const questionsTotal = Math.min(sessionQuestionTarget, filteredQuestions.length);
 
   if (isBlocked) {
@@ -269,6 +307,21 @@ export default function Practice() {
     );
   }
 
+  if (!practiceStarted) {
+    return (
+      <PracticeStart
+        selectedSubject={selectedSubject}
+        setSelectedSubject={setSelectedSubject}
+        selectedExamType={selectedExamType}
+        setSelectedExamType={setSelectedExamType}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        onStart={startPractice}
+        isGuest={isGuest}
+      />
+    );
+  }
+
   if (sessionDone) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -277,12 +330,29 @@ export default function Practice() {
           totalTime={totalSessionTime.current}
           onRestart={handleRestart}
           isFree={isFree}
+          isGuest={isGuest}
         />
       </div>
     );
   }
 
   if (!currentQuestion) {
+    if (pool && filteredQuestions.length === 0) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
+          <div className="max-w-md space-y-4">
+            <BookOpen className="mx-auto h-10 w-10 text-primary" />
+            <h1 className="text-2xl font-bold">No questions found for this choice yet</h1>
+            <p className="text-muted-foreground">
+              Try another subject, year level or exam style while the library continues to grow.
+            </p>
+            <Button onClick={() => setPracticeStarted(false)} variant="hero">
+              Choose another practice set
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -300,7 +370,7 @@ export default function Practice() {
       <header className="sticky top-0 z-40 glass-nav">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Dashboard</Link>
+            <Link to={isGuest ? "/" : "/dashboard"}><ArrowLeft className="w-4 h-4 mr-1" /> {isGuest ? "Home" : "Dashboard"}</Link>
           </Button>
 
           <div className="flex items-center gap-3">
@@ -420,6 +490,192 @@ export default function Practice() {
             </div>
           </motion.div>
         </AnimatePresence>
+      </main>
+    </div>
+  );
+}
+
+function PracticeStart({
+  selectedSubject,
+  setSelectedSubject,
+  selectedExamType,
+  setSelectedExamType,
+  selectedYear,
+  setSelectedYear,
+  onStart,
+  isGuest,
+}: {
+  selectedSubject: QuestionSubject;
+  setSelectedSubject: (subject: QuestionSubject) => void;
+  selectedExamType: QuestionExamType;
+  setSelectedExamType: (examType: QuestionExamType) => void;
+  selectedYear: number;
+  setSelectedYear: (year: number) => void;
+  onStart: () => void;
+  isGuest: boolean;
+}) {
+  const examTypeOptions: { value: QuestionExamType; label: string; desc: string }[] = [
+    { value: "naplan", label: "NAPLAN", desc: "Years 3, 5, 7 and 9" },
+    { value: "selective", label: "Selective", desc: "NSW and VIC entry prep" },
+    { value: "scholarship", label: "Scholarship", desc: "ACER and EduTest style" },
+    { value: "general", label: "ICAS / Senior", desc: "ICAS, HSC and VCE skills" },
+  ];
+  const relatedPathways = examCards.filter((card) => card.dbExamType === selectedExamType).slice(0, 3);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-background/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <Link to="/" className="inline-flex items-center bg-slate-900 rounded-xl px-2 py-1 shadow-sm">
+            <img src="/logo.png" alt="ScholarDrill Logo" className="h-9 w-auto object-contain" />
+          </Link>
+          {isGuest ? (
+            <Button asChild variant="outline">
+              <Link to="/auth"><UserPlus className="h-4 w-4" /> Save progress</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline"><Link to="/dashboard">Dashboard</Link></Button>
+          )}
+        </div>
+      </header>
+
+      <main className="mx-auto grid max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
+        <section className="space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+            <Sparkles className="h-4 w-4" />
+            Free practice starts here
+          </div>
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
+              Try a real question before signing up.
+            </h1>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Choose a subject, answer a short adaptive set, and see explanations immediately. Create an account only when you want to save the progress map.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              "No signup needed",
+              "Explanations included",
+              "Progress map after practice",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-border bg-card p-4 text-sm font-medium">
+                <CheckCircle2 className="mb-2 h-5 w-5 text-success" />
+                {item}
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              <h2 className="font-bold">What happens next?</h2>
+            </div>
+            <div className="grid gap-3">
+              {[
+                ["Diagnose", "We start with a question matched to the year and subject."],
+                ["Explain", "Every answer reveals a clear worked explanation."],
+                ["Report", "The summary shows score, timing and the next focus area."],
+              ].map(([title, desc]) => (
+                <div key={title} className="rounded-2xl bg-muted/40 p-4">
+                  <p className="font-semibold">{title}</p>
+                  <p className="text-sm text-muted-foreground">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[2rem] border border-border bg-card p-5 shadow-xl">
+          <div className="mb-5">
+            <h2 className="text-xl font-black">Start free practice</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Takes less than 30 seconds to start.</p>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <p className="mb-3 text-sm font-semibold">1. Choose a subject</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {SUBJECT_CHOICES.map((subject) => (
+                  <button
+                    key={subject.value}
+                    type="button"
+                    onClick={() => setSelectedSubject(subject.value)}
+                    className={`rounded-2xl border p-4 text-left transition-all ${
+                      selectedSubject === subject.value
+                        ? "border-primary bg-primary/10 shadow-sm"
+                        : "border-border bg-background hover:border-primary/40"
+                    }`}
+                  >
+                    <p className="font-bold">{subject.label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{subject.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-sm font-semibold">2. Choose year level</p>
+              <div className="flex flex-wrap gap-2">
+                {YEAR_CHOICES.map((year) => (
+                  <button
+                    key={year}
+                    type="button"
+                    onClick={() => setSelectedYear(year)}
+                    className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                      selectedYear === year
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background hover:border-primary/40"
+                    }`}
+                  >
+                    Year {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-sm font-semibold">3. Choose exam style</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {examTypeOptions.map((exam) => (
+                  <button
+                    key={exam.value}
+                    type="button"
+                    onClick={() => setSelectedExamType(exam.value)}
+                    className={`rounded-2xl border p-4 text-left transition-all ${
+                      selectedExamType === exam.value
+                        ? "border-primary bg-primary/10 shadow-sm"
+                        : "border-border bg-background hover:border-primary/40"
+                    }`}
+                  >
+                    <p className="font-bold">{exam.label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{exam.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-muted/40 p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <GraduationCap className="h-4 w-4 text-primary" />
+                Matching pathways
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {relatedPathways.map((pathway) => (
+                  <span key={pathway.id} className="rounded-full bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                    {pathway.title}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <Button onClick={onStart} variant="hero" size="lg" className="h-14 w-full rounded-full text-lg">
+              Start Free Practice
+              <Clock className="h-5 w-5" />
+            </Button>
+          </div>
+        </section>
       </main>
     </div>
   );

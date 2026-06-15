@@ -95,9 +95,9 @@ export const StudentGamificationSection = () => {
                 </h4>
                 <div className="space-y-3">
                   {[
-                    { rank: 1, name: "Sarah M.", xp: 2450, highlight: false },
-                    { rank: 2, name: "Leo T. (You)", xp: 2100, highlight: true },
-                    { rank: 3, name: "David L.", xp: 1950, highlight: false },
+                    { rank: 1, name: "Student A.", xp: 2450, highlight: false },
+                    { rank: 2, name: "You", xp: 2100, highlight: true },
+                    { rank: 3, name: "Student K.", xp: 1950, highlight: false },
                   ].map((user) => (
                     <div
                       key={user.rank}
