@@ -12,6 +12,17 @@ const subjectToExam: Record<string, QuestionExamType> = {
   science: "general",
 };
 
+const subjectLabels: Record<QuestionSubject, string> = {
+  maths: "Maths",
+  reading: "Reading",
+  writing: "Writing",
+  conventions: "Conventions",
+  reasoning: "Reasoning",
+  science: "Science",
+};
+
+const allSubjects: QuestionSubject[] = ["maths", "reading", "writing", "conventions", "reasoning", "science"];
+
 function normalizeSubject(subject: string): QuestionSubject {
   return ["maths", "reading", "writing", "conventions", "reasoning", "science"].includes(subject)
     ? (subject as QuestionSubject)
@@ -24,7 +35,7 @@ function preferredTestId(subject: QuestionSubject, examType: QuestionExamType) {
 }
 
 export function buildPracticeRecommendations(stats: UserStats, yearLevel: number): PracticeRecommendation[] {
-  const focusRecommendations = stats.focusTopics.slice(0, 3).map((topic) => {
+  const focusRecommendations = stats.focusTopics.map((topic) => {
     const subject = normalizeSubject(topic.subject);
     const examType = subjectToExam[subject] ?? "general";
     return {
@@ -38,42 +49,31 @@ export function buildPracticeRecommendations(stats: UserStats, yearLevel: number
     };
   });
 
-  const subjectRecommendations = [...stats.bySubject]
-    .filter((subject) => !focusRecommendations.some((rec) => rec.subject === subject.subject))
-    .sort((a, b) => a.accuracy - b.accuracy || b.attempted - a.attempted)
-    .slice(0, Math.max(0, 3 - focusRecommendations.length))
-    .map((subjectStat) => {
-      const subject = normalizeSubject(subjectStat.subject);
-      const examType = subjectToExam[subject] ?? "general";
-      return {
-        title: `Build ${subjectStat.subject} confidence`,
-        subject,
-        examType,
-        yearLevel,
-        testId: preferredTestId(subject, examType),
-        reason: `${subjectStat.accuracy}% accuracy in ${subjectStat.subject}; assign a focused practice block next.`,
-      };
-    });
+  const statsBySubject = new Map(stats.bySubject.map((subject) => [subject.subject, subject]));
+  const subjectRecommendations = allSubjects.map((subject) => {
+    const subjectStat = statsBySubject.get(subject);
+    const examType = subjectToExam[subject] ?? "general";
+    const label = subjectLabels[subject];
+    return {
+      title: subjectStat ? `Build ${label} confidence` : `Start ${label} practice`,
+      subject,
+      examType,
+      yearLevel,
+      testId: preferredTestId(subject, examType),
+      reason: subjectStat
+        ? `${subjectStat.accuracy}% accuracy from ${subjectStat.attempted} attempts. Assign this if ${label.toLowerCase()} needs more attention.`
+        : `No ${label.toLowerCase()} attempts yet. Assign this to create a first performance signal.`,
+    };
+  });
 
-  const recommendations = [...focusRecommendations, ...subjectRecommendations];
+  const seen = new Set<string>();
+  const recommendations = [...focusRecommendations, ...subjectRecommendations].filter((recommendation) => {
+    const key = `${recommendation.title}:${recommendation.subject}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   if (recommendations.length > 0) return recommendations;
 
-  return [
-    {
-      title: "Start a selective reasoning check",
-      subject: "reasoning",
-      examType: "selective",
-      yearLevel,
-      testId: preferredTestId("reasoning", "selective"),
-      reason: "No practice data yet. Start with reasoning to create the first diagnostic signal.",
-    },
-    {
-      title: "Try ICAS Science foundations",
-      subject: "science",
-      examType: "general",
-      yearLevel,
-      testId: preferredTestId("science", "general"),
-      reason: "Science builds useful data interpretation and investigation skills.",
-    },
-  ];
+  return [];
 }

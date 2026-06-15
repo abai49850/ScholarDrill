@@ -66,6 +66,75 @@ function shareWithTutor(stats: UserStats, profile: Profile | null) {
   window.location.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
 }
 
+const SUBJECT_LABELS: Record<string, string> = {
+  maths: "Maths",
+  reading: "Reading",
+  writing: "Writing",
+  conventions: "Conventions",
+  reasoning: "Reasoning",
+  science: "Science",
+};
+
+function SubjectPerformanceSnapshot({ stats }: { stats: UserStats }) {
+  const rows = stats.bySubject
+    .map((subject) => ({
+      ...subject,
+      label: SUBJECT_LABELS[subject.subject] ?? subject.subject,
+    }))
+    .sort((a, b) => a.accuracy - b.accuracy || b.attempted - a.attempted);
+  const maxAttempts = Math.max(1, ...rows.map((row) => row.attempted));
+
+  return (
+    <section className="rounded-[2rem] border border-border bg-card p-5 shadow-sm">
+      <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className="text-lg font-bold">Subject performance snapshot</h3>
+          <p className="text-sm text-muted-foreground">
+            Lower accuracy and fewer attempts are useful signals for what to assign next.
+          </p>
+        </div>
+        <div className="text-sm font-semibold text-primary">{stats.overallAccuracy}% overall accuracy</div>
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-sm text-muted-foreground">
+          No subject data yet. Ask the student to complete one practice set to unlock this chart.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {rows.map((row) => (
+            <div key={row.subject} className="grid gap-2 md:grid-cols-[140px_1fr_92px] md:items-center">
+              <div>
+                <p className="text-sm font-semibold">{row.label}</p>
+                <p className="text-xs text-muted-foreground">{row.attempted} attempts</p>
+              </div>
+              <div className="space-y-1">
+                <div className="h-3 rounded-full bg-secondary">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(4, row.accuracy)}%` }} />
+                </div>
+                <div className="h-2 rounded-full bg-secondary/70">
+                  <div
+                    className="h-full rounded-full bg-success"
+                    style={{ width: `${Math.max(4, Math.round((row.attempted / maxAttempts) * 100))}%` }}
+                  />
+                </div>
+              </div>
+              <div className="text-sm font-bold md:text-right">
+                {row.accuracy}%
+                <span className="block text-xs font-medium text-muted-foreground">accuracy</span>
+              </div>
+            </div>
+          ))}
+          <div className="flex flex-wrap gap-4 pt-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-5 rounded-full bg-primary" /> Accuracy</span>
+            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-5 rounded-full bg-success" /> Practice volume</span>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export const ParentPortal = ({ stats, profile, userId }: Props) => {
   const readiness = Math.min(100, Math.round((stats.overallAccuracy * 0.7) + (Math.min(stats.totalAttempted, 100) / 100) * 30));
   const trend = `${stats.weeklyTrendPct >= 0 ? "+" : ""}${stats.weeklyTrendPct}%`;
@@ -136,6 +205,8 @@ export const ParentPortal = ({ stats, profile, userId }: Props) => {
           </div>
         </div>
       </div>
+
+      <SubjectPerformanceSnapshot stats={stats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 flex flex-col gap-6">

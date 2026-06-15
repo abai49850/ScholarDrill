@@ -67,7 +67,14 @@ export const AiRecommendationsPanel = ({
       </div>
 
       {showOptions && (
-        <div className="mb-4 grid gap-3">
+        <div className="mb-4">
+          <div className="mb-3">
+            <p className="text-sm font-semibold">Choose practice to assign</p>
+            <p className="text-xs text-muted-foreground">
+              Topic gaps appear first, followed by every subject category so parents can recommend any area.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
           {recommendations.map((recommendation) => {
             const assigned = assignedTitles.has(recommendation.title);
             return (
@@ -98,6 +105,7 @@ export const AiRecommendationsPanel = ({
               </div>
             );
           })}
+          </div>
         </div>
       )}
 

@@ -3,26 +3,20 @@ import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserProfile, type ExamFocus } from "@/contexts/UserProfileContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getDisplayYear } from "@/lib/utils/australian-localiser";
 import { toast } from "sonner";
 
 const YEAR_LEVELS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const REGIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
-const FOCI: { value: ExamFocus; label: string }[] = [
-  { value: "selective", label: "Selective entry" },
-  { value: "scholarship", label: "Scholarships" },
-  { value: "naplan", label: "NAPLAN" },
-  { value: "all", label: "All exams" },
-];
 
 export function DashboardPreferencesBar() {
   const { profile, updateProfile } = useUserProfile();
   const { user, refreshProfile } = useAuth();
   const [saving, setSaving] = useState(false);
 
-  const persistPatch = async (patch: { year_level?: number; region?: string; exam_focus?: string }) => {
+  const persistPatch = async (patch: { year_level?: number; region?: string }) => {
     if (!user) return;
     setSaving(true);
     const { error } = await supabase.from("profiles").update(patch).eq("user_id", user.id);
@@ -41,12 +35,12 @@ export function DashboardPreferencesBar() {
           <div>
             <h2 className="font-semibold">Study preferences</h2>
             <p className="text-sm text-muted-foreground">
-              Use these to shape dashboard recommendations and practice test ordering.
+              Use these to shape dashboard recommendations. All practice test options remain available below.
             </p>
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[620px]">
+        <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[420px]">
           <div>
             <Label className="text-xs text-muted-foreground">Year level</Label>
             <Select
@@ -84,23 +78,6 @@ export function DashboardPreferencesBar() {
             </Select>
           </div>
 
-          <div>
-            <Label className="text-xs text-muted-foreground">Exam focus</Label>
-            <Select
-              value={profile.examFocus}
-              onValueChange={(examFocus) => {
-                updateProfile({ examFocus: examFocus as ExamFocus });
-                void persistPatch({ exam_focus: examFocus });
-              }}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {FOCI.map((focus) => (
-                  <SelectItem key={focus.value} value={focus.value}>{focus.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         {saving && (
