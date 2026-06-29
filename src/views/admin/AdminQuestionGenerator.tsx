@@ -41,6 +41,8 @@ const EXAMS: { value: QuestionExamType; label: string }[] = [
   { value: "general", label: "General / ICAS / Senior" },
 ];
 const YEARS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
+const MAX_GENERATION_BATCH_SIZE = 25;
+const MAX_GENERATION_RUN_SIZE = 250;
 
 async function getFunctionErrorMessage(error: unknown, fallback = "Try again") {
   const maybeError = error as { message?: string; context?: Response };
@@ -88,6 +90,7 @@ export default function AdminQuestionGenerator() {
   const [skillTags, setSkillTags] = useState("");
   const [difficulty, setDifficulty] = useState<number>(selectedExam?.difficulty ?? 3);
   const [count, setCount] = useState<number>(5);
+  const [targetTotal, setTargetTotal] = useState<number>(50);
   const [notes, setNotes] = useState("");
 
   const [generating, setGenerating] = useState(false);
@@ -109,43 +112,102 @@ export default function AdminQuestionGenerator() {
     setNotes("");
   };
 
+  const normaliseContentKey = (content: string) =>
+    content.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+  const mergeUniqueQuestions = (existing: GeneratedQuestion[], incoming: GeneratedQuestion[]) => {
+    const seen = new Set(existing.map((q) => normaliseContentKey(q.content)));
+    const unique: GeneratedQuestion[] = [];
+    for (const question of incoming) {
+      const key = normaliseContentKey(question.content);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      unique.push(question);
+    }
+    return [...existing, ...unique];
+  };
+
+  const requestQuestions = async (batchCount: number, batchNotes = "") => {
+    const { data, error } = await supabase.functions.invoke("generate-questions", {
+      body: {
+        subject,
+        examType,
+        yearLevel,
+        topic: topic.trim() || selectedExam.title,
+        subtopic: subtopic.trim() || undefined,
+        skillTags: skillTags.split(",").map((s) => s.trim()).filter(Boolean),
+        difficulty,
+        count: batchCount,
+        notes: [examGuidance(selectedExam), notes.trim(), batchNotes].filter(Boolean).join("\n\n"),
+        examPathway: {
+          id: selectedExam.id,
+          title: selectedExam.title,
+          category: selectedExam.category,
+          sourceLabel: selectedExam.sourceLabel,
+          sourceUrl: selectedExam.sourceUrl,
+          sections: selectedExam.sections,
+        },
+      },
+    });
+    if (error) throw new Error(await getFunctionErrorMessage(error));
+    const errMsg = (data as { error?: string })?.error;
+    if (errMsg) throw new Error(errMsg);
+    const qs = (data as { questions: GeneratedQuestion[] }).questions ?? [];
+    if (qs.length === 0) throw new Error("No questions returned");
+    return qs;
+  };
+
   const generate = async () => {
     setGenerating(true);
     setResults([]);
     setSavedIdx(new Set());
     try {
-      const { data, error } = await supabase.functions.invoke("generate-questions", {
-        body: {
-          subject,
-          examType,
-          yearLevel,
-          topic: topic.trim() || selectedExam.title,
-          subtopic: subtopic.trim() || undefined,
-          skillTags: skillTags.split(",").map((s) => s.trim()).filter(Boolean),
-          difficulty,
-          count,
-          notes: [examGuidance(selectedExam), notes.trim()].filter(Boolean).join("\n\n"),
-          examPathway: {
-            id: selectedExam.id,
-            title: selectedExam.title,
-            category: selectedExam.category,
-            sourceLabel: selectedExam.sourceLabel,
-            sourceUrl: selectedExam.sourceUrl,
-            sections: selectedExam.sections,
-          },
-        },
-      });
-      if (error) throw new Error(await getFunctionErrorMessage(error));
-      const errMsg = (data as { error?: string })?.error;
-      if (errMsg) throw new Error(errMsg);
-      const qs = (data as { questions: GeneratedQuestion[] }).questions ?? [];
-      if (qs.length === 0) throw new Error("No questions returned");
+      const qs = await requestQuestions(count);
       setResults(qs);
       toast({ title: "Generated", description: `${qs.length} draft questions ready for review.` });
     } catch (e) {
       const message = await getFunctionErrorMessage(e);
       toast({
         title: "Generation failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const generateBatchRun = async () => {
+    setGenerating(true);
+    setResults([]);
+    setSavedIdx(new Set());
+    try {
+      const requested = Math.max(1, Math.min(MAX_GENERATION_RUN_SIZE, targetTotal));
+      let generated: GeneratedQuestion[] = [];
+      let remaining = requested;
+      let batchNo = 1;
+
+      while (remaining > 0) {
+        const batchCount = Math.min(MAX_GENERATION_BATCH_SIZE, remaining);
+        const batchNotes = [
+          `Batch ${batchNo} of this generation run.`,
+          "Create distinct scenarios and avoid repeating question stems, exact numbers, texts, names, and answer patterns from earlier batches in this run.",
+        ].join(" ");
+        const batch = await requestQuestions(batchCount, batchNotes);
+        generated = mergeUniqueQuestions(generated, batch);
+        setResults(generated);
+        remaining -= batchCount;
+        batchNo += 1;
+      }
+
+      toast({
+        title: "Batch generation complete",
+        description: `${generated.length} unique draft questions ready for review. Requested ${requested}.`,
+      });
+    } catch (e) {
+      const message = await getFunctionErrorMessage(e);
+      toast({
+        title: "Batch generation failed",
         description: message,
         variant: "destructive",
       });
@@ -399,8 +461,8 @@ export default function AdminQuestionGenerator() {
           </div>
           <div className="space-y-1.5">
             <Label>How many to generate</Label>
-            <Input type="number" min={1} max={10} value={count}
-              onChange={(e) => setCount(Math.max(1, Math.min(10, Number(e.target.value) || 5)))} />
+            <Input type="number" min={1} max={MAX_GENERATION_BATCH_SIZE} value={count}
+              onChange={(e) => setCount(Math.max(1, Math.min(MAX_GENERATION_BATCH_SIZE, Number(e.target.value) || 5)))} />
           </div>
           <div className="space-y-1.5 md:col-span-1">
             <Label>Extra guidance</Label>
@@ -408,10 +470,30 @@ export default function AdminQuestionGenerator() {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <Label>Batch target</Label>
+            <Input
+              type="number"
+              min={1}
+              max={MAX_GENERATION_RUN_SIZE}
+              value={targetTotal}
+              onChange={(e) => setTargetTotal(Math.max(1, Math.min(MAX_GENERATION_RUN_SIZE, Number(e.target.value) || 50)))}
+            />
+          </div>
+          <div className="md:col-span-2 rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+            Batch mode generates in chunks of up to {MAX_GENERATION_BATCH_SIZE}, keeps the run responsive, and deduplicates question stems before review.
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-2 pt-2">
           <Button onClick={generate} disabled={generating} size="lg">
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             {generating ? "Generating..." : "Generate questions"}
+          </Button>
+          <Button variant="outline" onClick={generateBatchRun} disabled={generating} size="lg">
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+            Generate batch target
           </Button>
           {results.length > 0 && (
             <>

@@ -86,7 +86,7 @@ function isConfiguredApiKey(apiKey: string | undefined) {
 }
 
 function buildSystemPrompt() {
-  return `You are an expert Australian K-12 curriculum writer for ScholarDrill.
+  return `You are an expert Australian K-12 curriculum writer for ScholarEdge.
 
 Write ORIGINAL multiple-choice practice questions for Australian exam preparation. Cover NAPLAN, ICAS, NSW/VIC selective entry, ACER scholarship, EduTest, HSC and VCE pathways when requested.
 
@@ -94,6 +94,8 @@ Strict rules:
 - Do not copy, quote, paraphrase closely, or recreate any official, past-paper, paid, or third-party sample question.
 - Use source links and exam descriptions only for structure, timing, skill focus and style guidance.
 - Every generated question must be new, self-contained, age-appropriate, and in Australian English.
+- Vary contexts, numbers, names, source snippets, and distractor logic across the batch.
+- Do not produce near-duplicate questions within the same response.
 - Return exactly four options with ids "a", "b", "c" and "d".
 - Exactly one option must be correct.
 - Explanations must teach the reasoning, not just name the answer.
@@ -233,7 +235,7 @@ Deno.serve(async (req) => {
     if (!EXAM_TYPES.includes(body.examType)) return json({ error: "Invalid examType" }, 400);
     if (!body.yearLevel || body.yearLevel < 1 || body.yearLevel > 12) return json({ error: "Invalid yearLevel" }, 400);
 
-    body.count = Math.max(1, Math.min(10, body.count ?? 5));
+    body.count = Math.max(1, Math.min(25, body.count ?? 5));
     body.difficulty = Math.max(1, Math.min(5, body.difficulty ?? 3));
 
     const model = Deno.env.get("GEMINI_QUESTION_MODEL") || Deno.env.get("GEMINI_MODEL") || "gemini-flash-lite-latest";
