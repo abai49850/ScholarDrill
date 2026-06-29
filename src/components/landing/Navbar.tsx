@@ -34,7 +34,7 @@ export const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <a href="#" className="flex items-center overflow-hidden rounded-xl shadow-sm transition-transform hover:scale-105">
+        <a href="#" className="flex items-center transition-transform hover:scale-105">
           <img src="/logo.png" alt="ScholarEdge Logo" className="h-9 w-auto object-contain md:h-11" />
         </a>
 

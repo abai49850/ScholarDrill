@@ -192,7 +192,7 @@ export default function Auth() {
         className="w-full max-w-md"
       >
         <div className="flex justify-center mb-6">
-          <Link to="/" className="inline-flex items-center justify-center overflow-hidden rounded-xl shadow-sm transition-transform hover:scale-105">
+          <Link to="/" className="inline-flex items-center justify-center transition-transform hover:scale-105">
             <img src="/logo.png" alt="ScholarEdge Logo" className="h-14 w-auto object-contain md:h-16" />
           </Link>
         </div>

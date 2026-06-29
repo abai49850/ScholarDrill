@@ -33,7 +33,7 @@ export const FooterSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-1">
-            <Link to="/" className="inline-flex items-center overflow-hidden rounded-xl shadow-sm">
+            <Link to="/" className="inline-flex items-center">
               <img src="/logo.png" alt="ScholarEdge Logo" className="h-9 w-auto object-contain md:h-11" />
             </Link>
             <p className="mt-8 text-sm text-muted-foreground">

@@ -49,7 +49,7 @@ export function DashboardSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
         <NavLink to="/dashboard" className="flex items-center justify-center w-full py-1">
-          <div className={`flex w-full items-center justify-center overflow-hidden rounded-xl shadow-sm transition-all ${collapsed ? 'p-0' : ''}`}>
+          <div className={`flex w-full items-center justify-center transition-all ${collapsed ? 'p-0' : ''}`}>
             <img src={collapsed ? "/icon-192.png" : "/logo.png"} alt="ScholarEdge Logo" className={`flex-shrink-0 object-contain transition-all ${collapsed ? 'h-8 w-8' : 'h-auto w-full max-h-9'}`} />
           </div>
         </NavLink>
