@@ -32,7 +32,7 @@ export class ParentInsightService {
 
     const tutor = {
       ...tutors[0],
-      name: "ScholarDrill Insights",
+      name: "ScholarEdge Insights",
       personality: "Professional Consultant",
       emoji: "📋",
     };

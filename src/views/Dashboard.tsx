@@ -192,7 +192,7 @@ function FirstSessionPrompt() {
           </div>
           <h2 className="text-3xl font-black tracking-tight">Start one practice set to build your progress map.</h2>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            After a few questions, ScholarDrill can show strengths, focus topics, streaks and parent-ready reports.
+            After a few questions, ScholarEdge can show strengths, focus topics, streaks and parent-ready reports.
           </p>
           <Button asChild variant="hero" size="lg" className="mt-6 rounded-full">
             <Link to="/practice"><BookOpenCheck className="h-5 w-5" /> Start Free Practice</Link>

@@ -1,4 +1,4 @@
-# ScholarDrill AI Project Context
+# ScholarEdge AI Project Context
 
 Last checked: 2026-06-15, Australia/Sydney
 
@@ -6,19 +6,19 @@ This file is a handoff document for future AI agents. It summarises the current 
 
 ## Project Identity
 
-- Project name: ScholarDrill
-- Local path: `C:\Users\asimb\OneDrive - Deakin University\Antigravity\Codex updated 180526\ScholarDrill`
-- Git remote: `https://github.com/abai49850/ScholarDrill.git`
+- Project name: ScholarEdge
+- Local path: `C:\Users\asimb\OneDrive - Deakin University\Antigravity\Codex updated 180526\ScholarEdge`
+- Git remote: `https://github.com/abai49850/ScholarEdge.git`
 - Main branch: `main`
 - Latest known pushed commit when this context file was first created: `1159ba0 Align bottom CTA with hero`
 - Always run `git log --oneline -6` for the latest commit because this handoff file may be updated alongside feature work.
-- Live site previously discussed: `https://scholardrill.vercel.app/`
+- Live site previously discussed: `https://ScholarEdge.vercel.app/`
 - Current Supabase project ref discussed in this thread: `sqktobxffnfqjmxwywpr`
 - Current Supabase URL discussed in this thread: `https://sqktobxffnfqjmxwywpr.supabase.co`
 
 ## High-Level Purpose
 
-ScholarDrill is a Next.js education web app for Australian students and parents. It supports practice, diagnostics, admin question management, AI question generation, AI coaching, student dashboards, parent reporting, tutor sharing, gamification, and exam-specific landing pages.
+ScholarEdge is a Next.js education web app for Australian students and parents. It supports practice, diagnostics, admin question management, AI question generation, AI coaching, student dashboards, parent reporting, tutor sharing, gamification, and exam-specific landing pages.
 
 Primary exam/practice pathways now include:
 
@@ -172,7 +172,7 @@ f042e5f Expand admin exam generation pathways
 30ddadf Add exam pathways to dashboard practice
 fba5634 Activate dashboard engagement features
 9550e71 Fix signup profile trigger
-f9d0965 Update ScholarDrill browser tab icon
+f9d0965 Update ScholarEdge browser tab icon
 98dee69 Fix admin user management actions
 ```
 

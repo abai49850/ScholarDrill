@@ -34,8 +34,8 @@ export const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <a href="#" className="flex items-center bg-slate-900 rounded-xl px-2 py-1 shadow-sm transition-transform hover:scale-105">
-          <img src="/logo.png" alt="ScholarDrill Logo" className="h-8 md:h-10 w-auto object-contain" />
+        <a href="#" className="flex items-center overflow-hidden rounded-xl shadow-sm transition-transform hover:scale-105">
+          <img src="/logo.png" alt="ScholarEdge Logo" className="h-9 w-auto object-contain md:h-11" />
         </a>
 
         <div className="hidden items-center gap-8 md:flex">

@@ -1,6 +1,6 @@
-# ScholarDrill
+# ScholarEdge
 
-ScholarDrill is a Next.js and Supabase web app for Australian exam preparation, including NAPLAN, ICAS, selective entry, scholarship exams, VCE/HSC-style skills, AI coaching, admin question management, parent reporting and gamified student practice.
+ScholarEdge is a Next.js and Supabase web app for Australian exam preparation, including NAPLAN, ICAS, selective entry, scholarship exams, VCE/HSC-style skills, AI coaching, admin question management, parent reporting and gamified student practice.
 
 For the current project handoff, architecture notes, recent updates, deployment details, Supabase function notes and known local caveats, read:
 

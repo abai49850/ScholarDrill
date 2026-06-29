@@ -17,13 +17,13 @@ export function constructMetadata({
   noIndex = false,
 }: SEOConfig): Metadata {
   return {
-    title: `${title} | ScholarDrill`,
+    title: `${title} | ScholarEdge`,
     description,
     keywords: ['NAPLAN', 'HSC', 'VCE', 'Selective Schools', 'Scholarship Exams', 'Australia Education'],
     openGraph: {
       title,
       description,
-      url: `https://scholardrill.com.au/${slug}`,
+      url: `https://scholaredge.com.au/${slug}`,
       images: [{ url: ogImage }],
       type: 'website',
     },
@@ -34,7 +34,7 @@ export function constructMetadata({
       images: [ogImage],
     },
     alternates: {
-      canonical: `https://scholardrill.com.au/${slug}`,
+      canonical: `https://scholaredge.com.au/${slug}`,
     },
     ...(noIndex && {
       robots: {

@@ -33,8 +33,8 @@ export const FooterSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-1">
-            <Link to="/" className="inline-flex items-center bg-slate-900 rounded-xl px-2 py-1 shadow-sm">
-              <img src="/logo.png" alt="ScholarDrill Logo" className="h-8 md:h-10 w-auto object-contain" />
+            <Link to="/" className="inline-flex items-center overflow-hidden rounded-xl shadow-sm">
+              <img src="/logo.png" alt="ScholarEdge Logo" className="h-9 w-auto object-contain md:h-11" />
             </Link>
             <p className="mt-8 text-sm text-muted-foreground">
               Australia's smartest test preparation platform.
@@ -61,7 +61,7 @@ export const FooterSection = () => {
         </div>
 
         <div className="mt-12 border-t border-border pt-8 text-center text-xs text-muted-foreground">
-          Copyright {new Date().getFullYear()} ScholarDrill. All rights reserved. Made in Australia.
+          Copyright {new Date().getFullYear()} ScholarEdge. All rights reserved. Made in Australia.
         </div>
       </div>
     </footer>

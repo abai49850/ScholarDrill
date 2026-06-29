@@ -9,13 +9,13 @@ const testimonials = [
     type: "Parent",
   },
   {
-    quote: "I use ScholarDrill with students around Glen Waverley and Balwyn who are aiming for selective entry. The VIC-specific exam pathway is much closer to what families here actually need.",
+    quote: "I use ScholarEdge with students around Glen Waverley and Balwyn who are aiming for selective entry. The VIC-specific exam pathway is much closer to what families here actually need.",
     author: "David Thompson",
     role: "Primary School Teacher, Melbourne VIC",
     type: "Teacher",
   },
   {
-    quote: "ScholarDrill helped my daughter build the confidence she needed for a top selective high school in Melbourne. The AI coach turned her practice results into a clear weekly plan.",
+    quote: "ScholarEdge helped my daughter build the confidence she needed for a top selective high school in Melbourne. The AI coach turned her practice results into a clear weekly plan.",
     author: "Michelle Lee",
     role: "Parent of Year 8 Student, Box Hill VIC",
     type: "Parent",

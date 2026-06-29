@@ -29,9 +29,9 @@ function downloadHtmlReport(stats: UserStats, profile: Profile | null) {
     .map((s) => `<tr><td>${s.subject}</td><td>${s.attempted}</td><td>${s.correct}</td><td>${s.accuracy}%</td></tr>`)
     .join("");
   const html = `<!doctype html>
-<html><head><meta charset="utf-8"><title>ScholarDrill Report - ${name}</title>
+<html><head><meta charset="utf-8"><title>ScholarEdge Report - ${name}</title>
 <style>body{font-family:Arial,sans-serif;margin:32px;color:#172033;line-height:1.5}h1{color:#006eb8}table{border-collapse:collapse;width:100%;margin-top:16px}td,th{border:1px solid #d8dee9;padding:8px;text-align:left}.muted{color:#596579}</style></head>
-<body><h1>ScholarDrill Performance Report</h1><p class="muted">${new Date().toLocaleDateString()}</p>
+<body><h1>ScholarEdge Performance Report</h1><p class="muted">${new Date().toLocaleDateString()}</p>
 <h2>${name}</h2><p>${summary}</p>
 <h3>Subject Performance</h3><table><thead><tr><th>Subject</th><th>Attempts</th><th>Correct</th><th>Accuracy</th></tr></thead><tbody>${subjectRows || "<tr><td colspan='4'>No practice activity yet.</td></tr>"}</tbody></table>
 <h3>Strengths</h3><ul>${stats.strongestTopics.map((t) => `<li>${t.topic}: ${t.accuracy}% (${t.attempted} attempts)</li>`).join("") || "<li>No strengths identified yet.</li>"}</ul>
@@ -41,7 +41,7 @@ function downloadHtmlReport(stats: UserStats, profile: Profile | null) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `scholardrill-report-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.html`;
+  link.download = `ScholarEdge-report-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.html`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -50,11 +50,11 @@ function shareWithTutor(stats: UserStats, profile: Profile | null) {
   const email = window.prompt("Enter tutor email address");
   if (!email) return;
   const name = profile?.display_name || "Student";
-  const subject = encodeURIComponent(`ScholarDrill progress report for ${name}`);
+  const subject = encodeURIComponent(`ScholarEdge progress report for ${name}`);
   const body = encodeURIComponent([
     "Hello,",
     "",
-    `Here is ${name}'s ScholarDrill progress summary:`,
+    `Here is ${name}'s ScholarEdge progress summary:`,
     buildPerformanceSummary(stats, profile?.daily_goal ?? 10),
     "",
     "Strengths:",

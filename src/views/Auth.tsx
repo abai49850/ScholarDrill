@@ -121,7 +121,7 @@ export default function Auth() {
         return;
       }
       if (data.session) {
-        toast.success("Account created. Welcome to ScholarDrill.");
+        toast.success("Account created. Welcome to ScholarEdge.");
         navigate("/dashboard", { replace: true });
       } else {
         toast.success("Account created. Check your email to confirm your account.");
@@ -192,8 +192,8 @@ export default function Auth() {
         className="w-full max-w-md"
       >
         <div className="flex justify-center mb-6">
-          <Link to="/" className="inline-flex items-center justify-center bg-slate-900 rounded-xl px-3 py-2 shadow-sm transition-transform hover:scale-105">
-            <img src="/logo.png" alt="ScholarDrill Logo" className="h-12 md:h-14 w-auto object-contain" />
+          <Link to="/" className="inline-flex items-center justify-center overflow-hidden rounded-xl shadow-sm transition-transform hover:scale-105">
+            <img src="/logo.png" alt="ScholarEdge Logo" className="h-14 w-auto object-contain md:h-16" />
           </Link>
         </div>
 
@@ -211,7 +211,7 @@ export default function Auth() {
                 </div>
                 <h1 className="text-xl font-bold">Set a new password</h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Enter a new password for your ScholarDrill account.
+                  Enter a new password for your ScholarEdge account.
                 </p>
               </div>
               <div>
@@ -351,7 +351,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-4">
-          By continuing you agree to ScholarDrill's terms. <Link to="/" className="underline">Back to home</Link>
+          By continuing you agree to ScholarEdge's terms. <Link to="/" className="underline">Back to home</Link>
         </p>
       </motion.div>
     </main>

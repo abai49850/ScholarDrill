@@ -17,7 +17,7 @@ export interface LandingPageData {
 export const landingPages: LandingPageData[] = [
   {
     slug: "naplan-practice-tests",
-    seoTitle: "NAPLAN Practice Tests 2025 | ScholarDrill Australia",
+    seoTitle: "NAPLAN Practice Tests 2025 | ScholarEdge Australia",
     seoDescription: "Prepare your child for NAPLAN with AI-powered practice tests for Years 3, 5, 7 & 9. Realistic questions, instant feedback and predicted band scores. Start free.",
     badge: "🇦🇺 Australian Curriculum Aligned",
     headline: "Ace NAPLAN With Confidence — Real Practice Tests for Years 3–9",
@@ -44,7 +44,7 @@ export const landingPages: LandingPageData[] = [
       correctIndex: 1,
     },
     testimonials: [
-      { name: "Sarah M.", location: "Sydney, NSW", quote: "My son went from Band 5 to Band 8 in Numeracy after 6 weeks on ScholarDrill. The practice tests are incredibly realistic.", rating: 5, avatar: "Sarah" },
+      { name: "Sarah M.", location: "Sydney, NSW", quote: "My son went from Band 5 to Band 8 in Numeracy after 6 weeks on ScholarEdge. The practice tests are incredibly realistic.", rating: 5, avatar: "Sarah" },
       { name: "David K.", location: "Melbourne, VIC", quote: "The parent dashboard is amazing. I can see exactly where my daughter needs help without sitting next to her.", rating: 5, avatar: "David" },
       { name: "Priya R.", location: "Brisbane, QLD", quote: "Best NAPLAN prep resource I've found. The AI recommendations are spot on.", rating: 5, avatar: "Priya" },
     ],
@@ -57,7 +57,7 @@ export const landingPages: LandingPageData[] = [
   },
   {
     slug: "scholarship-exam-prep",
-    seoTitle: "Scholarship Exam Preparation Australia | ScholarDrill",
+    seoTitle: "Scholarship Exam Preparation Australia | ScholarEdge",
     seoDescription: "Expert scholarship exam prep for Australian students. Practice tests for ACER, Edutest and more. AI coaching, parent reports, real results. Start free today.",
     badge: "🏅 Scholarship Exam Specialists",
     headline: "Win Scholarships With Expert AI-Powered Exam Preparation",
@@ -85,19 +85,19 @@ export const landingPages: LandingPageData[] = [
     },
     testimonials: [
       { name: "Jennifer L.", location: "Perth, WA", quote: "My daughter received a full scholarship to her dream school. The abstract reasoning training was the key differentiator.", rating: 5, avatar: "Jennifer" },
-      { name: "Michael T.", location: "Adelaide, SA", quote: "We tried three other platforms. ScholarDrill is the only one that actually matched the real scholarship exam difficulty.", rating: 5, avatar: "Michael" },
+      { name: "Michael T.", location: "Adelaide, SA", quote: "We tried three other platforms. ScholarEdge is the only one that actually matched the real scholarship exam difficulty.", rating: 5, avatar: "Michael" },
       { name: "Anika P.", location: "Canberra, ACT", quote: "The percentile tracking kept my son motivated. He could see himself improving week by week.", rating: 5, avatar: "Anika" },
     ],
     faqs: [
-      { q: "Which scholarship exams does ScholarDrill cover?", a: "We cover ACER, Edutest, and school-specific scholarship tests used by most Australian independent and Catholic schools." },
+      { q: "Which scholarship exams does ScholarEdge cover?", a: "We cover ACER, Edutest, and school-specific scholarship tests used by most Australian independent and Catholic schools." },
       { q: "When should we start preparing?", a: "We recommend starting 12–16 weeks before the exam. Our structured study plans guide you through exactly what to practise each week." },
-      { q: "Can my child use ScholarDrill alongside a tutor?", a: "Absolutely. Many families use ScholarDrill as a daily practice supplement to their weekly tutoring sessions." },
-      { q: "How is ScholarDrill different from past papers?", a: "Past papers are static. ScholarDrill adapts to your child's weaknesses, provides instant AI explanations, and tracks improvement over time." },
+      { q: "Can my child use ScholarEdge alongside a tutor?", a: "Absolutely. Many families use ScholarEdge as a daily practice supplement to their weekly tutoring sessions." },
+      { q: "How is ScholarEdge different from past papers?", a: "Past papers are static. ScholarEdge adapts to your child's weaknesses, provides instant AI explanations, and tracks improvement over time." },
     ],
   },
   {
     slug: "selective-school-test-prep",
-    seoTitle: "Selective School Test Preparation Australia | ScholarDrill",
+    seoTitle: "Selective School Test Preparation Australia | ScholarEdge",
     seoDescription: "Prepare for the Selective High School Placement Test with AI-powered practice. Covering NSW, VIC & QLD selective exams. Start your free diagnostic today.",
     badge: "🏫 Selective School Specialists",
     headline: "Get Into Your Dream Selective School With Targeted Practice",
@@ -124,12 +124,12 @@ export const landingPages: LandingPageData[] = [
       correctIndex: 0,
     },
     testimonials: [
-      { name: "Lily C.", location: "Sydney, NSW", quote: "My son got into James Ruse. I genuinely believe ScholarDrill was the single biggest factor. Worth every cent.", rating: 5, avatar: "Lily" },
+      { name: "Lily C.", location: "Sydney, NSW", quote: "My son got into James Ruse. I genuinely believe ScholarEdge was the single biggest factor. Worth every cent.", rating: 5, avatar: "Lily" },
       { name: "Robert N.", location: "Melbourne, VIC", quote: "The VIC-specific content is excellent. No other platform I found had this level of state-specific detail.", rating: 5, avatar: "Robert" },
       { name: "Hana S.", location: "Brisbane, QLD", quote: "The thinking skills modules improved my daughter's reasoning speed dramatically. She flew through the actual test.", rating: 5, avatar: "Hana" },
     ],
     faqs: [
-      { q: "Does ScholarDrill cover NSW, VIC and QLD selective tests?", a: "Yes. We have state-specific question banks and simulations for all three major selective school systems." },
+      { q: "Does ScholarEdge cover NSW, VIC and QLD selective tests?", a: "Yes. We have state-specific question banks and simulations for all three major selective school systems." },
       { q: "My child is in Year 5. Is it too early to start?", a: "Not at all. Many families start in Year 5 to build a strong foundation. The earlier you start, the more improvement you see." },
       { q: "How many practice questions are available?", a: "We have over 8,000 selective school practice questions across Maths, Reading, Writing, Thinking Skills and General Ability." },
       { q: "Can we track improvement over time?", a: "Yes. The parent dashboard shows score trends across every session, plus a predicted ranking score updated weekly." },
@@ -137,7 +137,7 @@ export const landingPages: LandingPageData[] = [
   },
   {
     slug: "vic-selective-entry-prep",
-    seoTitle: "VIC Selective Entry Test Preparation | ScholarDrill",
+    seoTitle: "VIC Selective Entry Test Preparation | ScholarEdge",
     seoDescription: "Prepare for Victorian Selective Entry High School exams with ACER-style practice for Maths, Quantitative Reasoning, Reading, Verbal Reasoning and Writing. Start free.",
     badge: "VIC Selective Entry Specialists",
     headline: "Prepare for VIC Selective Entry With Targeted ACER-Style Practice",
@@ -164,7 +164,7 @@ export const landingPages: LandingPageData[] = [
       correctIndex: 2,
     },
     testimonials: [
-      { name: "Michelle L.", location: "Box Hill, VIC", quote: "ScholarDrill helped my daughter prepare for a top Melbourne selective high school. The VIC-specific reasoning practice made the biggest difference.", rating: 5, avatar: "Michelle" },
+      { name: "Michelle L.", location: "Box Hill, VIC", quote: "ScholarEdge helped my daughter prepare for a top Melbourne selective high school. The VIC-specific reasoning practice made the biggest difference.", rating: 5, avatar: "Michelle" },
       { name: "Arjun P.", location: "Glen Waverley, VIC", quote: "The quantitative reasoning sets felt much closer to the ACER-style practice we needed than the generic worksheets we had been using.", rating: 5, avatar: "Arjun" },
       { name: "Helen R.", location: "Geelong, VIC", quote: "The parent dashboard made it obvious where my son was losing marks, and the AI coach gave him a simple plan for the next week.", rating: 5, avatar: "Helen" },
     ],
@@ -177,7 +177,7 @@ export const landingPages: LandingPageData[] = [
   },
   {
     slug: "year-5-maths-practice",
-    seoTitle: "Year 5 Maths Practice Tests Australia | ScholarDrill",
+    seoTitle: "Year 5 Maths Practice Tests Australia | ScholarEdge",
     seoDescription: "Year 5 Maths practice tests aligned to the Australian Curriculum. Fractions, decimals, geometry and more. AI feedback, parent reports. Start free.",
     badge: "📐 Australian Curriculum Aligned · Year 5",
     headline: "Year 5 Maths Made Manageable — Practice That Actually Works",
@@ -206,7 +206,7 @@ export const landingPages: LandingPageData[] = [
     testimonials: [
       { name: "Emma B.", location: "Melbourne, VIC", quote: "My daughter went from struggling to confident in fractions in just 3 weeks. The worked solutions are brilliant.", rating: 5, avatar: "Emma" },
       { name: "Chris W.", location: "Sydney, NSW", quote: "Finally a maths platform that matches exactly what they're learning at school. The curriculum alignment is perfect.", rating: 5, avatar: "Chris" },
-      { name: "Fatima A.", location: "Perth, WA", quote: "My son actually asks to do ScholarDrill maths now. That is something I never expected to say!", rating: 5, avatar: "Fatima" },
+      { name: "Fatima A.", location: "Perth, WA", quote: "My son actually asks to do ScholarEdge maths now. That is something I never expected to say!", rating: 5, avatar: "Fatima" },
     ],
     faqs: [
       { q: "Is the content aligned to the new Australian Curriculum v9?", a: "Yes. All Year 5 maths content is mapped to the Australian Curriculum v9 achievement standards." },
@@ -217,7 +217,7 @@ export const landingPages: LandingPageData[] = [
   },
   {
     slug: "icas-english-practice",
-    seoTitle: "ICAS English Practice Tests Australia | ScholarDrill",
+    seoTitle: "ICAS English Practice Tests Australia | ScholarEdge",
     seoDescription: "Prepare for ICAS English with AI-powered practice tests. Reading, writing and language conventions for Years 3–10. Realistic format, instant feedback. Start free.",
     badge: "📚 ICAS Exam Specialists",
     headline: "Master ICAS English — Practice Tests That Match the Real Thing",
@@ -246,7 +246,7 @@ export const landingPages: LandingPageData[] = [
     testimonials: [
       { name: "Grace O.", location: "Sydney, NSW", quote: "My daughter got High Distinction in ICAS English. The reading comprehension practice was the deciding factor.", rating: 5, avatar: "Grace" },
       { name: "James P.", location: "Brisbane, QLD", quote: "The AI writing feedback is remarkable. It gives the same kind of specific advice a good teacher would.", rating: 5, avatar: "James" },
-      { name: "Mei L.", location: "Melbourne, VIC", quote: "We had 4 weeks to prepare. ScholarDrill got us there. The ICAS-style questions are extremely accurate.", rating: 5, avatar: "Mei" },
+      { name: "Mei L.", location: "Melbourne, VIC", quote: "We had 4 weeks to prepare. ScholarEdge got us there. The ICAS-style questions are extremely accurate.", rating: 5, avatar: "Mei" },
     ],
     faqs: [
       { q: "Which year levels of ICAS English are covered?", a: "We cover Years 3 through 10, matching all ICAS English paper levels from Paper A to Paper G." },
@@ -257,7 +257,7 @@ export const landingPages: LandingPageData[] = [
   },
   {
     slug: "vce-english-exam-prep",
-    seoTitle: "VCE English Exam Prep 2025 | ScholarDrill",
+    seoTitle: "VCE English Exam Prep 2025 | ScholarEdge",
     seoDescription: "Comprehensive VCE English preparation. Text response, comparative analysis, language analysis and creative writing. AI-powered feedback, study plans. Start free.",
     badge: "📘 VCE Specialists · VCAA Aligned",
     headline: "Score 40+ in VCE English — AI-Powered Prep That Delivers Results",
@@ -292,7 +292,7 @@ export const landingPages: LandingPageData[] = [
       { q: "Does this cover both Units 1/2 and Units 3/4?", a: "Yes. We have content and practice tasks for VCE English Units 1, 2, 3 and 4, as well as EAL/D variants." },
       { q: "How does AI essay marking work?", a: "You submit your essay and our AI analyses it against VCAA criteria — Knowledge & Understanding, Analysis and Use of Metalanguage, and Textual Evidence — giving a criterion score and specific improvement suggestions." },
       { q: "Which texts are supported?", a: "We support the most commonly studied VCE texts, including those from the current VCAA text list. New texts are added each year." },
-      { q: "Can I use this alongside school?", a: "Absolutely. Most students use ScholarDrill to get extra essay practice outside class. The AI feedback fills in the gap when a teacher can't mark every draft." },
+      { q: "Can I use this alongside school?", a: "Absolutely. Most students use ScholarEdge to get extra essay practice outside class. The AI feedback fills in the gap when a teacher can't mark every draft." },
     ],
   },
 ];

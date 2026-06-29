@@ -19,7 +19,7 @@ export default function LandingPage() {
     }
     meta.content = data.seoDescription;
     return () => {
-      document.title = "ScholarDrill | Australian Exam Preparation";
+      document.title = "ScholarEdge | Australian Exam Preparation";
     };
   }, [data]);
 

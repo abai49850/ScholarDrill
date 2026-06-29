@@ -11,7 +11,7 @@ interface SEOProps {
 export function SEOManager({ title, description, keywords, canonical, ogImage }: SEOProps) {
   useEffect(() => {
     // Update Document Title
-    document.title = `${title} | ScholarDrill`;
+    document.title = `${title} | ScholarEdge`;
 
     // Update Meta Description
     const metaDescription = document.querySelector('meta[name="description"]');

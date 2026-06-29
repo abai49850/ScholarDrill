@@ -154,7 +154,7 @@ export function LandingPageTemplate({ data }: { data: LandingPageData }) {
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black mb-4">Try It Right Now — No Sign Up Needed</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Answer a real sample question and experience the ScholarDrill difference.</p>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Answer a real sample question and experience the ScholarEdge difference.</p>
           </div>
           <InteractiveDemo question={data.sampleQuestion} />
           <div className="text-center mt-8">
@@ -191,7 +191,7 @@ export function LandingPageTemplate({ data }: { data: LandingPageData }) {
           <div>
             <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-bold mb-6 ${accentBg}`}>📊 Parent Dashboard</span>
             <h2 className="text-3xl font-black mb-4">See Exactly How Your Child Is Progressing</h2>
-            <p className="text-muted-foreground leading-relaxed mb-6">The ScholarDrill Parent Portal gives you a real-time window into your child's performance — no guesswork, no waiting for school reports.</p>
+            <p className="text-muted-foreground leading-relaxed mb-6">The ScholarEdge Parent Portal gives you a real-time window into your child's performance — no guesswork, no waiting for school reports.</p>
             <ul className="space-y-3">
               {["Predicted exam scores updated after every session", "Weekly improvement trend charts", "AI-generated study recommendations", "Side-by-side comparison vs. national benchmarks"].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm font-medium">
@@ -287,7 +287,7 @@ export function LandingPageTemplate({ data }: { data: LandingPageData }) {
             <Zap className="h-6 w-6 text-white/70" />
           </div>
           <h2 className="text-3xl md:text-4xl font-black mb-4">Start Your Child's Free Diagnostic Test Today</h2>
-          <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">Join 12,000+ Australian families already using ScholarDrill. No credit card required. Results in minutes.</p>
+          <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">Join 12,000+ Australian families already using ScholarEdge. No credit card required. Results in minutes.</p>
           <Button size="lg" className="h-14 px-12 text-lg rounded-full bg-white text-foreground hover:bg-white/90 shadow-xl font-bold" asChild>
             <Link to="/auth">{data.primaryCta} <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
@@ -297,7 +297,7 @@ export function LandingPageTemplate({ data }: { data: LandingPageData }) {
 
       {/* FOOTER */}
       <footer className="bg-foreground text-background py-10 text-center text-sm">
-        <p className="text-background/50">© {new Date().getFullYear()} ScholarDrill · Australian Curriculum Aligned · <Link to="/" className="underline hover:text-white transition-colors">Home</Link></p>
+        <p className="text-background/50">© {new Date().getFullYear()} ScholarEdge · Australian Curriculum Aligned · <Link to="/" className="underline hover:text-white transition-colors">Home</Link></p>
       </footer>
     </div>
   );

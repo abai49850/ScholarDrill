@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { landingPages } from "@/data/landingPages";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://scholardrill.com.au";
+  const baseUrl = "https://scholaredge.com.au";
   const now = new Date();
   const staticRoutes = [
     "",

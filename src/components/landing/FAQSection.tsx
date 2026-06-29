@@ -8,8 +8,8 @@ import {
 
 const faqs = [
   {
-    q: "What tests does ScholarDrill cover?",
-    a: "ScholarDrill covers selective school entry exams across NSW and VIC, scholarship tests including ACER and EduTest, ICAS, senior English skill pathways for VCE and HSC preparation, plus NAPLAN Years 3, 5, 7 and 9.",
+    q: "What tests does ScholarEdge cover?",
+    a: "ScholarEdge covers selective school entry exams across NSW and VIC, scholarship tests including ACER and EduTest, ICAS, senior English skill pathways for VCE and HSC preparation, plus NAPLAN Years 3, 5, 7 and 9.",
   },
   {
     q: "What has changed in the expanded practice library?",
@@ -24,8 +24,8 @@ const faqs = [
     a: "The AI tutor reads recent practice history, strengths, weak topics and accuracy patterns, then gives targeted guidance instead of generic study advice. It can explain mistakes, recommend the next topic, and help students turn dashboard data into a practical study plan.",
   },
   {
-    q: "What makes ScholarDrill different from static worksheets or past papers?",
-    a: "ScholarDrill combines adaptive practice, daily quests, XP motivation, parent reporting, tutor sharing and AI coaching in one web app. Students get instant explanations, parents can see progress clearly, and tutors can receive focused reports instead of guessing what happened between lessons.",
+    q: "What makes ScholarEdge different from static worksheets or past papers?",
+    a: "ScholarEdge combines adaptive practice, daily quests, XP motivation, parent reporting, tutor sharing and AI coaching in one web app. Students get instant explanations, parents can see progress clearly, and tutors can receive focused reports instead of guessing what happened between lessons.",
   },
   {
     q: "Is the content aligned with the Australian Curriculum?",
@@ -40,8 +40,8 @@ const faqs = [
     a: "Yes. Students can start with a free diagnostic test and daily practice access, including instant explanations and basic progress tracking. Pro unlocks broader exam coverage, deeper analytics and more practice volume.",
   },
   {
-    q: "What ages is ScholarDrill suitable for?",
-    a: "ScholarDrill is designed for Australian students from upper primary through senior secondary pathways. Most practice starts from Years 3-9, with dedicated ICAS, scholarship, selective, VCE and HSC-style pathways extending the coverage further.",
+    q: "What ages is ScholarEdge suitable for?",
+    a: "ScholarEdge is designed for Australian students from upper primary through senior secondary pathways. Most practice starts from Years 3-9, with dedicated ICAS, scholarship, selective, VCE and HSC-style pathways extending the coverage further.",
   },
 ];
 
